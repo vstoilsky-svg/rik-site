@@ -1,0 +1,16 @@
+services:
+  rik-site:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rik-site:2026-07-30
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - rik-site-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  rik-site-data:

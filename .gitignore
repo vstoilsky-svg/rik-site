@@ -1,0 +1,36 @@
+# Secrets and local environment
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python
+**/.venv/
+**/.venv-*/
+**/venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+
+# Node and frontend build output
+**/node_modules/
+**/dist/
+
+# Logs and runtime data
+**/*.log
+backend/data/chat-sessions.json
+backend/data/usage-stats.json
+
+# Local operational folders
+AUDIT/
+runtime/
+site-tools/
+tmp/
+FULL_BACKUP/
+
+# OS and editor metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
