@@ -162,9 +162,10 @@
 .proj-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 14px; }
 .proj-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden;
   display: flex; flex-direction: column; }
-.proj-media { aspect-ratio: 3/2; background: linear-gradient(160deg,var(--card),var(--surface));
-  display: grid; place-items: center; padding: 10px; }
-.proj-media img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.proj-media { position: relative; aspect-ratio: 3/2; overflow: hidden;
+  background: linear-gradient(160deg,var(--card),var(--surface)); }
+.proj-media img { position: absolute; inset: 10px; display: block;
+  width: calc(100% - 20px); height: calc(100% - 20px); object-fit: cover; object-position: center; }
 .proj-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
 .proj-cat { font-size: .78rem; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: .02em; }
 .proj-body h3 { margin: 0; color: var(--brand-ink); font-size: 1.02rem; }
