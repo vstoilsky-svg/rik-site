@@ -102,7 +102,7 @@ export default function ForContractors() {
           <div className="proj-cards contractor-projects">
             {PROJECTS.map((project) => (
               <article className="proj-card" key={project.name}>
-                {project.img && <div className="proj-media"><img src={`/photo/projects/${project.img}.png`} alt={project.name} loading="lazy" /></div>}
+                {project.img && <div className="proj-media"><img src={`/photo/projects/${project.img.includes(".") ? project.img : `${project.img}.png`}`} alt={project.name} loading="lazy" /></div>}
                 <div className="proj-body"><span className="proj-cat">{project.cat}</span><h3>{project.name}</h3><p>{project.desc}</p></div>
               </article>
             ))}
