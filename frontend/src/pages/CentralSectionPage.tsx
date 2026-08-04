@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { sectionByRoute } from "../data/central-sections";
 import FloatingToc from "../components/FloatingToc";
+import SafeHtml from "../components/SafeHtml";
 
 // Техлисты секций ЦК (прямое скачивание PDF)
 const CK_TECHSHEET: Record<string, string> = {
@@ -113,7 +114,7 @@ export default function CentralSectionPage() {
                     ))}
                   </div>
                 )}
-                <div className="waer-table" dangerouslySetInnerHTML={{ __html: tb.html }} />
+                <SafeHtml className="waer-table" html={tb.html} />
               </div>
             ))}
             {s.tables.length === 0 && (

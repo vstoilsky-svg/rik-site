@@ -1,76 +1,48 @@
-# RIK site — portable current-state handoff for Georgiy
+# RIK site
 
-Snapshot source:
+Canonical source: private GitHub repository `vstoilsky-svg/rik-site`.
 
-- frontend: `C:\Users\user2\rik-site\app`
-- live backend: `C:\Users\user2\rik-chatbot-backend`
-- snapshot id: `20260729-074519`
+The repository contains the React/Vite frontend, FastAPI backend, production nginx/supervisor container configuration, documents and public assets. A GitHub merge updates source and publishes a container image; it does **not** deploy to Timeweb or change DNS.
 
-The original `.31` host was not moved, stopped or deleted. This directory is an
-independent copy of the current code/content state.
+## Local Windows setup
 
-## Contents
+Requirements: Node.js 24, npm 11, Python 3.12 x64, PowerShell 5.1+ and Docker Desktop for container checks.
 
-- `frontend/` — current React/Vite source, package lock and all public assets.
-- `backend/` — current FastAPI source, prompts, knowledge and Supabase schema
-  references.
-- `INSTALL.ps1` — creates clean Node/Python dependencies.
-- `START-DEV.ps1` — starts backend on `127.0.0.1:8011` and frontend on
-  `0.0.0.0:5173`.
-- `STOP-DEV.ps1` — stops only the processes recorded by `START-DEV.ps1`.
-- `VERIFY.ps1` — TypeScript/Vite build, Python compile and pip consistency.
-- `MANIFEST.csv` — SHA-256 inventory of the portable bundle.
+```powershell
+git clone https://github.com/vstoilsky-svg/rik-site.git C:\RIK-SITE-LOCAL\RUNNABLE
+Set-Location C:\RIK-SITE-LOCAL\RUNNABLE
+powershell -ExecutionPolicy Bypass -File .\INSTALL.ps1
+Copy-Item .\backend\.env.example .\backend\.env
+```
 
-## Required software
+Fill `backend/.env` only through the protected operator handoff. Never commit or paste its values.
 
-- Windows 10/11 x64.
-- Node.js 24.x and npm 11.x. `.31` used Node `24.15.0`, npm `11.12.1`.
-- Python 3.12+; `.31` backend venv used Python `3.14.6`.
-- PowerShell 5.1 or newer.
+```powershell
+powershell -ExecutionPolicy Bypass -File .\VERIFY.ps1
+powershell -ExecutionPolicy Bypass -File .\START-DEV.ps1
+```
 
-## First launch
+Open `http://localhost:5173/`. Other office computers can use the workstation IP while the dev server is running and the firewall allows port 5173.
 
-1. Copy the entire `RUNNABLE` folder from USB to a local SSD.
-2. Run:
+## Container
 
-   `powershell -ExecutionPolicy Bypass -File .\INSTALL.ps1`
+```powershell
+docker compose build
+docker compose up -d
+curl.exe http://127.0.0.1:8080/healthz
+```
 
-3. Open `backend\.env`, replace every `<SET_SEPARATELY>` value using the
-   protected credential handoff from Viktor/admin. Secrets are intentionally
-   absent from USB.
-4. Run:
+The image listens on port 8080 and runs as the non-root `rik` user. Runtime variables are injected from `backend/.env`; they are not baked into the image.
 
-   `powershell -ExecutionPolicy Bypass -File .\VERIFY.ps1`
+## Change workflow
 
-5. Start:
+Create a branch, make focused changes, run `GENERATE-MANIFEST.ps1`, then run `VERIFY.ps1`. Push the branch and open a pull request. GitHub CI validates source, manifest, tests, full history for secrets, the production image, deep links, 404 assets and the non-root runtime.
 
-   `powershell -ExecutionPolicy Bypass -File .\START-DEV.ps1`
+On a successful merge to `main`, GitHub publishes:
 
-6. Open `http://localhost:5173/`.
+- `ghcr.io/vstoilsky-svg/rik-site:latest`
+- `ghcr.io/vstoilsky-svg/rik-site:<commit-sha>`
 
-To work only on frontend before credentials are available:
+Use the immutable SHA tag for rollback. Deployment and domain cutover require a separate explicit decision by the operator.
 
-`powershell -ExecutionPolicy Bypass -File .\START-DEV.ps1 -FrontendOnly`
-
-## Important boundaries
-
-- Do not run production from Vite dev server. Production must use `npm run
-  build` plus a hardened static/reverse-proxy service.
-- Frontend `/api` is proxied to local `127.0.0.1:8011`; chat and request form
-  require the backend.
-- The current source intentionally includes the findings from the read-only
-  audit. Read `AUDIT\report.md` before fixes.
-- Never copy `.env`, SMTP password, OpenRouter key or Supabase service-role key
-  into git, site-bridge, Obsidian or reports.
-- Make a restore point and use minimal diffs; no blind overwrite.
-
-## What was excluded
-
-- frontend `node_modules/` and `dist/` — reproducible by `npm ci` / build;
-- backend `.venv/` — recreated by `INSTALL.ps1`;
-- `.env`, `secrets/`, runtime logs and chat-session data;
-- historical backend backups and Python caches.
-
-The complete unmodified site snapshot, including old restore/incoming/tmp
-folders, is separately stored under `FULL_BACKUP\rik-site`.
-
+See `CONTRIBUTING.md`, `SECURITY.md`, `docs/AUDIT-CLOSURE.md` and `docs/REPOSITORY-SIZE.md`.

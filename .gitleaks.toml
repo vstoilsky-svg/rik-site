@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated repository manifest stores Git blob identifiers only"
+paths = ['''^MANIFEST\.csv$''']

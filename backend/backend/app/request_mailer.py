@@ -14,6 +14,24 @@ ALLOWED_EXTENSIONS = {
     ".ifc", ".jpg", ".jpeg", ".png", ".zip", ".rar", ".7z",
 }
 
+CONTENT_TYPES = {
+    ".pdf": "application/pdf",
+    ".xls": "application/vnd.ms-excel",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".dwg": "image/vnd.dwg",
+    ".dxf": "image/vnd.dxf",
+    ".rvt": "application/octet-stream",
+    ".ifc": "application/x-step",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".zip": "application/zip",
+    ".rar": "application/vnd.rar",
+    ".7z": "application/x-7z-compressed",
+}
+
 
 @dataclass(frozen=True)
 class RequestAttachment:
@@ -34,10 +52,41 @@ def normalized_filename(value: str) -> str:
     return safe_header(Path(value or "attachment").name, 180) or "attachment"
 
 
-def validate_attachment(filename: str) -> None:
+def validate_attachment(filename: str, content: bytes | None = None) -> str:
     extension = Path(filename).suffix.lower()
     if extension not in ALLOWED_EXTENSIONS:
         raise ValueError(f"Недопустимый тип файла: {extension or 'без расширения'}")
+    if content is not None and not _signature_matches(extension, content[:4096]):
+        raise ValueError(f"Содержимое файла не соответствует расширению: {extension}")
+    return CONTENT_TYPES[extension]
+
+
+def _signature_matches(extension: str, head: bytes) -> bool:
+    if not head:
+        return False
+    signatures = {
+        ".pdf": (b"%PDF-",),
+        ".png": (b"\x89PNG\r\n\x1a\n",),
+        ".jpg": (b"\xff\xd8\xff",),
+        ".jpeg": (b"\xff\xd8\xff",),
+        ".zip": (b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08"),
+        ".docx": (b"PK\x03\x04",),
+        ".xlsx": (b"PK\x03\x04",),
+        ".rar": (b"Rar!\x1a\x07",),
+        ".7z": (b"7z\xbc\xaf\x27\x1c",),
+        ".doc": (b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",),
+        ".xls": (b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",),
+        ".rvt": (b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",),
+        ".dwg": (b"AC10",),
+    }
+    if extension in signatures:
+        return any(head.startswith(signature) for signature in signatures[extension])
+    normalized = head.lstrip().upper()
+    if extension == ".dxf":
+        return normalized.startswith(b"0") and b"SECTION" in normalized
+    if extension == ".ifc":
+        return normalized.startswith(b"ISO-10303-21")
+    return False
 
 
 def send_request_email(fields: dict[str, str], attachments: list[RequestAttachment]) -> None:

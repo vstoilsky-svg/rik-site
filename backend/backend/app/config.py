@@ -38,6 +38,10 @@ def env_float(name: str, default: float) -> float:
         return default
 
 
+def env_csv(name: str, default: str = "") -> tuple[str, ...]:
+    return tuple(value.strip() for value in os.getenv(name, default).split(",") if value.strip())
+
+
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_MODELS = [
     model.strip()
@@ -54,6 +58,10 @@ MAX_MESSAGE_CHARS = env_int("MAX_MESSAGE_CHARS", 3000)
 KNOWLEDGE_MAX_CHARS = env_int("KNOWLEDGE_MAX_CHARS", 12000)
 RATE_LIMIT_WINDOW_SECONDS = env_int("RATE_LIMIT_WINDOW_SECONDS", 60)
 RATE_LIMIT_MAX_REQUESTS = env_int("RATE_LIMIT_MAX_REQUESTS", 20)
+RATE_LIMIT_MAX_BUCKETS = env_int("RATE_LIMIT_MAX_BUCKETS", 10000)
+TRUSTED_PROXY_IPS = env_csv("TRUSTED_PROXY_IPS", "127.0.0.1,::1")
+CHAT_SESSION_RETENTION_SECONDS = env_int("CHAT_SESSION_RETENTION_SECONDS", 7 * 24 * 60 * 60)
+CHAT_MAX_SESSIONS = env_int("CHAT_MAX_SESSIONS", 5000)
 CHAT_FALLBACK_MESSAGE = os.getenv(
     "CHAT_FALLBACK_MESSAGE",
     "Сейчас я немного перегружен. Попробуйте написать чуть позже.",
@@ -79,6 +87,11 @@ SMTP_USE_SSL = os.getenv("SMTP_USE_SSL", "false").strip().lower() in {"1", "true
 REQUEST_RECIPIENT = os.getenv("REQUEST_RECIPIENT", "zakaz@rik-vent.ru")
 REQUEST_MAX_FILES = env_int("REQUEST_MAX_FILES", 10)
 REQUEST_MAX_TOTAL_BYTES = env_int("REQUEST_MAX_TOTAL_BYTES", 25 * 1024 * 1024)
+REQUEST_MAX_FILE_BYTES = env_int("REQUEST_MAX_FILE_BYTES", 15 * 1024 * 1024)
+REQUEST_MAX_BODY_BYTES = env_int("REQUEST_MAX_BODY_BYTES", 30 * 1024 * 1024)
+REQUEST_MAX_FIELD_CHARS = env_int("REQUEST_MAX_FIELD_CHARS", 5000)
+REQUEST_RATE_LIMIT_WINDOW_SECONDS = env_int("REQUEST_RATE_LIMIT_WINDOW_SECONDS", 10 * 60)
+REQUEST_RATE_LIMIT_MAX_REQUESTS = env_int("REQUEST_RATE_LIMIT_MAX_REQUESTS", 5)
 
 PROMPT_PATH = ROOT_DIR / "prompts" / "system.md"
 KNOWLEDGE_DIR = ROOT_DIR / "knowledge"

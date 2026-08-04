@@ -11,6 +11,9 @@
 **/*.log
 **/.pytest_cache
 **/.mypy_cache
+**/*.bak
+**/*.bak-*
+**/*.bak[0-9]*
 **/.git
 **/.gitignore
 
