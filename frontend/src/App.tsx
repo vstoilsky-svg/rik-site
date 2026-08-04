@@ -10,6 +10,7 @@ import "./rich.css";
 import "./rik-20260722-fixes.css";
 import "./home-sections.css";
 import ChatWidget from "./components/ChatWidget.jsx";
+import NotFound from "./pages/NotFound";
 
 const Home = lazy(() => import("./pages/Home"));
 const Catalog = lazy(() => import("./pages/Catalog"));
@@ -72,6 +73,7 @@ export default function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/request" element={<RequestForm />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </Suspense>

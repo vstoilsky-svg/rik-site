@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import asyncio
+import ipaddress
 import json
 import re
 import smtplib
 import uuid
 
 from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.datastructures import UploadFile
 
@@ -26,25 +26,28 @@ from .supabase_rag import SupabaseRagRetriever
 
 app = FastAPI(title="RIK Website Chat API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["POST", "OPTIONS"],
-    allow_headers=["*"],
-)
-
 chat_store = FileChatStore(
     file_path=config.DATA_DIR / "chat-sessions.json",
     stats_path=config.DATA_DIR / "usage-stats.json",
     max_history_messages=config.MAX_HISTORY_MESSAGES,
+    max_sessions=config.CHAT_MAX_SESSIONS,
+    retention_seconds=config.CHAT_SESSION_RETENTION_SECONDS,
 )
 knowledge_base = KnowledgeBase(config.KNOWLEDGE_DIR, config.KNOWLEDGE_MAX_CHARS)
 prompt_builder = PromptBuilder(config.PROMPT_PATH, knowledge_base)
 openrouter = OpenRouterClient()
 rag_retriever = SupabaseRagRetriever(openrouter)
 local_rag_retriever = LocalVectorRagRetriever(openrouter)
-rate_limiter = RateLimiter(config.RATE_LIMIT_WINDOW_SECONDS, config.RATE_LIMIT_MAX_REQUESTS)
+rate_limiter = RateLimiter(
+    config.RATE_LIMIT_WINDOW_SECONDS,
+    config.RATE_LIMIT_MAX_REQUESTS,
+    config.RATE_LIMIT_MAX_BUCKETS,
+)
+request_rate_limiter = RateLimiter(
+    config.REQUEST_RATE_LIMIT_WINDOW_SECONDS,
+    config.REQUEST_RATE_LIMIT_MAX_REQUESTS,
+    config.RATE_LIMIT_MAX_BUCKETS,
+)
 
 
 @app.get("/api/health")
@@ -54,6 +57,16 @@ async def health() -> JSONResponse:
 
 @app.post("/api/request")
 async def submit_request(request: Request) -> JSONResponse:
+    if not request_rate_limiter.check(f"request:{request_client_ip(request)}"):
+        return JSONResponse({"ok": False, "error": "Слишком много заявок. Попробуйте позже."}, status_code=429)
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            if int(content_length) > config.REQUEST_MAX_BODY_BYTES:
+                return JSONResponse({"ok": False, "error": "Размер запроса превышает допустимый"}, status_code=413)
+        except ValueError:
+            return JSONResponse({"ok": False, "error": "Некорректный размер запроса"}, status_code=400)
+
     form = await request.form()
     fields: dict[str, str] = {}
     uploads: list[UploadFile] = []
@@ -62,7 +75,10 @@ async def submit_request(request: Request) -> JSONResponse:
             if value.filename:
                 uploads.append(value)
         else:
-            fields[key] = str(value).strip()
+            field_value = str(value).strip()
+            if len(field_value) > config.REQUEST_MAX_FIELD_CHARS:
+                return JSONResponse({"ok": False, "error": "Слишком длинное значение поля"}, status_code=422)
+            fields[key] = field_value
 
     # Honeypot: bots receive a neutral success response without triggering e-mail.
     if fields.get("website"):
@@ -82,11 +98,17 @@ async def submit_request(request: Request) -> JSONResponse:
         for upload in uploads:
             filename = normalized_filename(upload.filename or "attachment")
             validate_attachment(filename)
-            content = await upload.read()
-            total_size += len(content)
-            if total_size > config.REQUEST_MAX_TOTAL_BYTES:
-                return JSONResponse({"ok": False, "error": "Общий размер файлов превышает допустимый"}, status_code=413)
-            attachments.append(RequestAttachment(filename, upload.content_type or "application/octet-stream", content))
+            chunks: list[bytes] = []
+            file_size = 0
+            while chunk := await upload.read(64 * 1024):
+                file_size += len(chunk)
+                total_size += len(chunk)
+                if file_size > config.REQUEST_MAX_FILE_BYTES or total_size > config.REQUEST_MAX_TOTAL_BYTES:
+                    return JSONResponse({"ok": False, "error": "Размер файлов превышает допустимый"}, status_code=413)
+                chunks.append(chunk)
+            content = b"".join(chunks)
+            content_type = validate_attachment(filename, content)
+            attachments.append(RequestAttachment(filename, content_type, content))
     except ValueError as error:
         return JSONResponse({"ok": False, "error": str(error)}, status_code=415)
     finally:
@@ -217,9 +239,32 @@ def normalize_message(value: str) -> str:
 
 
 def rate_limit_key(request: Request, session_id: str) -> str:
+    del session_id
+    return f"chat:{request_client_ip(request)}"
+
+
+def request_client_ip(request: Request) -> str:
+    peer = request.client.host if request.client else "127.0.0.1"
+    try:
+        peer_ip = ipaddress.ip_address(peer)
+    except ValueError:
+        return "invalid"
+
+    if str(peer_ip) not in config.TRUSTED_PROXY_IPS:
+        return str(peer_ip)
+
     forwarded = request.headers.get("x-forwarded-for", "")
-    client_ip = forwarded.split(",")[0].strip() or (request.client.host if request.client else "local")
-    return f"{client_ip}:{session_id}"
+    for raw_value in reversed(forwarded.split(",")):
+        candidate = raw_value.strip()
+        if not candidate:
+            continue
+        try:
+            candidate_ip = ipaddress.ip_address(candidate)
+        except ValueError:
+            continue
+        if str(candidate_ip) not in config.TRUSTED_PROXY_IPS:
+            return str(candidate_ip)
+    return str(peer_ip)
 
 
 def request_history(payload: ChatRequest, session_id: str) -> list[dict[str, str]]:

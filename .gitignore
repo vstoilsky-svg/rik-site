@@ -11,6 +11,9 @@
 **/*.py[cod]
 **/.pytest_cache/
 **/.mypy_cache/
+**/*.bak
+**/*.bak-*
+**/*.bak[0-9]*
 
 # Node and frontend build output
 **/node_modules/
@@ -33,4 +36,3 @@ FULL_BACKUP/
 Thumbs.db
 .idea/
 .vscode/
-

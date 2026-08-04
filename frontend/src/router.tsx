@@ -86,6 +86,8 @@ export function BrowserRouter({ children }: { children: ReactNode }) {
 }
 
 function matchPath(pattern: string, pathname: string): Record<string, string> | null {
+  if (pattern === "*") return {};
+
   const normalize = (value: string) => {
     const decoded = decodeURIComponent(value);
     return decoded.length > 1 && decoded.endsWith("/") ? decoded.slice(0, -1) : decoded;

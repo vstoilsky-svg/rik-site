@@ -27,5 +27,11 @@ if ($LASTEXITCODE -ne 0) { throw "Python compile failed: $LASTEXITCODE" }
 & $venvPython -m pip check
 if ($LASTEXITCODE -ne 0) { throw "pip check failed: $LASTEXITCODE" }
 
-Write-Host 'VERIFY PASS. Review known audit findings before production use.'
+$env:PYTHONPATH = $backend
+& $venvPython -m unittest discover -s (Join-Path $backend 'tests') -v
+if ($LASTEXITCODE -ne 0) { throw "Backend tests failed: $LASTEXITCODE" }
 
+& (Join-Path $root 'VERIFY-MANIFEST.ps1')
+if ($LASTEXITCODE -ne 0) { throw "Manifest verification failed: $LASTEXITCODE" }
+
+Write-Host 'VERIFY PASS.'

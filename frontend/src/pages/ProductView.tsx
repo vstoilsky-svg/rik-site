@@ -14,6 +14,7 @@ import ChannelRectCards from "../components/ChannelRectCards";
 import DuctSections from "../components/DuctSections";
 import DuctProductCards from "../components/DuctProductCards";
 import { ductFamilyOf, familyForHubSlug } from "../data/duct-families";
+import SafeHtml from "../components/SafeHtml";
 
 const PRODUCT_NOTICE_EXCLUSIONS = new Set([
   "vozduhovody-i-fasonnye-izdeliya",
@@ -160,14 +161,14 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
         {isDuctItem && ductContentHtml && (
           <section className="block" id="tech" data-toc="Технические характеристики">
             <h2>Технические характеристики</h2>
-            <div className="duct-rich" dangerouslySetInnerHTML={{ __html: ductContentHtml }} />
+            <SafeHtml className="duct-rich" html={ductContentHtml} />
           </section>
         )}
 
         {isRms && p.contentHtml && (
           <section className="block rms-rich-block" id="tech" data-toc="Технические характеристики">
             <h2>Технические характеристики</h2>
-            <div className="duct-rich" dangerouslySetInnerHTML={{ __html: p.contentHtml }} />
+            <SafeHtml className="duct-rich" html={p.contentHtml} />
           </section>
         )}
 
@@ -182,7 +183,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
               <div className="table-block" key={tb.title}>
                 {!isRedundantTechnicalHeading(tb.title) && <h3 className="table-h">{tb.title}</h3>}
                 {tb.img && <img className="scheme-img" src={tb.img} alt={tb.title} loading="lazy" />}
-                <div className="waer-table" dangerouslySetInnerHTML={{ __html: tb.html }} />
+                <SafeHtml className="waer-table" html={tb.html} />
               </div>
             ));
             return (
