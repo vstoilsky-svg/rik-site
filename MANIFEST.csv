@@ -2,7 +2,7 @@
 ".dockerignore","dd551cd1ae8d2c653bad7d4535d59004203129a9"
 ".gitattributes","1b25ecc56675d823680c21fa730548c059b8f8f2"
 ".github/pull_request_template.md","6c289b6becabf0e8d31f3709f679f6b99dc0855b"
-".github/workflows/ci.yml","6b82553c4053ef4f02d470d7a419dcb957a7e207"
+".github/workflows/ci.yml","a1d607ce49a9b7e95b0f1c51d5e23dd17953da3d"
 ".github/workflows/publish-container.yml","35cbfc892befc15873ccf26e297984d788e3ebcc"
 ".gitignore","4139d717b7b7af79e902d944fd7fbb7a06c205b8"
 ".gitleaks.toml","96e28dfb7bd329c1c10c6d0cf48ecd36e6b55260"
