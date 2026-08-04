@@ -13,7 +13,9 @@ function Invoke-GitHashObject([string[]]$Paths) {
     $outputPath = Join-Path ([System.IO.Path]::GetTempPath()) "rik-hash-output-$token.txt"
     $errorPath = Join-Path ([System.IO.Path]::GetTempPath()) "rik-hash-error-$token.txt"
     try {
-        [System.IO.File]::WriteAllLines($inputPath, $Paths, $utf8)
+        # No trailing newline: Git for Linux treats the final empty record as
+        # an empty path, while Git for Windows silently ignores it.
+        [System.IO.File]::WriteAllText($inputPath, ($Paths -join "`n"), $utf8)
         $process = Start-Process -FilePath (Get-Command git).Source -ArgumentList @('hash-object', '--stdin-paths') `
             -WorkingDirectory $root -RedirectStandardInput $inputPath -RedirectStandardOutput $outputPath `
             -RedirectStandardError $errorPath -NoNewWindow -Wait -PassThru
