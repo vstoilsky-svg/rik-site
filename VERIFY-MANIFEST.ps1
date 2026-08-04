@@ -9,6 +9,7 @@ $rows = Import-Csv -LiteralPath $manifestPath
 $missing = 0
 $mismatch = 0
 $manifestPaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$entries = [System.Collections.Generic.List[object]]::new()
 
 foreach ($row in $rows) {
     $relativePath = $row.RelPath.Replace('\', '/')
@@ -24,10 +25,16 @@ foreach ($row in $rows) {
         $missing++
         continue
     }
-    $item = Get-Item -LiteralPath $path -Force
-    $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
-    if (($item.Length -ne [int64]$row.Bytes) -or ($hash -ne $row.SHA256)) {
-        Write-Host "MISMATCH $($row.RelPath)"
+    $entries.Add([pscustomobject]@{ Row = $row; RelPath = $relativePath })
+}
+
+$blobs = @($entries.RelPath | & git -C $root hash-object --stdin-paths)
+if ($LASTEXITCODE -ne 0 -or $blobs.Count -ne $entries.Count) {
+    throw "git hash-object failed: Paths=$($entries.Count) Blobs=$($blobs.Count) Exit=$LASTEXITCODE"
+}
+for ($index = 0; $index -lt $entries.Count; $index++) {
+    if ($blobs[$index].Trim() -ne $entries[$index].Row.GitBlob) {
+        Write-Host "MISMATCH $($entries[$index].Row.RelPath)"
         $mismatch++
     }
 }

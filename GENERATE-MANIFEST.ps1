@@ -13,16 +13,20 @@ $relativePaths = @(
 )
 if ($LASTEXITCODE -ne 0) { throw "git ls-files failed: $LASTEXITCODE" }
 
-$rows = foreach ($relativePath in $relativePaths) {
-    $path = Join-Path $root $relativePath
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-        continue
+$existingPaths = @(
+    $relativePaths | Where-Object {
+        Test-Path -LiteralPath (Join-Path $root $_) -PathType Leaf
     }
-    $item = Get-Item -LiteralPath $path -Force
+)
+$blobs = @($existingPaths | & git -C $root hash-object --stdin-paths)
+if ($LASTEXITCODE -ne 0 -or $blobs.Count -ne $existingPaths.Count) {
+    throw "git hash-object failed: Paths=$($existingPaths.Count) Blobs=$($blobs.Count) Exit=$LASTEXITCODE"
+}
+
+$rows = for ($index = 0; $index -lt $existingPaths.Count; $index++) {
     [pscustomobject]@{
-        RelPath = $relativePath.Replace('\', '/')
-        Bytes = $item.Length
-        SHA256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+        RelPath = $existingPaths[$index].Replace('\', '/')
+        GitBlob = $blobs[$index].Trim()
     }
 }
 
