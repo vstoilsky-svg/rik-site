@@ -20,7 +20,7 @@ $rows = foreach ($relativePath in $relativePaths) {
     }
     $item = Get-Item -LiteralPath $path
     [pscustomobject]@{
-        RelPath = $relativePath.Replace('/', '\')
+        RelPath = $relativePath.Replace('\', '/')
         Bytes = $item.Length
         SHA256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
     }

@@ -11,13 +11,14 @@ $mismatch = 0
 $manifestPaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
 foreach ($row in $rows) {
-    $relativePath = $row.RelPath.Replace('/', '\')
+    $relativePath = $row.RelPath.Replace('\', '/')
     if (-not $manifestPaths.Add($relativePath)) {
         Write-Host "DUPLICATE $relativePath"
         $mismatch++
         continue
     }
-    $path = Join-Path $root $relativePath
+    $nativePath = $relativePath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
+    $path = Join-Path $root $nativePath
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
         Write-Host "MISSING $($row.RelPath)"
         $missing++
@@ -34,8 +35,11 @@ foreach ($row in $rows) {
 $actualPaths = @(
     & git -C $root -c core.quotepath=false ls-files --cached --others --exclude-standard |
         Where-Object { $_ -and ($_ -ne 'MANIFEST.csv') } |
-        ForEach-Object { $_.Replace('/', '\') } |
-        Where-Object { Test-Path -LiteralPath (Join-Path $root $_) -PathType Leaf } |
+        ForEach-Object { $_.Replace('\', '/') } |
+        Where-Object {
+            $nativePath = $_.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
+            Test-Path -LiteralPath (Join-Path $root $nativePath) -PathType Leaf
+        } |
         Sort-Object -Unique
 )
 if ($LASTEXITCODE -ne 0) { throw "git ls-files failed: $LASTEXITCODE" }
@@ -58,7 +62,7 @@ foreach ($relativePath in $manifestPaths) {
 
 $forbidden = @(
     $actualPaths | Where-Object {
-        ($_ -match '(^|\\)\.env$') -or
+        ($_ -match '(^|/)\.env$') -or
         ($_ -match '(?i)\.bak($|[-0-9])')
     }
 )
