@@ -50,6 +50,10 @@ jobs:
         shell: pwsh
         run: ./VERIFY-MANIFEST.ps1
 
+      - name: Verify SEO self-review guard
+        shell: pwsh
+        run: ./VERIFY-SEO.ps1
+
       - name: Scan complete Git history for secrets
         run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1 git --redact --no-banner --config /repo/.gitleaks.toml /repo
 
@@ -70,4 +74,8 @@ jobs:
           curl -fsS http://127.0.0.1:18080/ >/dev/null
           curl -fsS http://127.0.0.1:18080/product/centralnye-ustanovki >/dev/null
           curl -fsS http://127.0.0.1:18080/definitely-not-a-real-route >/dev/null
+          curl -fsS http://127.0.0.1:18080/robots.txt | grep -q '^User-agent: \*$'
+          curl -fsS http://127.0.0.1:18080/sitemap.xml | grep -q '<urlset'
+          curl -fsS http://127.0.0.1:18080/llms.txt | grep -q '^# РИК'
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/assets/definitely-not-real.js)" = "404"
           grep -R -q "Страница не найдена" frontend/dist/assets
