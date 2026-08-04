@@ -51,7 +51,7 @@ jobs:
         run: ./VERIFY-MANIFEST.ps1
 
       - name: Scan complete Git history for secrets
-        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1 git --redact --no-banner /repo
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1 git --redact --no-banner --config /repo/.gitleaks.toml /repo
 
       - name: Build and smoke-test production container
         shell: bash
@@ -71,4 +71,3 @@ jobs:
           curl -fsS http://127.0.0.1:18080/product/centralnye-ustanovki >/dev/null
           curl -fsS http://127.0.0.1:18080/definitely-not-a-real-route >/dev/null
           grep -R -q "Страница не найдена" frontend/dist/assets
-
