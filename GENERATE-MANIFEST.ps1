@@ -18,7 +18,7 @@ $rows = foreach ($relativePath in $relativePaths) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
         continue
     }
-    $item = Get-Item -LiteralPath $path
+    $item = Get-Item -LiteralPath $path -Force
     [pscustomobject]@{
         RelPath = $relativePath.Replace('\', '/')
         Bytes = $item.Length

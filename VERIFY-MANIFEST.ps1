@@ -24,7 +24,7 @@ foreach ($row in $rows) {
         $missing++
         continue
     }
-    $item = Get-Item -LiteralPath $path
+    $item = Get-Item -LiteralPath $path -Force
     $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
     if (($item.Length -ne [int64]$row.Bytes) -or ($hash -ne $row.SHA256)) {
         Write-Host "MISMATCH $($row.RelPath)"
