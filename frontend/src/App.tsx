@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import SeoHead from "./components/SeoHead";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./theme.css";
@@ -48,6 +49,7 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter>
+      <SeoHead />
       <ScrollToTop />
       <Suspense fallback={<div className="container section-body" role="status">Загрузка…</div>}>
         <Routes>

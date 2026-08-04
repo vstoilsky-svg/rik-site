@@ -5,6 +5,30 @@ $utf8 = [System.Text.UTF8Encoding]::new($false)
 $OutputEncoding = $utf8
 $root = $PSScriptRoot
 $manifestPath = Join-Path $root 'MANIFEST.csv'
+
+function Invoke-GitHashObject([string[]]$Paths) {
+    if ($Paths.Count -eq 0) { return @() }
+    $token = [Guid]::NewGuid().ToString('N')
+    $inputPath = Join-Path ([System.IO.Path]::GetTempPath()) "rik-hash-input-$token.txt"
+    $outputPath = Join-Path ([System.IO.Path]::GetTempPath()) "rik-hash-output-$token.txt"
+    $errorPath = Join-Path ([System.IO.Path]::GetTempPath()) "rik-hash-error-$token.txt"
+    try {
+        # No trailing newline: Git for Linux treats the final empty record as
+        # an empty path, while Git for Windows silently ignores it.
+        [System.IO.File]::WriteAllText($inputPath, ($Paths -join "`n"), $utf8)
+        $process = Start-Process -FilePath (Get-Command git).Source -ArgumentList @('hash-object', '--stdin-paths') `
+            -WorkingDirectory $root -RedirectStandardInput $inputPath -RedirectStandardOutput $outputPath `
+            -RedirectStandardError $errorPath -NoNewWindow -Wait -PassThru
+        if ($process.ExitCode -ne 0) {
+            $message = [System.IO.File]::ReadAllText($errorPath, $utf8).Trim()
+            throw "git hash-object failed: Exit=$($process.ExitCode) $message"
+        }
+        return @([System.IO.File]::ReadAllLines($outputPath, $utf8))
+    }
+    finally {
+        Remove-Item -LiteralPath $inputPath, $outputPath, $errorPath -Force -ErrorAction SilentlyContinue
+    }
+}
 $rows = Import-Csv -LiteralPath $manifestPath
 $missing = 0
 $mismatch = 0
@@ -28,9 +52,9 @@ foreach ($row in $rows) {
     $entries.Add([pscustomobject]@{ Row = $row; RelPath = $relativePath })
 }
 
-$blobs = @($entries.RelPath | & git -C $root hash-object --stdin-paths)
-if ($LASTEXITCODE -ne 0 -or $blobs.Count -ne $entries.Count) {
-    throw "git hash-object failed: Paths=$($entries.Count) Blobs=$($blobs.Count) Exit=$LASTEXITCODE"
+$blobs = @(Invoke-GitHashObject -Paths @($entries.RelPath))
+if ($blobs.Count -ne $entries.Count) {
+    throw "git hash-object failed: Paths=$($entries.Count) Blobs=$($blobs.Count)"
 }
 for ($index = 0; $index -lt $entries.Count; $index++) {
     if ($blobs[$index].Trim() -ne $entries[$index].Row.GitBlob) {

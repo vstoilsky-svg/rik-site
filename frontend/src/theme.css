@@ -1,8 +1,8 @@
 :root {
   /* Бренд-синий РИК (из утверждённых токенов сайта) */
-  --brand: #1f7aff;
-  --brand-hover: #1f5fe0;
-  --brand-active: #0757cc;
+  --brand: #0b5fc7;
+  --brand-hover: #084fa8;
+  --brand-active: #063f87;
   --brand-deep: #113e75;
   --on-brand: #ffffff;
   --hero-grad: linear-gradient(135deg, #113e75 0%, #1f5fe0 60%, #4eb4ff 100%);

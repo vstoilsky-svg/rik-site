@@ -29,6 +29,7 @@
 .home-document-card b { margin-top: auto; padding-top: 18px; color: var(--brand); font-size: 1.15rem; }
 
 .home-final-cta { padding: 64px 0; background: var(--brand-ink); color: #fff; }
+.home-final-cta .home-eyebrow { color: #9ac8ff; }
 .home-final-cta-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 48px; }
 .home-final-cta h2 { max-width: 760px; color: #fff; }
 .home-final-cta p { max-width: 720px; margin: 14px 0 0; color: rgba(255, 255, 255, .75); line-height: 1.6; }
