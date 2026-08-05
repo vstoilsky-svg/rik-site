@@ -4,6 +4,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import SeoHead from "./components/SeoHead";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import Catalog from "./pages/Catalog";
 import "./theme.css";
 import "./layout.css";
 import "./catalog.css";
@@ -13,8 +15,6 @@ import "./home-sections.css";
 import ChatWidget from "./components/ChatWidget.jsx";
 import NotFound from "./pages/NotFound";
 
-const Home = lazy(() => import("./pages/Home"));
-const Catalog = lazy(() => import("./pages/Catalog"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const RequestForm = lazy(() => import("./pages/RequestForm"));
 const Services = lazy(() => import("./pages/Services"));

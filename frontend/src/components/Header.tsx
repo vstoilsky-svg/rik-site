@@ -38,7 +38,10 @@ export default function Header() {
     <header className="site-header">
       <div className="container header-inner">
         <Link to="/" className="logo" onClick={close}>
-          <img src="/logo.png" alt="РИК — Русская инжиниринговая компания" />
+          <picture>
+            <source srcSet="/logo-header.webp" type="image/webp" />
+            <img src="/logo.png" alt="РИК — Русская инжиниринговая компания" width="320" height="120" />
+          </picture>
         </Link>
         <nav className="nav">
           <div className="has-mega" onMouseEnter={() => setMegaOpen(true)} onMouseLeave={() => setMegaOpen(false)}>

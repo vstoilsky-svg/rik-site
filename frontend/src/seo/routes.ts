@@ -1,5 +1,6 @@
 import { PRODUCTS, type Product } from "../data/catalog";
 import { CENTRAL_SECTIONS, type CentralSection } from "../data/central-sections";
+import { hasGenericResponsiveSource } from "../data/responsive-images";
 
 export const SITE_ORIGIN = "https://rik-vent.ru";
 export const DEFAULT_DESCRIPTION =
@@ -12,6 +13,8 @@ export type SeoRoute = {
   title: string;
   description: string;
   image: string;
+  criticalImage?: string;
+  responsiveCriticalImage?: boolean;
   ogType: "website" | "product";
   kind: SeoRouteKind;
   name: string;
@@ -74,11 +77,15 @@ function compactDescription(value: string): string {
 
 function productRoute(product: Product): SeoRoute {
   const name = productDisplayName(product);
+  const image = product.pageMedia?.[0]?.src ?? product.catalogMedia?.[0]?.src ?? product.photo ?? "/logo.png";
+  const criticalImage = product.pageMedia?.[0]?.src ?? product.photo ?? image;
   return {
     path: `/product/${product.slug}`,
     title: `${name} — оборудование РИК`,
     description: compactDescription(`${name}. ${product.blurb}`),
-    image: product.pageMedia?.[0]?.src ?? product.catalogMedia?.[0]?.src ?? product.photo ?? "/logo.png",
+    image,
+    criticalImage,
+    responsiveCriticalImage: hasGenericResponsiveSource(criticalImage),
     ogType: "product",
     kind: "product",
     name,
@@ -92,6 +99,8 @@ function sectionRoute(section: CentralSection): SeoRoute {
     title: `${name} — секция РИК`,
     description: compactDescription(`${name}. ${section.desc}`),
     image: section.photo,
+    criticalImage: section.photo,
+    responsiveCriticalImage: false,
     ogType: "product",
     kind: "section",
     name,
@@ -131,7 +140,12 @@ for (const route of SEO_ROUTES) {
   if (!/^\/(?:[a-z0-9-]+(?:\/[a-z0-9-]+)*)?$/.test(route.path) || (route.path.length > 1 && route.path.endsWith("/"))) {
     throw new Error(`Invalid canonical SEO path: ${route.path}`);
   }
-  if (!route.title.trim() || !route.description.trim() || !route.image.startsWith("/")) {
+  if (
+    !route.title.trim()
+    || !route.description.trim()
+    || !route.image.startsWith("/")
+    || (route.criticalImage && !route.criticalImage.startsWith("/"))
+  ) {
     throw new Error(`Incomplete SEO metadata: ${route.path}`);
   }
   if (route.title.includes("�") || route.description.includes("�")) throw new Error(`Invalid UTF-8 marker in ${route.path}`);

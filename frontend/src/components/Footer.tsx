@@ -5,7 +5,10 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="container footer-inner">
         <div>
-          <img src="/logo-white.png" alt="РИК" className="footer-logo-img" />
+          <picture>
+            <source srcSet="/logo-footer.webp" type="image/webp" />
+            <img src="/logo-white.png" alt="РИК" className="footer-logo-img" width="320" height="120" />
+          </picture>
           <p className="footer-tag">Производство вентиляционного оборудования полного цикла</p>
         </div>
         <nav className="footer-links">

@@ -51,17 +51,32 @@ foreach ($route in $routes) {
     }
     if (-not (Test-Path -LiteralPath $target -PathType Leaf)) { throw "Missing prerendered route: $($route.path)" }
     $html = Get-Content -LiteralPath $target -Raw -Encoding UTF8
-    $preloadMatches = @([regex]::Matches($html, '<link rel="preload" as="image" href="(?<href>[^"]+)" fetchpriority="high" />'))
-    $expectedPreload = if ($route.path -eq '/') {
+    $preloadPattern = '<link rel="preload" as="image" href="(?<href>[^"]+)"(?: imagesrcset="(?<srcset>[^"]+)" imagesizes="(?<sizes>[^"]+)")? fetchpriority="high" />'
+    $preloadMatches = @([regex]::Matches($html, $preloadPattern))
+    $expectedPreload = if ($route.path -eq '/' -or $route.path -eq '/products') {
         '/photo/home-hero-light.webp'
     } elseif ($route.path.StartsWith('/product/')) {
-        [string]$route.image
+        if ($route.criticalImage) { [string]$route.criticalImage } else { [string]$route.image }
     } else {
         $null
     }
     if ($expectedPreload) {
-        if ($preloadMatches.Count -ne 1 -or $preloadMatches[0].Groups['href'].Value -ne $expectedPreload) {
+        $isResponsive = [bool]$route.responsiveCriticalImage
+        $expectedHref = if ($isResponsive) { $expectedPreload -replace '\.png$', '-responsive-640.webp' } else { $expectedPreload }
+        if ($preloadMatches.Count -ne 1 -or $preloadMatches[0].Groups['href'].Value -ne $expectedHref) {
             throw "Critical image preload mismatch: $($route.path)"
+        }
+        if ($isResponsive) {
+            $expectedSrcset = "$($expectedPreload -replace '\.png$', '-responsive-640.webp') 640w, $($expectedPreload -replace '\.png$', '-responsive-1280.webp') 1280w"
+            $expectedSizes = '(max-width: 760px) calc(100vw - 84px), 600px'
+            if (
+                $preloadMatches[0].Groups['srcset'].Value -ne $expectedSrcset -or
+                $preloadMatches[0].Groups['sizes'].Value -ne $expectedSizes
+            ) {
+                throw "Responsive critical image preload mismatch: $($route.path)"
+            }
+        } elseif ($preloadMatches[0].Groups['srcset'].Success -or $preloadMatches[0].Groups['sizes'].Success) {
+            throw "Responsive preload attributes leaked into non-responsive route: $($route.path)"
         }
     } elseif ($preloadMatches.Count -ne 0) {
         throw "Critical image preload leaked into route: $($route.path)"

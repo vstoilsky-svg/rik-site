@@ -18,6 +18,10 @@ function replaceOne(input, pattern, replacement, label) {
   return input.replace(pattern, replacement);
 }
 
+function responsiveDerivative(src, width) {
+  return src.replace(/\.png$/i, `-responsive-${width}.webp`);
+}
+
 function renderRoute(route) {
   const url = canonicalUrl(route);
   const image = `https://rik-vent.ru${route.image}`;
@@ -38,16 +42,19 @@ function renderRoute(route) {
     `<meta name="twitter:card" content="summary_large_image" />\n    <meta name="twitter:title" content="${escapeHtml(route.title)}" />\n    <meta name="twitter:description" content="${escapeHtml(route.description)}" />\n    <meta name="twitter:image" content="${escapeHtml(image)}" />\n    <script id="rik-structured-data" type="application/ld+json">${jsonLd}</script>`,
     "twitter metadata",
   );
-  const criticalImage = route.path === "/"
+  const criticalImage = route.path === "/" || route.path === "/products"
     ? "/photo/home-hero-light.webp"
     : route.path.startsWith("/product/")
-      ? route.image
+      ? route.criticalImage ?? route.image
       : null;
   if (criticalImage) {
+    const preload = route.responsiveCriticalImage
+      ? `<link rel="preload" as="image" href="${escapeHtml(responsiveDerivative(criticalImage, 640))}" imagesrcset="${escapeHtml(responsiveDerivative(criticalImage, 640))} 640w, ${escapeHtml(responsiveDerivative(criticalImage, 1280))} 1280w" imagesizes="(max-width: 760px) calc(100vw - 84px), 600px" fetchpriority="high" />`
+      : `<link rel="preload" as="image" href="${escapeHtml(criticalImage)}" fetchpriority="high" />`;
     html = replaceOne(
       html,
       /<\/head>/,
-      `    <link rel="preload" as="image" href="${escapeHtml(criticalImage)}" fetchpriority="high" />\n  </head>`,
+      `    ${preload}\n  </head>`,
       "closing head",
     );
   }

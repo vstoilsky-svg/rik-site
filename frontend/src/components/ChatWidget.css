@@ -21,9 +21,10 @@
 }
 
 .chat-widget:not(.is-open) {
-  top: 50%;
+  top: 7px;
   bottom: auto;
-  transform: translateY(-50%);
+  transform: none;
+  z-index: calc(var(--z-sticky) + 1);
 }
 
 .chat-window {

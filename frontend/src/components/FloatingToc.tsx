@@ -25,7 +25,7 @@ export default function FloatingToc() {
   };
 
   return (
-    <div className="toc-float">
+    <div className={`toc-float${open ? " is-open" : ""}`}>
       {open ? (
         <nav className="toc-panel" aria-label="Оглавление страницы">
           <div className="toc-head">

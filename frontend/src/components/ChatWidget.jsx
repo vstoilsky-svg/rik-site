@@ -53,11 +53,25 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState(getInitialMessages);
   const [input, setInput] = useState("");
   const listRef = useRef(null);
+  const toggleRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages.slice(-20)));
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    function closeOnEscape(event) {
+      if (event.key !== "Escape") return;
+      setIsOpen(false);
+      toggleRef.current?.focus();
+    }
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
 
   function saveSession(nextSessionId) {
     setSessionId(nextSessionId);
@@ -246,7 +260,7 @@ export default function ChatWidget() {
         </section>
       )}
 
-      <button className="chat-toggle" type="button" onClick={() => setIsOpen((value) => !value)} aria-label={isOpen ? "Закрыть чат" : "Открыть чат"} title={isOpen ? "Закрыть чат" : "Открыть чат"}>
+      <button ref={toggleRef} className="chat-toggle" type="button" onClick={() => setIsOpen((value) => !value)} aria-label={isOpen ? "Закрыть чат" : "Открыть чат"} title={isOpen ? "Закрыть чат" : "Открыть чат"}>
         <MessageCircle />
       </button>
     </div>

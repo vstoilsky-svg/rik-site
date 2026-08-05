@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { byGroupCatalog } from "../data/catalog";
+import ResponsiveCardImage from "../components/ResponsiveCardImage";
+import { hasGenericResponsiveSource } from "../data/responsive-images";
 
 const HOME_GROUPS = [
   { key: "central", title: "Центральные установки" },
@@ -59,7 +61,11 @@ export default function Home() {
               return (
                 <Link className="home-category-card" to={`/products#${group.key}`} key={group.key}>
                   <span className="home-category-media">
-                    {image ? <img src={image} alt="" loading="lazy" /> : <span>РИК</span>}
+                    {image
+                      ? hasGenericResponsiveSource(image)
+                        ? <ResponsiveCardImage src={image} alt="" sizes="280px" profile="generic-card" />
+                        : <img src={image} alt="" loading="lazy" />
+                      : <span>РИК</span>}
                   </span>
                   <span className="home-category-title">{group.title}</span>
                 </Link>

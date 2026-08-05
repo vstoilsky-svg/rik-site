@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { PRODUCTS } from "../data/catalog";
 import { ductFamilyOf, type DuctFamily } from "../data/duct-families";
+import ResponsiveCardImage from "./ResponsiveCardImage";
 
 type Props = {
   family: DuctFamily;
@@ -32,7 +33,9 @@ export default function DuctProductCards({ family, excludeSlug }: Props) {
           >
             <span className="duct-product-media">
               {product.photo && !product.placeholder
-                ? <img src={product.photo} alt={product.name} loading="lazy" />
+                ? family === "round"
+                  ? <ResponsiveCardImage src={product.photo} alt={product.name} sizes="216px" />
+                  : <img src={product.photo} alt={product.name} loading="lazy" />
                 : <span className="ph">Фото готовится</span>}
             </span>
             <span className="duct-product-label">{product.name}</span>

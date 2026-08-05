@@ -102,9 +102,10 @@
   vertical-align: middle; }
 .table-block th { background: var(--brand-tint, #eef3fb); color: var(--brand-ink); font-weight: 700; }
 
-/* Плавающее оглавление длинной страницы (слева снизу — не мешает чату справа) */
-.toc-float { position: fixed; left: 18px; bottom: 18px; z-index: var(--z-sticky); }
-.toc-burger { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: var(--card);
+/* Закрытое оглавление живёт в выделенном месте шапки и не перекрывает контент. */
+.toc-float { position: fixed; left: auto; right: 88px; top: 13px; bottom: auto; z-index: calc(var(--z-sticky) + 1); }
+.toc-float.is-open { top: 80px; right: 18px; }
+.toc-burger { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line); background: var(--card);
   color: var(--brand-ink); cursor: pointer; box-shadow: 0 8px 24px rgba(8,38,95,.18); display: grid; place-items: center; }
 .toc-burger:hover { color: var(--brand); border-color: var(--brand); }
 .toc-panel { width: 250px; max-height: 60vh; overflow-y: auto; background: var(--card); border: 1px solid var(--line);
@@ -114,7 +115,10 @@
 .toc-link { display: block; width: 100%; text-align: left; padding: 9px 10px; border: 0; background: none; cursor: pointer;
   color: var(--ink-2); border-radius: var(--r-sm); font-size: .92rem; }
 .toc-link:hover { background: var(--surface); color: var(--brand); }
-@media (max-width: 560px) { .toc-panel { width: 220px; max-height: 55vh; } }
+@media (max-width: 560px) {
+  .toc-float:not(.is-open) { right: 64px; top: 12px; }
+  .toc-panel { width: 220px; max-width: calc(100vw - 36px); max-height: 55vh; }
+}
 
 /* BIM-меню скачивания на странице товара */
 .bim-menu { margin-top: 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--card); max-width: 560px; }
@@ -209,6 +213,8 @@
 .btn-light:hover { color: var(--brand); border-color: var(--brand); }
 
 /* Страница собственного производства */
+.about-video { display: block; width: 100%; max-width: 100%; height: auto; margin-top: 16px;
+  background: #07101c; border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-card); }
 .production-page { padding-bottom: 56px; }
 .production-video { margin-bottom: 24px; }
 .production-video video { display: block; width: 100%; max-height: 720px; aspect-ratio: 16/9; object-fit: contain; background: #07101c; border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-card); }
@@ -292,7 +298,7 @@
   .contractor-projects { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 760px) {
-  .production-benefits .feature-cards, .production-fact-grid, .capability-list { grid-template-columns: 1fr; }
+  .production-benefits .feature-cards, .production-fact-grid, .capability-list { grid-template-columns: minmax(0, 1fr); }
   .production-benefits .feature-card { text-align: left; }
   .production-benefits .feature-ic { margin: 0 0 14px; }
   .production-page .stats-band { grid-template-columns: repeat(2, 1fr); }
@@ -327,6 +333,15 @@
   .project-upload { padding: 20px 16px; }
 }
 
+@media (max-width: 360px) {
+  .stats-band, .production-page .stats-band { grid-template-columns: minmax(0, 1fr); padding: 22px 16px; }
+  .stat, .stat-value, .stat-label { min-width: 0; overflow-wrap: anywhere; }
+  .production-fact-grid article { grid-template-columns: 40px minmax(0, 1fr); padding: 16px; }
+  .steps-list li { min-width: 0; flex-wrap: wrap; }
+  .steps-list li > div { min-width: 0; flex: 1 1 calc(100% - 54px); }
+  .step-cta { margin-left: 54px; white-space: normal; }
+}
+
 /* Секции ЦК: сетка uniform-карточек одинаковой высоты */
 .cs-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; margin: 16px 0 8px; }
 /* Хаб круглого канала: на desktop 3-4 колонки (7 позиций), mobile — по общему медиазапросу ниже */
@@ -338,11 +353,11 @@
 .cs-card-media { height: 170px; background: linear-gradient(160deg,var(--card),var(--surface));
   display: flex; align-items: center; justify-content: center; padding: 14px; box-sizing: border-box; overflow: hidden; }
 .cs-card-media img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
-/* синяя кнопка = название секции, прижата к низу; ФИКС. высота (до 3 строк) — карточки равной высоты */
+/* синяя кнопка = название секции, прижата к низу; min-height держит ритм и позволяет длинным mobile-подписям расти */
 .cs-card-btn { margin-top: auto; background: var(--brand); color: #fff; text-align: center; font-weight: 700;
   font-size: .85rem; line-height: 1.25; padding: 10px 12px; box-sizing: border-box;
-  display: flex; align-items: center; justify-content: center; height: 4.1em; }
-.cs-card-btn > span, .cs-card-btn { overflow: hidden; }
+  display: flex; align-items: center; justify-content: center; min-height: 4.1em; }
+.cs-card-btn > span { overflow: hidden; }
 .cs-card:hover .cs-card-btn { background: var(--brand-ink); }
 
 .cs-mark { display: inline-block; margin-left: 8px; font-size: .8rem; font-weight: 700; color: #fff;
