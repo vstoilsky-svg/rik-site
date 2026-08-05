@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { CENTRAL_SECTIONS } from "../data/central-sections";
+import ResponsiveCardImage from "./ResponsiveCardImage";
 
 // Секции ЦК: только сетка uniform-карточек. Подробности — на отдельных страницах.
 export default function CentralSections() {
@@ -12,7 +13,9 @@ export default function CentralSections() {
       <div className="cs-cards">
         {CENTRAL_SECTIONS.map((s) => (
           <Link className="cs-card" to={`/product/centralnye-ustanovki/${s.route}`} key={s.id}>
-            <div className="cs-card-media"><img src={s.photo} alt={s.name} loading="lazy" /></div>
+            <div className="cs-card-media">
+              <ResponsiveCardImage src={s.photo} alt={s.name} sizes="190px" />
+            </div>
             <span className="cs-card-btn">{s.name}</span>
           </Link>
         ))}

@@ -100,6 +100,15 @@ jobs:
           curl -fsS http://127.0.0.1:18080/sitemap.xml | grep -q '<urlset'
           curl -fsSI http://127.0.0.1:18080/llms.txt | tr -d '\r' | grep -qi '^content-type: text/plain; charset=utf-8$'
           curl -fsS http://127.0.0.1:18080/llms.txt | grep -q '^# РИК'
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/media/production-video.mp4)" = "200"
+          curl -fsSI http://127.0.0.1:18080/media/production-video.mp4 | tr -d '\r' | grep -qi '^content-type: video/mp4$'
+          test "$(curl -sS -r 0-1023 -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/media/production-video.mp4)" = "206"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/media/definitely-not-real.mp4)" = "404"
+          for bim in /downloads/bim/bim-00.rvt /downloads/bim/bim-01.rfa; do
+            test "$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080${bim}")" = "200"
+            test "$(curl -sSI -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080${bim}")" = "200"
+          done
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/downloads/bim/definitely-not-real.rfa)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/assets/definitely-not-real.js)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/api/definitely-not-real)" = "404"
           curl -sS http://127.0.0.1:18080/definitely-not-a-real-route | grep -q 'Страница не найдена'

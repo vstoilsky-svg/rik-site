@@ -17,8 +17,11 @@ export async function loadSeoData() {
     const routes = module.SEO_ROUTES;
     if (!Array.isArray(routes) || routes.length !== 137) throw new Error(`SEO route export is invalid: ${routes?.length}`);
     for (const route of routes) {
-      const imagePath = path.join(frontendRoot, "public", route.image.replace(/^\//, ""));
-      await access(imagePath);
+      const imagePaths = new Set([route.image, route.criticalImage].filter(Boolean));
+      for (const image of imagePaths) {
+        const imagePath = path.join(frontendRoot, "public", image.replace(/^\//, ""));
+        await access(imagePath);
+      }
       JSON.stringify(module.structuredDataFor(route));
     }
     return {

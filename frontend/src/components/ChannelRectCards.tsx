@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { bySlug } from "../data/catalog";
+import ResponsiveCardImage from "./ResponsiveCardImage";
+import { hasGenericResponsiveSource } from "../data/responsive-images";
 
 // Карточки прямоугольного канального оборудования — тот же паттерн, что ChannelRoundCards.
 // Фото берём из существующих ассетов товара (bySlug), клик ведёт на страницу позиции.
@@ -33,7 +35,9 @@ export default function ChannelRectCards() {
             <Link className="cs-card" to={`/product/${it.slug}`} key={it.slug}>
               <div className="cs-card-media">
                 {p.photo && !p.placeholder
-                  ? <img src={p.photo} alt={it.label} loading="lazy" />
+                  ? hasGenericResponsiveSource(p.photo)
+                    ? <ResponsiveCardImage src={p.photo} alt={it.label} sizes="190px" profile="generic-card" />
+                    : <img src={p.photo} alt={it.label} loading="lazy" />
                   : <div className="ph">Фото готовится</div>}
               </div>
               <span className="cs-card-btn">{it.label}</span>

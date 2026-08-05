@@ -1,7 +1,7 @@
 .site-header { position: sticky; top: 0; z-index: var(--z-sticky); background: var(--header-bg); border-bottom: 1px solid var(--line); }
 .header-inner { display: flex; align-items: center; gap: 22px; height: 72px; }
 .logo { display: flex; align-items: center; }
-.logo img { height: 42px; display: block; }
+.logo img { width: auto; height: 42px; display: block; }
 .logo-dark { display: none; }
 :root[data-theme="dark"] .logo-light { display: none; }
 :root[data-theme="dark"] .logo-dark { display: block; }
@@ -34,7 +34,7 @@
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
 .site-footer { background: var(--footer-bg); color: rgba(255,255,255,.85); margin-top: 64px; }
 .footer-inner { display: flex; justify-content: space-between; gap: 32px; padding: 48px 24px 24px; flex-wrap: wrap; }
-.footer-logo-img { height: 38px; display: block; margin-bottom: 6px; }
+.footer-logo-img { width: auto; height: 38px; display: block; margin-bottom: 6px; }
 .footer-tag { opacity: .7; max-width: 40ch; }
 .footer-contacts { display: flex; flex-direction: column; gap: 8px; }
 .footer-contacts a { color: #fff; }
@@ -42,9 +42,15 @@
 .footer-links a { color: rgba(255,255,255,.85); text-decoration: none; }
 .footer-links a:hover { color: #fff; }
 .footer-bottom { padding: 16px 24px 32px; opacity: .6; font-size: .85rem; }
-.burger { display: none; width: 44px; height: 44px; border: 1px solid var(--line); background: var(--card); border-radius: var(--r-sm); font-size: 20px; cursor: pointer; align-items: center; justify-content: center; color: var(--brand-ink); }
+.burger { display: none; width: 48px; height: 48px; border: 1px solid var(--line); background: var(--card); border-radius: var(--r-sm); font-size: 20px; cursor: pointer; align-items: center; justify-content: center; color: var(--brand-ink); }
 .mobile-menu { display: none; }
-@media (max-width: 1180px) {
+@media (min-width: 1301px) {
+  .header-inner { padding-right: 168px; }
+}
+@media (min-width: 1301px) and (max-width: 1500px) {
+  .header-phone { display: none; }
+}
+@media (max-width: 1300px) {
   .nav { display: none; }
   .header-phone, .header-req { display: none; }
   .burger { display: inline-flex; }
@@ -79,6 +85,9 @@
       var(--hero-image) center right / cover no-repeat,
       var(--hero-fallback);
   }
+}
+@media (max-width: 360px) {
+  .header-inner { gap: 12px; }
 }
 
 /* Мега-меню «Продукция» (чистый CSS hover, стабильно в Chrome) */

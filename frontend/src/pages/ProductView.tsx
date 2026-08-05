@@ -16,6 +16,10 @@ import DuctSections from "../components/DuctSections";
 import DuctProductCards from "../components/DuctProductCards";
 import { ductFamilyOf, familyForHubSlug } from "../data/duct-families";
 import SafeHtml from "../components/SafeHtml";
+import ResponsiveCardImage from "../components/ResponsiveCardImage";
+import { hasGenericResponsiveSource } from "../data/responsive-images";
+
+const PRODUCT_HERO_IMAGE_SIZES = "(max-width: 760px) calc(100vw - 84px), 600px";
 
 const PRODUCT_NOTICE_EXCLUSIONS = new Set([
   "vozduhovody-i-fasonnye-izdeliya",
@@ -83,19 +87,43 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
             <div className="card-media-duo">
               {p.pageMedia.map((m, index) => (
                 <figure key={m.src}>
-                  <img
-                    src={m.src}
-                    alt={`${p.name} — ${m.label}`}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    fetchPriority={index === 0 ? "high" : "low"}
-                    decoding="async"
-                  />
+                  {hasGenericResponsiveSource(m.src)
+                    ? (
+                      <ResponsiveCardImage
+                        src={m.src}
+                        alt={`${p.name} — ${m.label}`}
+                        sizes={PRODUCT_HERO_IMAGE_SIZES}
+                        profile="generic-hero"
+                        loading={index === 0 ? "eager" : "lazy"}
+                        fetchPriority={index === 0 ? "high" : "low"}
+                      />
+                    )
+                    : (
+                      <img
+                        src={m.src}
+                        alt={`${p.name} — ${m.label}`}
+                        loading={index === 0 ? "eager" : "lazy"}
+                        fetchPriority={index === 0 ? "high" : "low"}
+                        decoding="async"
+                      />
+                    )}
                   <figcaption>{m.label}</figcaption>
                 </figure>
               ))}
             </div>
           ) : p.photo && !p.placeholder ? (
-            <img src={p.photo} alt={p.name} loading="eager" fetchPriority="high" decoding="async" />
+            hasGenericResponsiveSource(p.photo)
+              ? (
+                <ResponsiveCardImage
+                  src={p.photo}
+                  alt={p.name}
+                  sizes={PRODUCT_HERO_IMAGE_SIZES}
+                  profile="generic-hero"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              )
+              : <img src={p.photo} alt={p.name} loading="eager" fetchPriority="high" decoding="async" />
           ) : (
             <div className="ph">Изображение готовится студийным рендером</div>
           )}

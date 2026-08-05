@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { GROUPS, byGroupCatalog, type Product } from "../data/catalog";
 import { PageHero } from "../components/rich";
+import ResponsiveCardImage from "../components/ResponsiveCardImage";
+import { hasGenericResponsiveSource } from "../data/responsive-images";
 
 // Хаб каталога. Вся карточка — одна ссылка на страницу товара (/product/<slug>).
 function Card({ p }: { p: Product }) {
@@ -10,13 +12,21 @@ function Card({ p }: { p: Product }) {
     <Link
       to={`/product/${p.slug}`}
       className={wide ? "card card-link card-wide" : "card card-link"}
-      aria-label={p.name}
     >
       {wide && p.catalogMedia ? (
         <div className="card-media-duo">
           {p.catalogMedia.map((m) => (
             <figure key={m.src}>
-              <img src={m.src} alt={`${p.name} — ${m.label}`} loading="lazy" />
+              {hasGenericResponsiveSource(m.src)
+                ? (
+                  <ResponsiveCardImage
+                    src={m.src}
+                    alt=""
+                    sizes="(max-width: 700px) calc(100vw - 64px), 520px"
+                    profile="generic-card"
+                  />
+                )
+                : <img src={m.src} alt="" loading="lazy" fetchPriority="low" />}
               <figcaption>{m.label}</figcaption>
             </figure>
           ))}
@@ -24,7 +34,16 @@ function Card({ p }: { p: Product }) {
       ) : (
         <span className="card-media">
           {p.photo && !p.placeholder
-            ? <img src={p.photo} alt={p.name} loading="lazy" />
+            ? hasGenericResponsiveSource(p.photo)
+              ? (
+                <ResponsiveCardImage
+                  src={p.photo}
+                  alt=""
+                  sizes="(max-width: 700px) calc(100vw - 32px), 300px"
+                  profile="generic-card"
+                />
+              )
+              : <img src={p.photo} alt="" loading="lazy" fetchPriority="low" />
             : <span className="ph-sm">рендер готовится</span>}
         </span>
       )}

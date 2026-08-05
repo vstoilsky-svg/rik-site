@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
 import { TECH_SHEETS, TECH_SHEET_EXTRAS, PRODUCTS, type Product } from "../data/catalog";
+import ResponsiveCardImage from "../components/ResponsiveCardImage";
+import { hasGenericResponsiveSource } from "../data/responsive-images";
 
 type SectionKey = "central" | "fans" | "channel" | "firevalves" | "specialvalves" | "ducts" | "automation" | "curtains" | "mix" | "kkb" | "chillers";
 
@@ -100,7 +102,11 @@ export default function TechSheets() {
                 {section.withPdf.map(({ product, path, label }) => (
                   <article className="ts-card" key={`${product.slug}-${path}`}>
                     <Link className="ts-media" to={`/product/${product.slug}`} aria-label={product.name}>
-                      {product.photo ? <img src={product.photo} alt="" loading="lazy" /> : <span>РИК</span>}
+                      {product.photo
+                        ? hasGenericResponsiveSource(product.photo)
+                          ? <ResponsiveCardImage src={product.photo} alt="" sizes="180px" profile="generic-card" />
+                          : <img src={product.photo} alt="" loading="lazy" />
+                        : <span>РИК</span>}
                     </Link>
                     <div className="ts-body">
                       <span className="ts-badge">PDF</span>
@@ -116,7 +122,11 @@ export default function TechSheets() {
                 {section.fallback.map((product) => (
                   <article className="ts-card ts-card-page" key={product.slug}>
                     <Link className="ts-media" to={`/product/${product.slug}`} aria-label={product.name}>
-                      {product.photo ? <img src={product.photo} alt="" loading="lazy" /> : <span>РИК</span>}
+                      {product.photo
+                        ? hasGenericResponsiveSource(product.photo)
+                          ? <ResponsiveCardImage src={product.photo} alt="" sizes="180px" profile="generic-card" />
+                          : <img src={product.photo} alt="" loading="lazy" />
+                        : <span>РИК</span>}
                     </Link>
                     <div className="ts-body">
                       <span className="ts-badge ts-badge-page">Раздел</span>
