@@ -32,8 +32,10 @@ jobs:
           echo "bd195238e6bee799b17d000f042b613a4e8fda7fdc83cb21b9ba41da80e2292f  $archive" | sha256sum -c -
           test "$(zipinfo -1 "$archive" | grep -vc '/$')" = "151"
           unzip -o "$archive" -d "$GITHUB_WORKSPACE"
+          git restore --source=HEAD --worktree .github/workflows/ci.yml
+          git diff --quiet -- .github/workflows/ci.yml
 
-      - name: Commit verified site snapshot
+      - name: Commit verified non-workflow snapshot
         shell: bash
         run: |
           set -euo pipefail
@@ -45,6 +47,6 @@ jobs:
             echo "No imported changes found" >&2
             exit 1
           fi
-          test "$(git diff --cached --name-only | wc -l | tr -d ' ')" = "151"
+          test "$(git diff --cached --name-only | wc -l | tr -d ' ')" = "150"
           git commit -m "fix: close desktop mobile and static asset gaps [site-import]"
           git push origin "HEAD:${GITHUB_REF_NAME}"
