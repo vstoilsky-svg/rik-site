@@ -38,6 +38,7 @@ export default function ForDesigners() {
         ]}
       />
       <div className="container section-body">
+        <h2 className="sr-only" id="designer-resources-section-title">Материалы для проектировщиков</h2>
         <div className="tiles">
           {ITEMS.map((t) => <TileCard t={t} key={t.title} />)}
         </div>

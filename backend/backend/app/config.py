@@ -39,7 +39,9 @@ def env_float(name: str, default: float) -> float:
 
 
 def env_csv(name: str, default: str = "") -> tuple[str, ...]:
-    return tuple(value.strip() for value in os.getenv(name, default).split(",") if value.strip())
+    configured = os.getenv(name, "").strip()
+    source = configured or default
+    return tuple(value.strip() for value in source.split(",") if value.strip())
 
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")

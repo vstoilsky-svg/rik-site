@@ -54,5 +54,6 @@ $rows = for ($index = 0; $index -lt $existingPaths.Count; $index++) {
     }
 }
 
-$rows | Export-Csv -LiteralPath $manifestPath -NoTypeInformation -Encoding UTF8
+$csv = @($rows | ConvertTo-Csv -NoTypeInformation)
+[System.IO.File]::WriteAllText($manifestPath, (($csv -join "`n") + "`n"), $utf8)
 Write-Host "MANIFEST generated: Rows=$($rows.Count)"

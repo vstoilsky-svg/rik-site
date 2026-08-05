@@ -1,8 +1,10 @@
+import os
 import unittest
+from unittest.mock import patch
 
 from starlette.requests import Request
 
-from backend.app import main
+from backend.app import config, main
 
 
 def make_request(peer: str, forwarded: str | None = None) -> Request:
@@ -23,6 +25,13 @@ def make_request(peer: str, forwarded: str | None = None) -> Request:
 
 
 class NetworkIdentityTests(unittest.TestCase):
+    def test_blank_trusted_proxy_setting_uses_safe_default(self) -> None:
+        with patch.dict(os.environ, {"TRUSTED_PROXY_IPS": ""}):
+            self.assertEqual(
+                config.env_csv("TRUSTED_PROXY_IPS", "127.0.0.1,::1"),
+                ("127.0.0.1", "::1"),
+            )
+
     def test_untrusted_peer_cannot_spoof_forwarded_header(self) -> None:
         request = make_request("203.0.113.5", "198.51.100.8")
         self.assertEqual(main.request_client_ip(request), "203.0.113.5")

@@ -21,6 +21,7 @@ export default function Careers() {
         lead="Мы производим вентиляционное и климатическое оборудование полного цикла и растём. Ищем инженеров, конструкторов, производственных и коммерческих специалистов."
       />
       <div className="container section-body">
+      <h2 className="sr-only" id="careers-benefits-section-title">Преимущества работы в РИК</h2>
       <div className="tiles">
         {WHY.map(([t, d]) => (
           <div className="tile" key={t}><h3 className="no-arrow">{t}</h3><p>{d}</p></div>

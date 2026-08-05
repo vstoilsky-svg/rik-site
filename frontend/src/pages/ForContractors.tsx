@@ -75,7 +75,7 @@ export default function ForContractors() {
           { icon: "clock", title: "Сроки и сервис", sub: "монтаж, ПНР, ЗИП" },
         ]}
       />
-      <main className="container section-body contractors-page">
+      <div className="container section-body contractors-page">
         <section className="contractor-scope">
           <h2 className="block-h">Что берём на себя</h2>
           <div className="scope-line">
@@ -168,7 +168,7 @@ export default function ForContractors() {
             {status === "err" && <p className="req-err">{error}. Можно позвонить: +7 (495) 104-37-79.</p>}
           </form>
         </section>
-      </main>
+      </div>
     </>
   );
 }

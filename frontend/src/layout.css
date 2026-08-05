@@ -70,6 +70,16 @@
   }
 }
 @media (max-width: 860px) { .hero-inner { padding: 56px 24px; } }
+@media (max-width: 640px) {
+  .site-header { position: fixed; left: 0; right: 0; }
+  main { padding-top: 72px; }
+  .hero {
+    background:
+      linear-gradient(rgba(233,241,251,.86), rgba(233,241,251,.86)),
+      var(--hero-image) center right / cover no-repeat,
+      var(--hero-fallback);
+  }
+}
 
 /* Мега-меню «Продукция» (чистый CSS hover, стабильно в Chrome) */
 .has-mega { display: flex; align-items: center; height: 72px; }
@@ -83,4 +93,3 @@
 .mega-link { display: block; color: var(--ink-2); font-size: .87rem; padding: 4px 0; font-weight: 500; line-height: 1.25; }
 .mega-link:hover { color: var(--brand); }
 @media (max-width: 1100px) { .mega-inner { grid-template-columns: repeat(3, 1fr); } }
-

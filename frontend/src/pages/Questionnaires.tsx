@@ -17,6 +17,7 @@ export default function Questionnaires() {
         lead="Скачайте форму, заполните исходные данные и пришлите нам — подберём оборудование и подготовим расчёт."
       />
       <div className="container section-body">
+      <h2 className="sr-only" id="questionnaires-list-section-title">Доступные опросные листы</h2>
       <div className="cert-grid">
         {SHEETS.map((s) => (
           <div className="cert-card" key={s.file}>

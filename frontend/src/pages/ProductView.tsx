@@ -8,6 +8,7 @@ import { RAW_TABLES } from "../data/raw-tables";
 import { SPECIAL_FAN_TABLES } from "../data/special-fans.generated";
 import { BIM } from "../data/bim";
 import FloatingToc from "../components/FloatingToc";
+import { useAccessibleModal } from "../components/AccessibleModal";
 import CentralSections from "../components/CentralSections";
 import ChannelRoundCards from "../components/ChannelRoundCards";
 import ChannelRectCards from "../components/ChannelRectCards";
@@ -34,6 +35,7 @@ const isRedundantTechnicalHeading = (title: string) =>
 
 export default function ProductView({ p, embedded = false }: { p: Product; embedded?: boolean }) {
   const [certOpen, setCertOpen] = useState(false);
+  const { dialogRef, rememberTrigger } = useAccessibleModal(certOpen, () => setCertOpen(false));
   const certs = certsOf(p.slug);
   const cert = certs.length === 1 ? certs[0].path : null; // одиночный — через модалку
   const bim = BIM[p.slug];
@@ -79,15 +81,21 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
         <div className="product-media">
           {p.pageMedia ? (
             <div className="card-media-duo">
-              {p.pageMedia.map((m) => (
+              {p.pageMedia.map((m, index) => (
                 <figure key={m.src}>
-                  <img src={m.src} alt={`${p.name} — ${m.label}`} loading="lazy" />
+                  <img
+                    src={m.src}
+                    alt={`${p.name} — ${m.label}`}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "low"}
+                    decoding="async"
+                  />
                   <figcaption>{m.label}</figcaption>
                 </figure>
               ))}
             </div>
           ) : p.photo && !p.placeholder ? (
-            <img src={p.photo} alt={p.name} loading="lazy" />
+            <img src={p.photo} alt={p.name} loading="eager" fetchPriority="high" decoding="async" />
           ) : (
             <div className="ph">Изображение готовится студийным рендером</div>
           )}
@@ -114,7 +122,16 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
               <a href={ductCatalog} download className="btn btn-ghost dark">Скачать каталог</a>
             )}
             {ductHubFamily && cert && (
-              <button type="button" className="btn btn-ghost dark" onClick={() => setCertOpen(true)}>Сертификат</button>
+              <button
+                type="button"
+                className="btn btn-ghost dark"
+                onClick={(event) => {
+                  rememberTrigger(event.currentTarget);
+                  setCertOpen(true);
+                }}
+              >
+                Сертификат
+              </button>
             )}
             {!ductHubFamily && techSheet && (
               <a href={techSheet} download className="btn btn-ghost dark">
@@ -292,7 +309,18 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
           <h2>Документация</h2>
           <div className="cta-row">
             <Link to="/request" className="btn btn-primary">Запросить расчёт</Link>
-            {cert && <button type="button" className="btn btn-ghost dark" onClick={() => setCertOpen(true)}>Сертификат</button>}
+            {cert && (
+              <button
+                type="button"
+                className="btn btn-ghost dark"
+                onClick={(event) => {
+                  rememberTrigger(event.currentTarget);
+                  setCertOpen(true);
+                }}
+              >
+                Сертификат
+              </button>
+            )}
             {/* certificatePlaceholder: сертификаты готовятся — кнопку не показываем (22.07);
                 чтобы вернуть, добавить сертификат в CERTS — заработает ветка cert выше */}
             {directBimButtons?.map((model) => (
@@ -338,16 +366,24 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
 
       {cert && certOpen && (
         <div className="modal-backdrop" onClick={() => setCertOpen(false)}>
-          <div className="cert-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={dialogRef}
+            className="cert-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Сертификат — ${p.name}`}
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="cert-head">
               <span>Сертификат — {p.name}</span>
               <div className="cert-actions">
                 <a className="btn btn-ghost dark" href={cert} target="_blank" rel="noopener">Открыть в новой вкладке</a>
                 <a className="btn btn-primary" href={cert} download>Скачать PDF</a>
-                <button className="modal-close" onClick={() => setCertOpen(false)} aria-label="Закрыть">✕</button>
+                <button className="modal-close" onClick={() => setCertOpen(false)} aria-label="Закрыть" data-modal-initial-focus>✕</button>
               </div>
             </div>
-            <iframe className="cert-frame" src={cert} title={`Сертификат ${p.name}`} />
+            <iframe className="cert-frame" src={cert} title={`Сертификат ${p.name}`} tabIndex={-1} />
           </div>
         </div>
       )}

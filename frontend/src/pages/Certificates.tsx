@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAccessibleModal } from "../components/AccessibleModal";
 import { PageHero } from "../components/rich";
 
 const D = (f: string) => `/docs/certificates/${f}`;
@@ -19,6 +20,7 @@ const CERTS: { title: string; file: string; kind: string }[] = [
 export default function Certificates() {
   const [open, setOpen] = useState<number | null>(null);
   const cur = open === null ? null : CERTS[open];
+  const { dialogRef, rememberTrigger } = useAccessibleModal(cur !== null, () => setOpen(null));
   return (
     <>
       <PageHero
@@ -27,6 +29,7 @@ export default function Certificates() {
         lead="Документы соответствия на оборудование РИК. Откройте для просмотра или скачайте PDF."
       />
       <div className="container section-body">
+      <h2 className="sr-only" id="certificates-list-section-title">Перечень сертификатов и деклараций</h2>
       <div className="cert-grid">
         {CERTS.map((c, i) => (
           <div className="cert-card" key={c.file}>
@@ -35,7 +38,16 @@ export default function Certificates() {
               <div className="cert-kind">{c.kind}</div>
               <h3>{c.title}</h3>
               <div className="cert-card-actions">
-                <button type="button" className="btn btn-primary" onClick={() => setOpen(i)}>Просмотр</button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={(event) => {
+                    rememberTrigger(event.currentTarget);
+                    setOpen(i);
+                  }}
+                >
+                  Просмотр
+                </button>
                 <a className="btn btn-ghost dark" href={D(c.file)} download>Скачать</a>
               </div>
             </div>
@@ -52,16 +64,24 @@ export default function Certificates() {
 
       {cur && (
         <div className="modal-backdrop" onClick={() => setOpen(null)}>
-          <div className="cert-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={dialogRef}
+            className="cert-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="certificate-dialog-title"
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="cert-head">
-              <span>{cur.title}</span>
+              <span id="certificate-dialog-title">{cur.title}</span>
               <div className="cert-actions">
                 <a className="btn btn-ghost dark" href={D(cur.file)} target="_blank" rel="noopener">Открыть в новой вкладке</a>
                 <a className="btn btn-primary" href={D(cur.file)} download>Скачать PDF</a>
-                <button className="modal-close" onClick={() => setOpen(null)} aria-label="Закрыть">✕</button>
+                <button className="modal-close" onClick={() => setOpen(null)} aria-label="Закрыть" data-modal-initial-focus>✕</button>
               </div>
             </div>
-            <iframe className="cert-frame" src={D(cur.file)} title={cur.title} />
+            <iframe className="cert-frame" src={D(cur.file)} title={cur.title} tabIndex={-1} />
           </div>
         </div>
       )}
