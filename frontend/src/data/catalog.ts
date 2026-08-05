@@ -181,7 +181,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Канальное оборудование круглого сечения Ø100–315: вентиляторы, нагреватели, обратные клапаны, заслонки, фильтры, шумоглушители.",
     advantages: ["Круглое сечение Ø100–315", "Быстрый монтаж на круглые воздуховоды", "Совместимость в единой системе"],
     related: CHANNEL_ROUND_MENU,
-    photo: "/photo/catalog/channel-equipment-new.png" },
+    photo: P("kanalnoe_krugloe_oborudovanie") },
   // Круглые канальные страницы (самостоятельные): контент из WAER DRW/DRE/DRQ, маркировки РИК.
   { slug: "vodyanye-vozduhonagrevateli-rw-kruglye", group: "heaters", hideInMenu: true, hideInCatalog: true, marking: "RW (круглые)", waer: "DRW",
     name: "Водяные воздухонагреватели RW (круглые)",
@@ -220,7 +220,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Канальное оборудование прямоугольного сечения: вентиляторы, нагреватели и охладители, рекуператоры, фильтры, заслонки, гибкие вставки, бактерицидные секции, шумоглушители.",
     advantages: ["Прямоугольное сечение под проект", "Полный ряд функциональных секций", "Совместимость в единой системе"],
     related: CHANNEL_RECT_MENU,
-    photo: "/photo/catalog/channel-equipment-new.png" },
+    photo: P("kanalnoe_oborudovanie") },
   // Старый общий хаб — оставлен ради существующих ссылок (URL не ломаем): ведёт на две новые группы.
   { slug: "kanalnoe-oborudovanie", group: "channel", marking: "Канальное", waer: "—",
     hideInMenu: true, hideInCatalog: true,

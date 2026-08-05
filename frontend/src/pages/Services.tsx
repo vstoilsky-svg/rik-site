@@ -26,6 +26,7 @@ export default function Services() {
         ]}
       />
       <div className="container section-body">
+        <h2 className="sr-only" id="services-list-section-title">Направления услуг</h2>
         <div className="tiles">
           {SERVICES.map(([t, d]) => (
             <div className="tile" key={t}><h3 className="no-arrow">{t}</h3><p>{d}</p></div>

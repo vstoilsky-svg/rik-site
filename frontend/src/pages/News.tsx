@@ -58,6 +58,7 @@ export default function News() {
         lead="События компании, реализованные проекты, новинки оборудования и производства."
       />
       <div className="container section-body">
+      <h2 className="sr-only" id="company-news-section-title">Новости компании РИК</h2>
       {NEWS.length === 0 ? (
         <div className="empty-state block">
           <h2>Раздел наполняется</h2>

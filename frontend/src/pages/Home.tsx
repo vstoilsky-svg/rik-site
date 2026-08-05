@@ -42,7 +42,7 @@ export default function Home() {
         </div>
       </section>
 
-      <main className="home-content">
+      <div className="home-content">
         <section className="home-section container" aria-labelledby="home-products-title">
           <div className="home-section-heading">
             <div>
@@ -120,7 +120,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </main>
+      </div>
     </>
   );
 }

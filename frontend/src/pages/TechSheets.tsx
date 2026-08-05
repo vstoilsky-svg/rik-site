@@ -75,7 +75,7 @@ export default function TechSheets() {
         title="Технические листы"
         lead={`Техническая документация оборудования РИК — ${pdfRows.length} PDF. Документы сгруппированы в том же порядке, что и каталог продукции.`}
       />
-      <main className="container section-body tech-library">
+      <div className="container section-body tech-library">
         <form className="tech-search" role="search" onSubmit={(event) => event.preventDefault()}>
           <label className="sr-only" htmlFor="tech-sheet-search">Поиск по техническим листам</label>
           <input
@@ -140,7 +140,7 @@ export default function TechSheets() {
           <h2>Нужен подбор под проект?</h2>
           <Link to="/request" className="btn btn-primary">Запросить расчёт</Link>
         </div>
-      </main>
+      </div>
     </>
   );
 }

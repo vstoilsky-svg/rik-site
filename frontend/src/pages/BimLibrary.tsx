@@ -20,6 +20,7 @@ export default function BimLibrary() {
         lead={`BIM-модели оборудования РИК (формат .rfa для Revit) — ${total} моделей по ${groups.length} позициям каталога. Скачивайте и подставляйте в проект.`}
       />
       <div className="container section-body">
+        <h2 className="sr-only" id="bim-library-section-title">BIM-модели оборудования РИК</h2>
         <div className="bim-lib">
           {groups.map((g) => (
             <div className="bim-lib-group" key={g.slug}>

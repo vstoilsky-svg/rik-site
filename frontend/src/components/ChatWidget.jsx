@@ -176,7 +176,7 @@ export default function ChatWidget() {
   }
 
   return (
-    <div className="chat-widget">
+    <div className={`chat-widget${isOpen ? " is-open" : ""}`}>
       {isOpen && (
         <section className="chat-window" aria-label="Чат с ассистентом">
           <header className="chat-header">

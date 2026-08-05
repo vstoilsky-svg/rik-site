@@ -24,7 +24,7 @@ export default function Production() {
         ]}
       />
 
-      <main className="container section-body production-page">
+      <div className="container section-body production-page">
         <section className="production-video" aria-labelledby="production-video-title">
           <div className="section-heading">
             <span className="eyebrow">Видеоэкскурсия</span>
@@ -66,7 +66,7 @@ export default function Production() {
           <div><h2>Нужно оборудование под ваш проект?</h2><p className="soft">Прикрепите спецификацию или ТЗ — инженеры подготовят подбор и расчёт.</p></div>
           <Link to="/request" className="btn btn-primary">Отправить проект</Link>
         </div>
-      </main>
+      </div>
     </>
   );
 }
