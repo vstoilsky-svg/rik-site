@@ -197,6 +197,25 @@ foreach ($requiredEscapeContract in @(
   }
 }
 
+$headerComponentPath = Join-Path $SourceRoot "components\Header.tsx"
+if (-not (Test-Path -LiteralPath $headerComponentPath -PathType Leaf)) {
+  throw "Missing header component: components/Header.tsx"
+}
+$headerComponent = Get-Content -LiteralPath $headerComponentPath -Raw -Encoding UTF8
+foreach ($requiredEscapeContract in @(
+  'if (event.key !== "Escape") return',
+  'setOpen(false)',
+  'setMobilePanel("root")',
+  'burgerRef.current?.focus()',
+  'document.addEventListener("keydown", closeOnEscape)',
+  'document.removeEventListener("keydown", closeOnEscape)',
+  'ref={burgerRef}'
+)) {
+  if (-not $headerComponent.Contains($requiredEscapeContract)) {
+    throw "Header Escape accessibility contract missing: $requiredEscapeContract"
+  }
+}
+
 function Get-SourceText([string]$relativePath) {
   $path = Join-Path $SourceRoot $relativePath
   if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
@@ -217,10 +236,27 @@ $productHeroSizes = '(max-width: 760px) calc(100vw - 84px), 600px'
 if (-not $productViewSource.Contains($productHeroSizes)) {
   throw "Product responsive sizes must match the rendered mobile media slot"
 }
+foreach ($productHeadingContract in @(
+  'import { productDisplayName } from "../seo/routes"',
+  '<h1>{productDisplayName(p)}</h1>'
+)) {
+  if (-not $productViewSource.Contains($productHeadingContract)) {
+    throw "Hydrated product H1 must reuse the canonical SEO display name: $productHeadingContract"
+  }
+}
 
 $catalogSource = Get-SourceText "pages/Catalog.tsx"
 if ($catalogSource.Contains('aria-label={p.name}') -or $catalogSource.Contains('alt={p.name}')) {
   throw "Catalog cards must derive accessible names from visible labels and keep duplicate thumbnails decorative"
+}
+
+$techSheetsSource = Get-SourceText "pages/TechSheets.tsx"
+$foundPositionsLabel = ((@(
+  0x041D, 0x0430, 0x0439, 0x0434, 0x0435, 0x043D, 0x043E, 0x0020,
+  0x043F, 0x043E, 0x0437, 0x0438, 0x0446, 0x0438, 0x0439
+) | ForEach-Object { [char]$_ }) -join '') + ': {resultCount}'
+if (-not $techSheetsSource.Contains($foundPositionsLabel)) {
+  throw "Technical-sheet result counter must identify that it counts positions"
 }
 
 $safeHtmlSource = Get-SourceText "components/SafeHtml.tsx"

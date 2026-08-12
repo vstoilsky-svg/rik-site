@@ -18,6 +18,7 @@ import { ductFamilyOf, familyForHubSlug } from "../data/duct-families";
 import SafeHtml from "../components/SafeHtml";
 import ResponsiveCardImage from "../components/ResponsiveCardImage";
 import { hasGenericResponsiveSource } from "../data/responsive-images";
+import { productDisplayName } from "../seo/routes";
 
 const PRODUCT_HERO_IMAGE_SIZES = "(max-width: 760px) calc(100vw - 84px), 600px";
 
@@ -129,7 +130,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
           )}
         </div>
         <div className="product-head">
-          <h1>{p.name}</h1>
+          <h1>{productDisplayName(p)}</h1>
           <p className="lead">{p.blurb}</p>
           {isFireValves && (
             <aside className="product-notice product-notice--fire" aria-label="Информация для заказа">
