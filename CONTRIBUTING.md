@@ -1,6 +1,8 @@
 # Contributing
 
-The canonical repository is the private GitHub repository `vstoilsky-svg/rik-site`.
+The canonical repository is `vstoilsky-svg/rik-site`. Repository visibility does
+not change the secret-handling contract: credentials and local `.env` files must
+never be committed.
 
 1. Pull `main` and create a branch named `agent/<topic>` or `feature/<topic>`.
 2. Keep credentials only in `backend/.env`; never add that file to Git.
@@ -10,4 +12,3 @@ The canonical repository is the private GitHub repository `vstoilsky-svg/rik-sit
 6. A successful merge publishes immutable and `latest` container tags to GHCR.
 
 Production deployment, Timeweb settings, DNS and domain cutover are separate operator actions. A Git merge does not authorize or perform them.
-

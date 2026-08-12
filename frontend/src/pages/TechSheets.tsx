@@ -89,7 +89,7 @@ export default function TechSheets() {
             autoComplete="off"
           />
           {query && <button className="btn btn-light" type="button" onClick={() => setQuery("")}>Очистить</button>}
-          <span className="tech-search-status" aria-live="polite">Найдено: {resultCount}</span>
+          <span className="tech-search-status" aria-live="polite">Найдено позиций: {resultCount}</span>
         </form>
 
         {visibleSections.map((section) => (

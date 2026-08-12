@@ -120,11 +120,16 @@ foreach ($needle in @(
     'charset utf-8;',
     'max-age=31536000, immutable',
     'max-age=2592000, stale-while-revalidate=86400',
-    'location = /product/ventilyatorrrry-kryshnye-krv-v'
+    'location = /product/ventilyatorrrry-kryshnye-krv-v',
+    'location = /products/',
+    'return 301 /products;'
 )) {
     if (-not $nginx.Contains($needle)) { throw "nginx SEO guard is absent: $needle" }
 }
 if ($nginx.Contains('try_files $uri $uri/ /index.html')) { throw 'Legacy SPA soft-404 fallback is still present' }
+if (-not [regex]::IsMatch($nginx, '(?s)location\s*=\s*/products/\s*\{\s*return\s+301\s+/products;\s*\}')) {
+    throw 'Canonical /products/ redirect must be one exact nginx location block'
+}
 
 $productView = Get-Content -LiteralPath (Join-Path $frontend 'src\pages\ProductView.tsx') -Raw -Encoding UTF8
 if ($productView -notmatch '<img src=\{p\.photo\} alt=\{p\.name\} loading="eager" fetchPriority="high" decoding="async" />') {

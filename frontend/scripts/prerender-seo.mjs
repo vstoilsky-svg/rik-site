@@ -22,6 +22,36 @@ function responsiveDerivative(src, width) {
   return src.replace(/\.png$/i, `-responsive-${width}.webp`);
 }
 
+function renderBreadcrumbs(route) {
+  const current = `<span aria-current="page">${escapeHtml(route.name)}</span>`;
+  if (route.path === "/") return '<span aria-current="page">Главная</span>';
+  if (route.kind === "product" || route.kind === "section") {
+    return `<a href="/">Главная</a> <span aria-hidden="true">→</span> <a href="/products">Продукция</a> <span aria-hidden="true">→</span> ${current}`;
+  }
+  return `<a href="/">Главная</a> <span aria-hidden="true">→</span> ${current}`;
+}
+
+function renderRouteBody(route) {
+  const isProduct = route.kind === "product" || route.kind === "section";
+  const primaryLink = isProduct
+    ? '<a class="btn btn-primary" href="/request">Запросить расчёт</a>'
+    : '<a class="btn btn-primary" href="/products">Открыть каталог</a>';
+  const secondaryLink = route.path === "/products"
+    ? '<a class="btn btn-ghost dark" href="/request">Запросить расчёт</a>'
+    : '<a class="btn btn-ghost dark" href="/contacts">Связаться с РИК</a>';
+
+  return `<main data-rik-prerendered-route="${escapeHtml(route.path)}" aria-labelledby="rik-prerendered-title">
+      <article class="container section-body">
+        <nav class="crumbs" aria-label="Хлебные крошки">${renderBreadcrumbs(route)}</nav>
+        <section class="block">
+          <h1 id="rik-prerendered-title">${escapeHtml(route.name)}</h1>
+          <p class="lead">${escapeHtml(route.description)}</p>
+          <div class="cta-row">${primaryLink}${secondaryLink}</div>
+        </section>
+      </article>
+    </main>`;
+}
+
 function renderRoute(route) {
   const url = canonicalUrl(route);
   const image = `https://rik-vent.ru${route.image}`;
@@ -58,6 +88,12 @@ function renderRoute(route) {
       "closing head",
     );
   }
+  html = replaceOne(
+    html,
+    /<div id="root">\s*<\/div>/,
+    `<div id="root">${renderRouteBody(route)}</div>`,
+    "root container",
+  );
   return html;
 }
 

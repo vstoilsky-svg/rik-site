@@ -57,7 +57,7 @@ function geometryQualifier(slug: string): string | undefined {
   return undefined;
 }
 
-function productDisplayName(product: Product): string {
+export function productDisplayName(product: Product): string {
   if ((productNameCounts.get(product.name) ?? 0) === 1) return product.name;
   const qualifier = geometryQualifier(product.slug);
   if (qualifier) return `${product.name} ${qualifier}`;

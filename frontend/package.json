@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "postbuild": "node scripts/prerender-seo.mjs",
+    "postbuild": "node scripts/prerender-seo.mjs && node scripts/verify-prerender-body.mjs",
     "generate:seo": "node scripts/seo-artifacts.mjs",
     "verify:seo": "node scripts/seo-artifacts.mjs --check",
+    "verify:prerender": "node scripts/verify-prerender-body.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },

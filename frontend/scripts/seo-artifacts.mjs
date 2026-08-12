@@ -15,7 +15,8 @@ if (args.has("--routes")) {
 
   if (args.has("--check")) {
     const current = await readFile(sitemapPath, "utf8");
-    if (current !== sitemap) {
+    const normalizeEol = (value) => value.replace(/\r\n/g, "\n");
+    if (normalizeEol(current) !== normalizeEol(sitemap)) {
       throw new Error("frontend/public/sitemap.xml is stale; run npm run generate:seo");
     }
     await writeStdout(`SEO source guard passed: routes=${routes.length}, sitemap exact.\n`);

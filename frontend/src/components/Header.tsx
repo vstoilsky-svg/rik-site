@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { GROUPS, byGroupMenu } from "../data/catalog";
 
@@ -17,12 +17,24 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [mobilePanel, setMobilePanel] = useState<"root" | "products" | `group:${string}`>("root");
+  const burgerRef = useRef<HTMLButtonElement>(null);
   const location = useLocation();
   useEffect(() => {
     setOpen(false);
     setMegaOpen(false);
     setMobilePanel("root");
   }, [location.pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      setMobilePanel("root");
+      burgerRef.current?.focus();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
   const close = () => {
     setOpen(false);
     setMobilePanel("root");
@@ -70,7 +82,7 @@ export default function Header() {
         <div className="header-cta">
           <a href="tel:+74951043779" className="header-phone">+7 (495) 104-37-79</a>
           <Link to="/request" className="btn btn-primary header-req">Запросить расчёт</Link>
-          <button className="burger" onClick={toggleMobileMenu} aria-label="Меню" aria-expanded={open}>
+          <button ref={burgerRef} className="burger" onClick={toggleMobileMenu} aria-label="Меню" aria-expanded={open}>
             <span>{open ? "✕" : "☰"}</span>
           </button>
         </div>

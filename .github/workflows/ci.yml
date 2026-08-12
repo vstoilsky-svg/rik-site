@@ -94,6 +94,8 @@ jobs:
           done
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/product/ventilyatorrrry-kryshnye-krv-v)" = "301"
           test "$(curl -sS -o /dev/null -w '%{redirect_url}' http://127.0.0.1:18080/product/ventilyatorrrry-kryshnye-krv-v)" = "http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/products/)" = "301"
+          test "$(curl -sS -o /dev/null -w '%{redirect_url}' http://127.0.0.1:18080/products/)" = "http://127.0.0.1:18080/products"
           curl -fsS http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v | grep -q '<link rel="canonical" href="https://rik-vent.ru/product/ventilyatory-kryshnye-krv-v"'
           curl -fsS http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v | grep -q 'id="rik-structured-data"'
           curl -fsS http://127.0.0.1:18080/robots.txt | grep -q '^User-agent: \*$'
