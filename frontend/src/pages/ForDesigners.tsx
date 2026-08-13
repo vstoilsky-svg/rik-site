@@ -5,7 +5,7 @@ type Tile = { title: string; note: string; to?: string; href?: string; download?
 
 // to — внутренняя ссылка, href — файл/внешняя. Где материала пока нет — ведём на запрос.
 const ITEMS: Tile[] = [
-  { title: "Каталог оборудования", note: "Полный технический каталог РИК, PDF (412 стр.)", href: "/downloads/RIK-full-catalog-20260728.pdf" },
+  { title: "Каталог оборудования", note: "Полный технический каталог РИК, PDF (354 стр.)", href: "/downloads/RIK-full-catalog-20260728.pdf" },
   { title: "Технические листы", note: "PDF по всем позициям — скачать", to: "/tehlisty" },
   { title: "Сертификаты и декларации", note: "Документы соответствия, просмотр и скачивание", to: "/certificates" },
   { title: "BIM-модели (Revit)", note: "Библиотека .rfa по каталогу — скачать", to: "/bim" },

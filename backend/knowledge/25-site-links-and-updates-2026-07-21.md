@@ -8,7 +8,7 @@
 - [Центральные установки RIK-M и RIK-S](/product/centralnye-ustanovki)
 - [Круглое канальное оборудование](/product/kanalnoe-krugloe)
 - [Прямоугольное канальное оборудование](/product/kanalnoe-pryamougolnoe)
-- [Общий каталог оборудования РИК](/downloads/RIK-full-catalog.pdf)
+- [Общий каталог оборудования РИК](/downloads/RIK-full-catalog-20260728.pdf)
 
 ## Новые вентиляторы
 

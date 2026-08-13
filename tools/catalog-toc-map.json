@@ -1,0 +1,921 @@
+{
+  "source_pages": 412,
+  "removed_pages": [
+    129,
+    130,
+    131,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    163,
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    191,
+    192,
+    193,
+    194,
+    195,
+    196,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    230,
+    231,
+    232,
+    233,
+    234,
+    235,
+    282
+  ],
+  "removed_count": 58,
+  "expected_pages": 354,
+  "entries": [
+    {
+      "title": "Центральные установки",
+      "level": 0,
+      "current_toc_page": 6,
+      "retained_source_old_page": 6,
+      "corrected_new_page": 6
+    },
+    {
+      "title": "Центральные установки RIK-M и RIK-S",
+      "level": 1,
+      "current_toc_page": 7,
+      "retained_source_old_page": 7,
+      "corrected_new_page": 7
+    },
+    {
+      "title": "Вентиляторные секции — RV1 / RV2",
+      "level": 2,
+      "current_toc_page": 11,
+      "retained_source_old_page": 11,
+      "corrected_new_page": 11
+    },
+    {
+      "title": "Вентиляторные секции взрывозащищённые — RV1-Ex / RV2-Ex",
+      "level": 2,
+      "current_toc_page": 15,
+      "retained_source_old_page": 15,
+      "corrected_new_page": 15
+    },
+    {
+      "title": "Вентиляторные секции с резервированием — RV1-R / RV2-R",
+      "level": 2,
+      "current_toc_page": 20,
+      "retained_source_old_page": 20,
+      "corrected_new_page": 20
+    },
+    {
+      "title": "Секции фильтрации — RF1 / RF2 / RF3",
+      "level": 2,
+      "current_toc_page": 22,
+      "retained_source_old_page": 22,
+      "corrected_new_page": 22
+    },
+    {
+      "title": "Водяные воздухонагреватели — RWx",
+      "level": 2,
+      "current_toc_page": 25,
+      "retained_source_old_page": 25,
+      "corrected_new_page": 25
+    },
+    {
+      "title": "Электрические воздухонагреватели — REyyy",
+      "level": 2,
+      "current_toc_page": 28,
+      "retained_source_old_page": 28,
+      "corrected_new_page": 28
+    },
+    {
+      "title": "Газовые воздухонагреватели — RGsss",
+      "level": 2,
+      "current_toc_page": 35,
+      "retained_source_old_page": 35,
+      "corrected_new_page": 35
+    },
+    {
+      "title": "Водяные воздухоохладители — RSWxx",
+      "level": 2,
+      "current_toc_page": 38,
+      "retained_source_old_page": 38,
+      "corrected_new_page": 38
+    },
+    {
+      "title": "Фреоновые воздухоохладители (испарители) — RSFx/y",
+      "level": 2,
+      "current_toc_page": 41,
+      "retained_source_old_page": 41,
+      "corrected_new_page": 41
+    },
+    {
+      "title": "Пластинчатые рекуператоры — REC",
+      "level": 2,
+      "current_toc_page": 44,
+      "retained_source_old_page": 44,
+      "corrected_new_page": 44
+    },
+    {
+      "title": "Роторные регенераторы — REG",
+      "level": 2,
+      "current_toc_page": 46,
+      "retained_source_old_page": 46,
+      "corrected_new_page": 46
+    },
+    {
+      "title": "Шумоглушители — RY1 / RY2 / RY3",
+      "level": 2,
+      "current_toc_page": 49,
+      "retained_source_old_page": 49,
+      "corrected_new_page": 49
+    },
+    {
+      "title": "Сотовые (адиабатические) увлажнители — RHA",
+      "level": 2,
+      "current_toc_page": 52,
+      "retained_source_old_page": 52,
+      "corrected_new_page": 52
+    },
+    {
+      "title": "Бактерицидная УФ-обработка — RBW-n",
+      "level": 2,
+      "current_toc_page": 55,
+      "retained_source_old_page": 55,
+      "corrected_new_page": 55
+    },
+    {
+      "title": "Секции смешения и промежуточные — RP, RPU, RPD, RPL, RPR / RU",
+      "level": 2,
+      "current_toc_page": 57,
+      "retained_source_old_page": 57,
+      "corrected_new_page": 57
+    },
+    {
+      "title": "Регулирующая заслонка секционная — RS",
+      "level": 2,
+      "current_toc_page": 59,
+      "retained_source_old_page": 59,
+      "corrected_new_page": 59
+    },
+    {
+      "title": "Регулирующая заслонка с периметральным обогревом для ЦК — RSn",
+      "level": 2,
+      "current_toc_page": 62,
+      "retained_source_old_page": 62,
+      "corrected_new_page": 62
+    },
+    {
+      "title": "Гликолевый рекуператор",
+      "level": 1,
+      "current_toc_page": 65,
+      "retained_source_old_page": 65,
+      "corrected_new_page": 65
+    },
+    {
+      "title": "Вентиляторы",
+      "level": 0,
+      "current_toc_page": 67,
+      "retained_source_old_page": 67,
+      "corrected_new_page": 67
+    },
+    {
+      "title": "Вентиляторы крышные KRV",
+      "level": 1,
+      "current_toc_page": 68,
+      "retained_source_old_page": 68,
+      "corrected_new_page": 68
+    },
+    {
+      "title": "Вентиляторы крышные KRV-V (выброс в сторону)",
+      "level": 1,
+      "current_toc_page": 72,
+      "retained_source_old_page": 72,
+      "corrected_new_page": 72
+    },
+    {
+      "title": "Вентиляторы радиальные RR",
+      "level": 1,
+      "current_toc_page": 80,
+      "retained_source_old_page": 80,
+      "corrected_new_page": 80
+    },
+    {
+      "title": "Осевые вентиляторы подпора ROP",
+      "level": 1,
+      "current_toc_page": 95,
+      "retained_source_old_page": 95,
+      "corrected_new_page": 95
+    },
+    {
+      "title": "Осевые крышные вентиляторы подпора ROP-K",
+      "level": 1,
+      "current_toc_page": 99,
+      "retained_source_old_page": 99,
+      "corrected_new_page": 99
+    },
+    {
+      "title": "Крышные вентиляторы дымоудаления вверх KRV-DU",
+      "level": 1,
+      "current_toc_page": 103,
+      "retained_source_old_page": 103,
+      "corrected_new_page": 103
+    },
+    {
+      "title": "Канальное оборудование",
+      "level": 0,
+      "current_toc_page": 108,
+      "retained_source_old_page": 108,
+      "corrected_new_page": 108
+    },
+    {
+      "title": "Канальный вентилятор KR (круглый)",
+      "level": 1,
+      "current_toc_page": 109,
+      "retained_source_old_page": 109,
+      "corrected_new_page": 109
+    },
+    {
+      "title": "Канальный вентилятор VR (загнутые назад лопатки)",
+      "level": 1,
+      "current_toc_page": 112,
+      "retained_source_old_page": 112,
+      "corrected_new_page": 112
+    },
+    {
+      "title": "Канальные вентиляторы WR и WRN",
+      "level": 1,
+      "current_toc_page": 116,
+      "retained_source_old_page": 116,
+      "corrected_new_page": 116
+    },
+    {
+      "title": "Круглое канальное оборудование",
+      "level": 1,
+      "current_toc_page": 121,
+      "retained_source_old_page": 121,
+      "corrected_new_page": 121
+    },
+    {
+      "title": "Регулирующие заслонки RKZ (круглые)",
+      "level": 2,
+      "current_toc_page": 232,
+      "retained_source_old_page": 122,
+      "corrected_new_page": 122
+    },
+    {
+      "title": "Обратные клапаны RO (круглые)",
+      "level": 2,
+      "current_toc_page": 230,
+      "retained_source_old_page": 124,
+      "corrected_new_page": 124
+    },
+    {
+      "title": "Фильтры воздушные кассетные RF (круглые)",
+      "level": 2,
+      "current_toc_page": 146,
+      "retained_source_old_page": 126,
+      "corrected_new_page": 126
+    },
+    {
+      "title": "Электрические воздухонагреватели RE (круглые)",
+      "level": 2,
+      "current_toc_page": 143,
+      "retained_source_old_page": 132,
+      "corrected_new_page": 129
+    },
+    {
+      "title": "Водяные воздухонагреватели RW (круглые)",
+      "level": 2,
+      "current_toc_page": 140,
+      "retained_source_old_page": 135,
+      "corrected_new_page": 132
+    },
+    {
+      "title": "Шумоглушители RQ (круглые)",
+      "level": 2,
+      "current_toc_page": 149,
+      "retained_source_old_page": 138,
+      "corrected_new_page": 135
+    },
+    {
+      "title": "Прямоугольное канальное оборудование",
+      "level": 1,
+      "current_toc_page": 151,
+      "retained_source_old_page": 151,
+      "corrected_new_page": 137
+    },
+    {
+      "title": "Гибкие вставки V",
+      "level": 2,
+      "current_toc_page": 234,
+      "retained_source_old_page": 153,
+      "corrected_new_page": 139
+    },
+    {
+      "title": "Фильтры воздушные кассетные RF (прямоугольные)",
+      "level": 2,
+      "current_toc_page": 208,
+      "retained_source_old_page": 155,
+      "corrected_new_page": 141
+    },
+    {
+      "title": "Карманные фильтры RK и RKU",
+      "level": 2,
+      "current_toc_page": 211,
+      "retained_source_old_page": 158,
+      "corrected_new_page": 144
+    },
+    {
+      "title": "Водяные воздухонагреватели RW (прямоугольные)",
+      "level": 2,
+      "current_toc_page": 192,
+      "retained_source_old_page": 172,
+      "corrected_new_page": 149
+    },
+    {
+      "title": "Электрические воздухонагреватели RE (прямоугольные)",
+      "level": 2,
+      "current_toc_page": 195,
+      "retained_source_old_page": 175,
+      "corrected_new_page": 152
+    },
+    {
+      "title": "Водяные воздухоохладители RSW",
+      "level": 2,
+      "current_toc_page": 202,
+      "retained_source_old_page": 179,
+      "corrected_new_page": 156
+    },
+    {
+      "title": "Фреоновые воздухоохладители RSF",
+      "level": 2,
+      "current_toc_page": 199,
+      "retained_source_old_page": 182,
+      "corrected_new_page": 159
+    },
+    {
+      "title": "Пластинчатый рекуператор REC",
+      "level": 2,
+      "current_toc_page": 205,
+      "retained_source_old_page": 185,
+      "corrected_new_page": 162
+    },
+    {
+      "title": "Шумоглушители пластинчатые RQ",
+      "level": 2,
+      "current_toc_page": 216,
+      "retained_source_old_page": 188,
+      "corrected_new_page": 165
+    },
+    {
+      "title": "Обратные клапаны RO (прямоугольные)",
+      "level": 2,
+      "current_toc_page": 219,
+      "retained_source_old_page": 219,
+      "corrected_new_page": 168
+    },
+    {
+      "title": "Регулирующие заслонки RKZ (прямоугольные)",
+      "level": 2,
+      "current_toc_page": 221,
+      "retained_source_old_page": 221,
+      "corrected_new_page": 170
+    },
+    {
+      "title": "Регулирующие заслонки RSn с периметральным обогревом",
+      "level": 2,
+      "current_toc_page": 221,
+      "retained_source_old_page": 221,
+      "corrected_new_page": 170
+    },
+    {
+      "title": "Бактерицидная секция RBW",
+      "level": 2,
+      "current_toc_page": 236,
+      "retained_source_old_page": 236,
+      "corrected_new_page": 179
+    },
+    {
+      "title": "Вентиляционные затворы",
+      "level": 2,
+      "current_toc_page": 239,
+      "retained_source_old_page": 239,
+      "corrected_new_page": 182
+    },
+    {
+      "title": "Противопожарные клапаны",
+      "level": 0,
+      "current_toc_page": 240,
+      "retained_source_old_page": 240,
+      "corrected_new_page": 183
+    },
+    {
+      "title": "Противопожарные клапаны РИК-1, РИК-2, РИК-3",
+      "level": 1,
+      "current_toc_page": 241,
+      "retained_source_old_page": 241,
+      "corrected_new_page": 184
+    },
+    {
+      "title": "Специальные клапаны",
+      "level": 0,
+      "current_toc_page": 246,
+      "retained_source_old_page": 246,
+      "corrected_new_page": 189
+    },
+    {
+      "title": "Специальные клапаны — обзор раздела",
+      "level": 1,
+      "current_toc_page": 247,
+      "retained_source_old_page": 247,
+      "corrected_new_page": 190
+    },
+    {
+      "title": "Клапаны избыточного давления КИД / КИДм",
+      "level": 1,
+      "current_toc_page": 248,
+      "retained_source_old_page": 248,
+      "corrected_new_page": 191
+    },
+    {
+      "title": "Герметические клапаны круглые",
+      "level": 1,
+      "current_toc_page": 251,
+      "retained_source_old_page": 251,
+      "corrected_new_page": 194
+    },
+    {
+      "title": "Люк-вставки",
+      "level": 1,
+      "current_toc_page": 255,
+      "retained_source_old_page": 255,
+      "corrected_new_page": 198
+    },
+    {
+      "title": "Воздуховоды и фасонные изделия",
+      "level": 0,
+      "current_toc_page": 257,
+      "retained_source_old_page": 257,
+      "corrected_new_page": 200
+    },
+    {
+      "title": "Воздуховоды и фасонные изделия — обзор раздела",
+      "level": 1,
+      "current_toc_page": 258,
+      "retained_source_old_page": 258,
+      "corrected_new_page": 201
+    },
+    {
+      "title": "Детали систем вентиляции",
+      "level": 1,
+      "current_toc_page": 259,
+      "retained_source_old_page": 259,
+      "corrected_new_page": 202
+    },
+    {
+      "title": "Круглые воздуховоды",
+      "level": 1,
+      "current_toc_page": 260,
+      "retained_source_old_page": 260,
+      "corrected_new_page": 203
+    },
+    {
+      "title": "Прямоугольные воздуховоды",
+      "level": 1,
+      "current_toc_page": 261,
+      "retained_source_old_page": 261,
+      "corrected_new_page": 204
+    },
+    {
+      "title": "Фланцы для вентиляции",
+      "level": 1,
+      "current_toc_page": 262,
+      "retained_source_old_page": 262,
+      "corrected_new_page": 205
+    },
+    {
+      "title": "Шумоглушитель трубчатый прямоугольный ГТП",
+      "level": 2,
+      "current_toc_page": 263,
+      "retained_source_old_page": 263,
+      "corrected_new_page": 206
+    },
+    {
+      "title": "Шумоглушитель трубчатый круглый ГТК",
+      "level": 2,
+      "current_toc_page": 265,
+      "retained_source_old_page": 265,
+      "corrected_new_page": 208
+    },
+    {
+      "title": "Шумоглушитель трубчатый ГТПи",
+      "level": 2,
+      "current_toc_page": 267,
+      "retained_source_old_page": 267,
+      "corrected_new_page": 210
+    },
+    {
+      "title": "Шумоглушитель пластинчатый прямоугольный ГП",
+      "level": 2,
+      "current_toc_page": 269,
+      "retained_source_old_page": 269,
+      "corrected_new_page": 212
+    },
+    {
+      "title": "Шибер прямоугольный",
+      "level": 2,
+      "current_toc_page": 272,
+      "retained_source_old_page": 272,
+      "corrected_new_page": 215
+    },
+    {
+      "title": "Шибер круглый",
+      "level": 2,
+      "current_toc_page": 273,
+      "retained_source_old_page": 273,
+      "corrected_new_page": 216
+    },
+    {
+      "title": "Узел прохода",
+      "level": 2,
+      "current_toc_page": 274,
+      "retained_source_old_page": 274,
+      "corrected_new_page": 217
+    },
+    {
+      "title": "Насадка для выброса воздуха",
+      "level": 2,
+      "current_toc_page": 279,
+      "retained_source_old_page": 279,
+      "corrected_new_page": 222
+    },
+    {
+      "title": "Клапан обратный прямоугольный КОп",
+      "level": 2,
+      "current_toc_page": 283,
+      "retained_source_old_page": 283,
+      "corrected_new_page": 225
+    },
+    {
+      "title": "Клапан обратный лепестковый КОл",
+      "level": 2,
+      "current_toc_page": 285,
+      "retained_source_old_page": 285,
+      "corrected_new_page": 227
+    },
+    {
+      "title": "Клапан обратный круглый КО",
+      "level": 2,
+      "current_toc_page": 287,
+      "retained_source_old_page": 287,
+      "corrected_new_page": 229
+    },
+    {
+      "title": "Клапан лепестковый КЛ",
+      "level": 2,
+      "current_toc_page": 289,
+      "retained_source_old_page": 289,
+      "corrected_new_page": 231
+    },
+    {
+      "title": "Клапан воздушный ABK",
+      "level": 2,
+      "current_toc_page": 291,
+      "retained_source_old_page": 291,
+      "corrected_new_page": 233
+    },
+    {
+      "title": "Инспекционный люк для круглого канала",
+      "level": 2,
+      "current_toc_page": 293,
+      "retained_source_old_page": 293,
+      "corrected_new_page": 235
+    },
+    {
+      "title": "Инспекционный люк для прямоугольного канала",
+      "level": 2,
+      "current_toc_page": 295,
+      "retained_source_old_page": 295,
+      "corrected_new_page": 237
+    },
+    {
+      "title": "Зонт прямоугольный",
+      "level": 2,
+      "current_toc_page": 297,
+      "retained_source_old_page": 297,
+      "corrected_new_page": 239
+    },
+    {
+      "title": "Зонт круглый",
+      "level": 2,
+      "current_toc_page": 299,
+      "retained_source_old_page": 299,
+      "corrected_new_page": 241
+    },
+    {
+      "title": "Дроссель-клапан прямоугольный",
+      "level": 2,
+      "current_toc_page": 301,
+      "retained_source_old_page": 301,
+      "corrected_new_page": 243
+    },
+    {
+      "title": "Дроссель-клапан круглый",
+      "level": 2,
+      "current_toc_page": 302,
+      "retained_source_old_page": 302,
+      "corrected_new_page": 244
+    },
+    {
+      "title": "Дефлектор",
+      "level": 2,
+      "current_toc_page": 304,
+      "retained_source_old_page": 304,
+      "corrected_new_page": 246
+    },
+    {
+      "title": "Гибкая вставка прямоугольная",
+      "level": 2,
+      "current_toc_page": 306,
+      "retained_source_old_page": 306,
+      "corrected_new_page": 248
+    },
+    {
+      "title": "Гибкая вставка круглая",
+      "level": 2,
+      "current_toc_page": 307,
+      "retained_source_old_page": 307,
+      "corrected_new_page": 249
+    },
+    {
+      "title": "Прямой участок (круглый)",
+      "level": 2,
+      "current_toc_page": 308,
+      "retained_source_old_page": 308,
+      "corrected_new_page": 250
+    },
+    {
+      "title": "Отвод (круглый)",
+      "level": 2,
+      "current_toc_page": 310,
+      "retained_source_old_page": 310,
+      "corrected_new_page": 252
+    },
+    {
+      "title": "Переход (круглый)",
+      "level": 2,
+      "current_toc_page": 312,
+      "retained_source_old_page": 312,
+      "corrected_new_page": 254
+    },
+    {
+      "title": "Тройник (круглый)",
+      "level": 2,
+      "current_toc_page": 317,
+      "retained_source_old_page": 317,
+      "corrected_new_page": 259
+    },
+    {
+      "title": "Крестовина (круглая)",
+      "level": 2,
+      "current_toc_page": 324,
+      "retained_source_old_page": 324,
+      "corrected_new_page": 266
+    },
+    {
+      "title": "Ниппель / муфта",
+      "level": 2,
+      "current_toc_page": 326,
+      "retained_source_old_page": 326,
+      "corrected_new_page": 268
+    },
+    {
+      "title": "Врезка в круглый канал",
+      "level": 2,
+      "current_toc_page": 328,
+      "retained_source_old_page": 328,
+      "corrected_new_page": 270
+    },
+    {
+      "title": "Врезка в прямоугольный канал (для круглых воздуховодов)",
+      "level": 2,
+      "current_toc_page": 332,
+      "retained_source_old_page": 332,
+      "corrected_new_page": 274
+    },
+    {
+      "title": "Заглушка (круглая)",
+      "level": 2,
+      "current_toc_page": 335,
+      "retained_source_old_page": 335,
+      "corrected_new_page": 277
+    },
+    {
+      "title": "Утка (круглая)",
+      "level": 2,
+      "current_toc_page": 337,
+      "retained_source_old_page": 337,
+      "corrected_new_page": 279
+    },
+    {
+      "title": "Прямой участок (прямоугольный)",
+      "level": 2,
+      "current_toc_page": 339,
+      "retained_source_old_page": 339,
+      "corrected_new_page": 281
+    },
+    {
+      "title": "Переход на круглое сечение",
+      "level": 2,
+      "current_toc_page": 342,
+      "retained_source_old_page": 342,
+      "corrected_new_page": 284
+    },
+    {
+      "title": "Переход на прямоугольное сечение",
+      "level": 2,
+      "current_toc_page": 345,
+      "retained_source_old_page": 345,
+      "corrected_new_page": 287
+    },
+    {
+      "title": "Тройник (прямоугольный)",
+      "level": 2,
+      "current_toc_page": 348,
+      "retained_source_old_page": 348,
+      "corrected_new_page": 290
+    },
+    {
+      "title": "Отвод (прямоугольный)",
+      "level": 2,
+      "current_toc_page": 349,
+      "retained_source_old_page": 349,
+      "corrected_new_page": 291
+    },
+    {
+      "title": "Крестовина (прямоугольная)",
+      "level": 2,
+      "current_toc_page": 355,
+      "retained_source_old_page": 355,
+      "corrected_new_page": 297
+    },
+    {
+      "title": "Врезка в прямоугольный канал (прямоугольная)",
+      "level": 2,
+      "current_toc_page": 356,
+      "retained_source_old_page": 356,
+      "corrected_new_page": 298
+    },
+    {
+      "title": "Врезка в круглый канал (прямоугольная)",
+      "level": 2,
+      "current_toc_page": 358,
+      "retained_source_old_page": 358,
+      "corrected_new_page": 300
+    },
+    {
+      "title": "Адаптер для вентиляционных решёток",
+      "level": 2,
+      "current_toc_page": 359,
+      "retained_source_old_page": 359,
+      "corrected_new_page": 301
+    },
+    {
+      "title": "Заглушка (прямоугольная)",
+      "level": 2,
+      "current_toc_page": 361,
+      "retained_source_old_page": 361,
+      "corrected_new_page": 303
+    },
+    {
+      "title": "Утка (прямоугольная)",
+      "level": 2,
+      "current_toc_page": 364,
+      "retained_source_old_page": 364,
+      "corrected_new_page": 306
+    },
+    {
+      "title": "Фланец прямоугольный",
+      "level": 2,
+      "current_toc_page": 366,
+      "retained_source_old_page": 366,
+      "corrected_new_page": 308
+    },
+    {
+      "title": "Фланец круглый",
+      "level": 2,
+      "current_toc_page": 369,
+      "retained_source_old_page": 369,
+      "corrected_new_page": 311
+    },
+    {
+      "title": "Системы автоматического управления",
+      "level": 0,
+      "current_toc_page": 371,
+      "retained_source_old_page": 371,
+      "corrected_new_page": 313
+    },
+    {
+      "title": "Щиты питания и управления RAN",
+      "level": 1,
+      "current_toc_page": 372,
+      "retained_source_old_page": 372,
+      "corrected_new_page": 314
+    },
+    {
+      "title": "Воздушные завесы",
+      "level": 0,
+      "current_toc_page": 375,
+      "retained_source_old_page": 375,
+      "corrected_new_page": 317
+    },
+    {
+      "title": "Воздушно-тепловые завесы VTR",
+      "level": 1,
+      "current_toc_page": 376,
+      "retained_source_old_page": 376,
+      "corrected_new_page": 318
+    },
+    {
+      "title": "Смесительные узлы",
+      "level": 0,
+      "current_toc_page": 380,
+      "retained_source_old_page": 380,
+      "corrected_new_page": 322
+    },
+    {
+      "title": "Смесительный узел MIX",
+      "level": 1,
+      "current_toc_page": 381,
+      "retained_source_old_page": 381,
+      "corrected_new_page": 323
+    },
+    {
+      "title": "Компрессорно-конденсаторные блоки",
+      "level": 0,
+      "current_toc_page": 384,
+      "retained_source_old_page": 384,
+      "corrected_new_page": 326
+    },
+    {
+      "title": "Компрессорно-конденсаторные блоки RRA L5",
+      "level": 1,
+      "current_toc_page": 385,
+      "retained_source_old_page": 385,
+      "corrected_new_page": 327
+    },
+    {
+      "title": "Компрессорно-конденсаторные блоки RRA I2 (инверторные)",
+      "level": 1,
+      "current_toc_page": 389,
+      "retained_source_old_page": 389,
+      "corrected_new_page": 331
+    },
+    {
+      "title": "Чиллеры, тепловые насосы и гидромодули",
+      "level": 0,
+      "current_toc_page": 397,
+      "retained_source_old_page": 397,
+      "corrected_new_page": 339
+    },
+    {
+      "title": "Чиллеры, тепловые насосы и гидромодули — обзор раздела",
+      "level": 1,
+      "current_toc_page": 398,
+      "retained_source_old_page": 398,
+      "corrected_new_page": 340
+    }
+  ]
+}
