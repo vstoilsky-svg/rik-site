@@ -30,7 +30,8 @@ export interface Group { key: string; title: string; }
 import { DUCT_PRODUCTS } from "./duct-products.generated";
 
 const P = (s: string) => `/photo/catalog/${s}.webp`;
-const RECTANGULAR_CHANNEL_COLLAGE = P("kanalnoe_oborudovanie_20260814");
+const RECTANGULAR_CHANNEL_COLLAGE = P("kanalnoe_oborudovanie_20260814b");
+const ROUND_CHANNEL_COLLAGE = P("kanalnoe_krugloe_oborudovanie_20260814");
 
 // Структура «Продукция» — утверждена мастер-задачей 20260717 (11 групп, порядок фиксирован).
 export const GROUPS: Group[] = [
@@ -182,7 +183,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Канальное оборудование круглого сечения Ø100–315: вентиляторы, нагреватели, обратные клапаны, заслонки, фильтры, шумоглушители.",
     advantages: ["Круглое сечение Ø100–315", "Быстрый монтаж на круглые воздуховоды", "Совместимость в единой системе"],
     related: CHANNEL_ROUND_MENU,
-    photo: P("kanalnoe_krugloe_oborudovanie") },
+    photo: ROUND_CHANNEL_COLLAGE },
   // Круглые канальные страницы (самостоятельные): контент из WAER DRW/DRE/DRQ, маркировки РИК.
   { slug: "vodyanye-vozduhonagrevateli-rw-kruglye", group: "heaters", hideInMenu: true, hideInCatalog: true, marking: "RW (круглые)", waer: "DRW",
     name: "Водяные воздухонагреватели RW (круглые)",
