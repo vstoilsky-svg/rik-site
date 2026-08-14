@@ -220,7 +220,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Канальное оборудование прямоугольного сечения: вентиляторы, нагреватели и охладители, рекуператоры, фильтры, заслонки, гибкие вставки, бактерицидные секции, шумоглушители.",
     advantages: ["Прямоугольное сечение под проект", "Полный ряд функциональных секций", "Совместимость в единой системе"],
     related: CHANNEL_RECT_MENU,
-    photo: P("ventilyatory_kanalnye_wr_i_wrn") },
+    photo: P("kanalnoe_oborudovanie") },
   // Старый общий хаб — оставлен ради существующих ссылок (URL не ломаем): ведёт на две новые группы.
   { slug: "kanalnoe-oborudovanie", group: "channel", marking: "Канальное", waer: "—",
     hideInMenu: true, hideInCatalog: true,
