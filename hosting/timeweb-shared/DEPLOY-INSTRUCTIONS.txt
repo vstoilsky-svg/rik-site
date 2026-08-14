@@ -1,0 +1,25 @@
+RIK SITE — TIMEWEB SHARED HOSTING DEPLOYMENT
+
+Archive layout:
+  public_html_new/  new static frontend + PHP API entrypoint
+  rik_app/          private PHP application, knowledge and config
+
+Target account layout:
+  dev-rik-vent/public_html      current live site
+  dev-rik-vent/public_html_new  uploaded new site
+  dev-rik-vent/rik_app          private API files (outside public_html)
+
+Safe switch after the Timeweb backup task is completed:
+1. Upload the release ZIP into dev-rik-vent (one level above public_html).
+2. Extract it there. Do not move rik_app under public_html.
+3. Confirm that public_html_new/.htaccess and rik_app/config.env exist.
+4. Rename current public_html to public_html_bitrix_backup_20260814.
+5. Rename public_html_new to public_html.
+6. Open https://rik-vent.ru/api/health and expect status=ok.
+7. Check the home page, product page, catalog PDF, chatbot and a test request form.
+
+Rollback:
+1. Rename the failed new public_html to public_html_failed_20260814.
+2. Rename public_html_bitrix_backup_20260814 back to public_html.
+
+Never expose, download publicly, or place rik_app/config.env under public_html.
