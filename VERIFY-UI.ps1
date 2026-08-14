@@ -133,6 +133,23 @@ if (-not (Test-Path -LiteralPath $catalogCssPath -PathType Leaf)) {
   throw "Missing catalog CSS: catalog.css"
 }
 $catalogCss = Get-Content -LiteralPath $catalogCssPath -Raw -Encoding UTF8
+$centralMediaWrapperMatch = [regex]::Match($catalogCss, "(?s)\.card-media-duo-image\s*\{(?<body>[^}]*)\}")
+if (-not $centralMediaWrapperMatch.Success) {
+  throw "Missing bounded media wrapper for the central-units catalog card"
+}
+Assert-Declaration $centralMediaWrapperMatch.Groups["body"].Value "display" "block"
+Assert-Declaration $centralMediaWrapperMatch.Groups["body"].Value "width" "100%"
+Assert-Declaration $centralMediaWrapperMatch.Groups["body"].Value "height" "330px"
+
+$catalogPagePath = Join-Path $SourceRoot "pages\Catalog.tsx"
+if (-not (Test-Path -LiteralPath $catalogPagePath -PathType Leaf)) {
+  throw "Missing catalog page: pages/Catalog.tsx"
+}
+$catalogPage = Get-Content -LiteralPath $catalogPagePath -Raw -Encoding UTF8
+if (-not $catalogPage.Contains('<span className="card-media-duo-image">')) {
+  throw "Central-units responsive images must be wrapped to avoid an implicit grid row"
+}
+
 $edge320Catalog = [regex]::Match($catalogCss, "(?s)@media\s*\(\s*max-width\s*:\s*360px\s*\)\s*\{(?<body>.*?)\n\}")
 if (-not $edge320Catalog.Success) {
   throw "Missing <=360px catalog containment rules"
@@ -161,17 +178,20 @@ if (-not (Test-Path -LiteralPath $chatCssPath -PathType Leaf)) {
   throw "Missing chat widget CSS: components/ChatWidget.css"
 }
 $chatCss = Get-Content -LiteralPath $chatCssPath -Raw -Encoding UTF8
-$closedChatMatch = [regex]::Match(
+$chatPositionMatch = [regex]::Match(
   $chatCss,
-  "(?s)\.chat-widget:not\(\.is-open\)\s*\{(?<body>[^}]*)\}"
+  "(?s)\.chat-widget\s*\{(?<body>[^}]*)\}"
 )
-if (-not $closedChatMatch.Success) {
-  throw "Missing closed chat header-slot rule"
+if (-not $chatPositionMatch.Success) {
+  throw "Missing chat widget positioning rule"
 }
-$closedChatRule = $closedChatMatch.Groups["body"].Value
-Assert-Declaration $closedChatRule "top" "7px"
-Assert-Declaration $closedChatRule "bottom" "auto"
-Assert-Declaration $closedChatRule "transform" "none"
+$chatPositionRule = $chatPositionMatch.Groups["body"].Value
+Assert-Declaration $chatPositionRule "position" "fixed"
+Assert-Declaration $chatPositionRule "right" "20px"
+Assert-Declaration $chatPositionRule "bottom" "20px"
+if ([regex]::IsMatch($chatCss, "(?s)\.chat-widget:not\(\.is-open\)\s*\{[^}]*(?:top\s*:|bottom\s*:\s*auto)")) {
+  throw "Closed chat launcher must remain bottom-right instead of moving into the header"
+}
 
 $certModalMatch = [regex]::Match($catalogCss, "(?s)\.cert-modal\s*\{(?<body>[^}]*)\}")
 if (-not $certModalMatch.Success -or
@@ -330,4 +350,4 @@ if ($semanticFailures.Count -gt 0) {
   throw ("Semantic UI invariants failed:`n - " + ($semanticFailures -join "`n - "))
 }
 
-Write-Host "UI regression guards passed: category containment; <=320px component containment and product headings; unclipped central-card labels; responsive about video; intrinsic-aspect logos; 48px header controls; desktop/mobile header rail; closed TOC/chat header slots; certificate modal gutters; chat Escape focus return; one main landmark; heading contracts 8/8; accessible sr-only utility."
+Write-Host "UI regression guards passed: category containment; <=320px component containment and product headings; bounded central-units media; unclipped central-card labels; responsive about video; intrinsic-aspect logos; 48px header controls; desktop/mobile header rail; closed TOC header slot; bottom-right chat launcher; certificate modal gutters; chat Escape focus return; one main landmark; heading contracts 8/8; accessible sr-only utility."
