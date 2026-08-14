@@ -24,7 +24,7 @@
   .card-media-duo-image { height: 260px; }
   .card-media-duo img { height: 260px; }
 }
-.card-media { display: block; width: 100%; aspect-ratio: 4/3; border: 0; padding: 0; cursor: pointer; background: linear-gradient(160deg,var(--card),var(--surface)); }
+.card-media { display: block; width: 100%; aspect-ratio: 4/3; flex: 0 0 auto; min-height: 0; overflow: hidden; box-sizing: border-box; border: 0; padding: 0; cursor: pointer; background: linear-gradient(160deg,var(--card),var(--surface)); }
 .card-media img { width: 100%; height: 100%; object-fit: contain; }
 .ph-sm { display: grid; place-items: center; height: 100%; color: var(--muted); font-size: .85rem; }
 .card-body { padding: 14px 16px; }
