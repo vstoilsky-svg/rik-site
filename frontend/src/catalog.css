@@ -11,11 +11,10 @@
 .card-link .card-body h3 { margin: 0; }
 /* Длинная карточка ЦУ: две равные зоны RIK-S / RIK-M */
 .card-wide { grid-column: 1 / -1; }
-.card-media-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0; background: linear-gradient(90deg, #e6f0f8 0 50%, #ecf2fd 50% 100%); }
+.card-media-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0; background: #ecf2fd; }
 .card-media-duo figure { margin: 0; padding: 18px 22px 14px; text-align: center; display: grid; grid-template-rows: 330px auto; align-items: center; }
-.card-media-duo-image { display: block; width: 100%; height: 330px; }
-.card-media-duo figure:first-child { background: #e6f0f8; }
-.card-media-duo figure:last-child { background: #ecf2fd; }
+.card-media-duo-image { display: block; width: 100%; height: 330px; overflow: hidden; background: #ecf2fd; }
+.card-media-duo figure { background: #ecf2fd; }
 .card-media-duo img { width: 100%; height: 330px; object-fit: contain; object-position: center; }
 .card-media-duo figcaption { font-weight: 700; color: var(--ink); padding-top: 8px; }
 @media (max-width: 700px) {
