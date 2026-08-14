@@ -30,7 +30,7 @@ export interface Group { key: string; title: string; }
 import { DUCT_PRODUCTS } from "./duct-products.generated";
 
 const P = (s: string) => `/photo/catalog/${s}.webp`;
-const RECTANGULAR_CHANNEL_COLLAGE = P("kanalnoe_oborudovanie_20260814d");
+const RECTANGULAR_CHANNEL_COLLAGE = P("kanalnoe_oborudovanie_20260814e");
 const ROUND_CHANNEL_COLLAGE = P("kanalnoe_krugloe_oborudovanie_20260814");
 
 // Структура «Продукция» — утверждена мастер-задачей 20260717 (11 групп, порядок фиксирован).
