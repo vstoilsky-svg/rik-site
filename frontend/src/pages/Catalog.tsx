@@ -17,16 +17,18 @@ function Card({ p }: { p: Product }) {
         <div className="card-media-duo">
           {p.catalogMedia.map((m) => (
             <figure key={m.src}>
-              {hasGenericResponsiveSource(m.src)
-                ? (
-                  <ResponsiveCardImage
-                    src={m.src}
-                    alt=""
-                    sizes="(max-width: 700px) calc(100vw - 64px), 520px"
-                    profile="generic-card"
-                  />
-                )
-                : <img src={m.src} alt="" loading="lazy" fetchPriority="low" />}
+              <span className="card-media-duo-image">
+                {hasGenericResponsiveSource(m.src)
+                  ? (
+                    <ResponsiveCardImage
+                      src={m.src}
+                      alt=""
+                      sizes="(max-width: 700px) calc(100vw - 64px), 520px"
+                      profile="generic-card"
+                    />
+                  )
+                  : <img src={m.src} alt="" loading="lazy" fetchPriority="low" />}
+              </span>
               <figcaption>{m.label}</figcaption>
             </figure>
           ))}
