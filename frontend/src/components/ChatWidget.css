@@ -20,13 +20,6 @@
   gap: 12px;
 }
 
-.chat-widget:not(.is-open) {
-  top: 7px;
-  bottom: auto;
-  transform: none;
-  z-index: calc(var(--z-sticky) + 1);
-}
-
 .chat-window {
   width: min(390px, calc(100vw - 32px));
   height: min(620px, calc(100vh - 104px));
@@ -244,13 +237,6 @@
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
     gap: 8px;
-  }
-
-  .chat-widget:not(.is-open) {
-    top: 12px;
-    bottom: auto;
-    transform: none;
-    z-index: calc(var(--z-sticky) + 1);
   }
 
   .chat-toggle {

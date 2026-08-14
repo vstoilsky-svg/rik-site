@@ -13,6 +13,7 @@
 .card-wide { grid-column: 1 / -1; }
 .card-media-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0; background: linear-gradient(90deg, #e6f0f8 0 50%, #ecf2fd 50% 100%); }
 .card-media-duo figure { margin: 0; padding: 18px 22px 14px; text-align: center; display: grid; grid-template-rows: 330px auto; align-items: center; }
+.card-media-duo-image { display: block; width: 100%; height: 330px; }
 .card-media-duo figure:first-child { background: #e6f0f8; }
 .card-media-duo figure:last-child { background: #ecf2fd; }
 .card-media-duo img { width: 100%; height: 330px; object-fit: contain; object-position: center; }
@@ -20,6 +21,7 @@
 @media (max-width: 700px) {
   .card-media-duo { grid-template-columns: 1fr; background: #e6f0f8; }
   .card-media-duo figure { grid-template-rows: 260px auto; padding: 14px 16px 12px; }
+  .card-media-duo-image { height: 260px; }
   .card-media-duo img { height: 260px; }
 }
 .card-media { display: block; width: 100%; aspect-ratio: 4/3; border: 0; padding: 0; cursor: pointer; background: linear-gradient(160deg,var(--card),var(--surface)); }
