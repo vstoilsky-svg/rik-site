@@ -165,7 +165,7 @@ export function resolveSeoRoute(pathname: string): SeoRoute | undefined {
 }
 
 export function canonicalUrl(route: SeoRoute): string {
-  return `${SITE_ORIGIN}${route.path === "/" ? "/" : route.path}`;
+  return `${SITE_ORIGIN}${route.path === "/" ? "/" : `${route.path}/`}`;
 }
 
 export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {

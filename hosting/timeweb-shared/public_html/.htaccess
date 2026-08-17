@@ -1,6 +1,17 @@
 DirectoryIndex index.html
+ErrorDocument 404 /404.html
 
 RewriteEngine On
+
+# Exported routes are directories; redirect directly to their final HTTPS URL.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} !/$
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^ https://rik-vent.ru%{REQUEST_URI}/ [R=301,L,NE]
+
+# Keep one canonical host to avoid duplicate pages in search indexes.
+RewriteCond %{HTTP_HOST} ^www\.rik-vent\.ru$ [NC]
+RewriteRule ^ https://rik-vent.ru%{REQUEST_URI} [R=301,L,NE]
 
 # The API is implemented by PHP on Timeweb shared Hosting.
 RewriteRule ^api/index\.php$ - [L]
@@ -11,8 +22,7 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# React Router fallback for clean application URLs.
-RewriteRule ^ index.html [L]
+# Unknown URLs must stay real 404 responses instead of becoming soft 404s.
 
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
