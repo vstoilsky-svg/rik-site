@@ -27,7 +27,7 @@ if (-not $robots.Contains('Sitemap: https://rik-vent.ru/sitemap.xml')) { throw '
 [xml]$sitemap = Get-Content -LiteralPath (Join-Path $public 'sitemap.xml') -Raw -Encoding UTF8
 $urls = @($sitemap.urlset.url.loc | ForEach-Object { [string]$_ })
 $expectedUrls = @($routes | ForEach-Object {
-    if ($_.path -eq '/') { 'https://rik-vent.ru/' } else { "https://rik-vent.ru$($_.path)" }
+    if ($_.path -eq '/') { 'https://rik-vent.ru/' } else { "https://rik-vent.ru$($_.path)/" }
 })
 $missingUrls = @($expectedUrls | Where-Object { $urls -notcontains $_ })
 $extraUrls = @($urls | Where-Object { $expectedUrls -notcontains $_ })
@@ -86,7 +86,7 @@ foreach ($route in $routes) {
         throw "Raw title mismatch: $($route.path)"
     }
     $canonicalMatch = [regex]::Match($html, '<link rel="canonical" href="(?<value>[^"]+)"\s*/>')
-    $expectedCanonical = if ($route.path -eq '/') { 'https://rik-vent.ru/' } else { "https://rik-vent.ru$($route.path)" }
+    $expectedCanonical = if ($route.path -eq '/') { 'https://rik-vent.ru/' } else { "https://rik-vent.ru$($route.path)/" }
     if (-not $canonicalMatch.Success -or $canonicalMatch.Groups['value'].Value -ne $expectedCanonical) {
         throw "Raw canonical mismatch: $($route.path)"
     }
@@ -115,20 +115,23 @@ if (-not $llms.StartsWith($llmsPrefix)) { throw 'llms.txt content is corrupted' 
 $nginx = Get-Content -LiteralPath (Join-Path $root 'docker\nginx.conf') -Raw -Encoding UTF8
 foreach ($needle in @(
     'try_files $uri =404;',
-    'try_files $uri/index.html =404;',
+    'try_files $uri $uri/ =404;',
     'error_page 404 /404.html;',
     'charset utf-8;',
     'max-age=31536000, immutable',
     'max-age=2592000, stale-while-revalidate=86400',
     'location = /product/ventilyatorrrry-kryshnye-krv-v',
-    'location = /products/',
-    'return 301 /products;'
+    'return 301 /product/ventilyatory-kryshnye-krv-v/;'
 )) {
     if (-not $nginx.Contains($needle)) { throw "nginx SEO guard is absent: $needle" }
 }
 if ($nginx.Contains('try_files $uri $uri/ /index.html')) { throw 'Legacy SPA soft-404 fallback is still present' }
-if (-not [regex]::IsMatch($nginx, '(?s)location\s*=\s*/products/\s*\{\s*return\s+301\s+/products;\s*\}')) {
-    throw 'Canonical /products/ redirect must be one exact nginx location block'
+if ($nginx.Contains('try_files $uri/index.html =404;')) { throw 'Legacy no-slash route serving is still present' }
+if ([regex]::IsMatch($nginx, '(?s)location\s*=\s*/products/\s*\{\s*return\s+301\s+/products;\s*\}')) {
+    throw 'Legacy trailing-slash removal redirect is still present'
+}
+if (-not [regex]::IsMatch($nginx, '(?s)location\s*=\s*/product/ventilyatorrrry-kryshnye-krv-v\s*\{\s*return\s+301\s+/product/ventilyatory-kryshnye-krv-v/;\s*\}')) {
+    throw 'Legacy product redirect must target the trailing-slash canonical URL'
 }
 
 $productView = Get-Content -LiteralPath (Join-Path $frontend 'src\pages\ProductView.tsx') -Raw -Encoding UTF8
