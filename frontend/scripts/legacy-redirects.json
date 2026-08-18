@@ -130,5 +130,13 @@
   {
     "oldPath": "/legacy-cookies-agreement.php",
     "newPath": "/privacy/"
+  },
+  {
+    "oldPath": "/info/brands/sony/",
+    "newPath": "/production/"
+  },
+  {
+    "oldPath": "/auth/",
+    "newPath": "/"
   }
 ]
