@@ -24,7 +24,7 @@ export default function Requisites() {
     <>
       <PageHero
         crumbs={[{ label: "О компании", to: "/about" }, { label: "Реквизиты" }]}
-        title="Реквизиты"
+        title="Реквизиты ООО «РИК»"
         lead="Реквизиты ООО «РИК» для оформления договоров и платёжных документов."
       />
       <div className="container section-body">

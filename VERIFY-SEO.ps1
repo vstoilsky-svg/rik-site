@@ -12,6 +12,7 @@ foreach ($name in @('robots.txt', 'sitemap.xml', 'llms.txt')) {
 
 $seoScript = Join-Path $frontend 'scripts\seo-artifacts.mjs'
 $legacyRedirectsPath = Join-Path $frontend 'scripts\legacy-redirects.json'
+$legacyPatternRedirectsPath = Join-Path $frontend 'scripts\legacy-pattern-redirects.json'
 & node $seoScript --check
 if ($LASTEXITCODE -ne 0) { throw "SEO source check failed: $LASTEXITCODE" }
 $routesJson = & node $seoScript --routes-json
@@ -38,7 +39,7 @@ if ($urls.Count -ne $routes.Count -or $missingUrls.Count -ne 0 -or $extraUrls.Co
 if (($urls | Sort-Object -Unique).Count -ne $urls.Count) { throw 'Sitemap contains duplicate URLs' }
 
 $legacyRedirects = Get-Content -LiteralPath $legacyRedirectsPath -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($legacyRedirects.Count -ne 18) { throw "Unexpected legacy redirect count: $($legacyRedirects.Count)" }
+if ($legacyRedirects.Count -ne 33) { throw "Unexpected legacy redirect count: $($legacyRedirects.Count)" }
 if ((@($legacyRedirects.oldPath | Sort-Object -Unique)).Count -ne $legacyRedirects.Count) {
     throw 'Legacy redirect source paths are not unique'
 }
@@ -61,6 +62,33 @@ foreach ($redirect in $legacyRedirects) {
     $nginxRule = "rewrite ^$nginxPattern`$ $newPath permanent;"
     if (-not $apache.Contains($apacheRule)) { throw "Apache legacy redirect is absent: $oldPath" }
     if (-not $nginx.Contains($nginxRule)) { throw "Nginx legacy redirect is absent: $oldPath" }
+}
+
+$legacyPatternRedirects = Get-Content -LiteralPath $legacyPatternRedirectsPath -Raw -Encoding UTF8 | ConvertFrom-Json
+if ($legacyPatternRedirects.Count -ne 31) { throw "Unexpected legacy pattern redirect count: $($legacyPatternRedirects.Count)" }
+if ((@($legacyPatternRedirects.name | Sort-Object -Unique)).Count -ne $legacyPatternRedirects.Count) {
+    throw 'Legacy pattern redirect names are not unique'
+}
+foreach ($redirect in $legacyPatternRedirects) {
+    $name = [string]$redirect.name
+    $pattern = [string]$redirect.pattern
+    $newPath = [string]$redirect.newPath
+    if (-not $name -or -not $pattern -or -not $newPath.StartsWith('/')) {
+        throw "Invalid legacy pattern redirect: $name"
+    }
+    try { $compiledPattern = [regex]::new("^$pattern`$") } catch { throw "Invalid legacy redirect regex ($name): $pattern" }
+    $apacheRule = "RewriteRule ^$pattern`$ $newPath [R=301,L,NE]"
+    $nginxRule = "rewrite ^/$pattern`$ $newPath permanent;"
+    if (-not $apache.Contains($apacheRule)) { throw "Apache legacy pattern redirect is absent: $name" }
+    if (-not $nginx.Contains($nginxRule)) { throw "Nginx legacy pattern redirect is absent: $name" }
+    $samples = @($redirect.samples)
+    if ($samples.Count -eq 0) { throw "Legacy pattern redirect has no samples: $name" }
+    foreach ($sample in $samples) {
+        $samplePath = [string]$sample
+        if (-not $samplePath.StartsWith('/') -or -not $compiledPattern.IsMatch($samplePath.TrimStart('/'))) {
+            throw "Legacy redirect sample does not match ($name): $samplePath"
+        }
+    }
 }
 
 if (-not (Test-Path -LiteralPath $dist -PathType Container)) { throw 'frontend/dist is absent; run npm run build first' }
@@ -155,6 +183,21 @@ if ($nginx.Contains('try_files $uri $uri/ /index.html')) { throw 'Legacy SPA sof
 if ($nginx.Contains('try_files $uri/index.html =404;')) { throw 'Legacy no-slash route serving is still present' }
 if ([regex]::IsMatch($nginx, '(?s)location\s*=\s*/products/\s*\{\s*return\s+301\s+/products;\s*\}')) {
     throw 'Legacy trailing-slash removal redirect is still present'
+}
+
+$homeIndex = Get-Content -LiteralPath (Join-Path $dist 'index.html') -Raw -Encoding UTF8
+$homeJsonMatch = [regex]::Match($homeIndex, '<script id="rik-structured-data" type="application/ld\+json">(?<value>[\s\S]*?)</script>')
+if (-not $homeJsonMatch.Success) { throw 'Homepage JSON-LD is absent' }
+$homeJson = $homeJsonMatch.Groups['value'].Value | ConvertFrom-Json
+$homeOrganization = $homeJson | Where-Object { $_.'@type' -eq 'Organization' } | Select-Object -First 1
+if (-not $homeOrganization) { throw 'Homepage Organization entity is absent' }
+if ($homeOrganization.taxID -ne '9718157854') { throw 'Homepage Organization taxID is absent' }
+if ($homeOrganization.identifier.value -ne '1207700208682') { throw 'Homepage Organization registration id is absent' }
+if (-not $homeOrganization.legalName -or @($homeOrganization.alternateName).Count -lt 4) {
+    throw 'Homepage Organization legal or alternate names are incomplete'
+}
+if ($homeOrganization.address.postalCode -ne '119517' -or $homeOrganization.address.addressCountry -ne 'RU') {
+    throw 'Homepage Organization address is incomplete'
 }
 if (-not [regex]::IsMatch($nginx, '(?s)location\s*=\s*/product/ventilyatorrrry-kryshnye-krv-v\s*\{\s*return\s+301\s+/product/ventilyatory-kryshnye-krv-v/;\s*\}')) {
     throw 'Legacy product redirect must target the trailing-slash canonical URL'
