@@ -38,6 +38,13 @@ def env_float(name: str, default: float) -> float:
         return default
 
 
+def env_bool(name: str, default: bool) -> bool:
+    configured = os.getenv(name)
+    if configured is None:
+        return default
+    return configured.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def env_csv(name: str, default: str = "") -> tuple[str, ...]:
     configured = os.getenv(name, "").strip()
     source = configured or default
@@ -79,6 +86,7 @@ TRUSTED_PROXY_IPS = env_csv("TRUSTED_PROXY_IPS", "127.0.0.1,::1")
 CHAT_SESSION_RETENTION_SECONDS = env_int("CHAT_SESSION_RETENTION_SECONDS", 7 * 24 * 60 * 60)
 CHAT_MAX_SESSIONS = env_int("CHAT_MAX_SESSIONS", 5000)
 CHAT_FALLBACK_MESSAGE = resolve_chat_fallback_message(os.getenv("CHAT_FALLBACK_MESSAGE"))
+CHAT_FORCE_LOCAL = env_bool("CHAT_FORCE_LOCAL", False)
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")

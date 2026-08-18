@@ -11,6 +11,53 @@ function rik_chat_provider_fallback(): string
     return $configured;
 }
 
+function rik_local_knowledge_answer(string $message): string
+{
+    $normalized = rik_normalize_text($message);
+
+    if (rik_matches_any($normalized, ['контакт', 'телефон', 'почт', 'email', 'e-mail', 'связаться', 'адрес'])) {
+        return 'Связаться с РИК можно по телефону +7 (495) 104-37-79 или по e-mail zakaz@rik-vent.ru. Адрес и схема проезда есть на странице [Контакты](/contacts).';
+    }
+    if (rik_matches_any($normalized, ['сертификат', 'деклараци', 'документ', 'техническ', 'техлист', 'паспорт'])) {
+        return 'Сертификаты и техническая документация собраны в разделе [Сертификаты](/certificates). Технические листы конкретных моделей также доступны на страницах оборудования в [каталоге](/products).';
+    }
+    if (rik_matches_any($normalized, ['rik-m', 'rik-s', 'центральн', 'кондиционер', 'приточн', 'установк'])) {
+        return 'РИК выпускает центральные вентиляционные установки RIK-M и RIK-S — модульные приточные и приточно-вытяжные решения с секциями обработки воздуха. [Открыть раздел центральных установок](/product/centralnye-ustanovki). Для подбора можно [скачать опросный лист](/downloads/oprosny-list-centralny-konditsioner.xlsx).';
+    }
+    if (rik_matches_any($normalized, ['вентилятор', 'krv', 'krv-v', 'krv-du', 'rop', 'rop-k', 'rr', 'wrn', 'vr'])) {
+        return 'В линейке РИК есть крышные KRV и KRV-V, радиальные RR, осевые ROP и ROP-K, вентиляторы дымоудаления KRV-DU, а также круглые и прямоугольные канальные модели. Смотрите раздел [Вентиляторы](/products#fans). Для подбора доступен [опросный лист на вентилятор](/downloads/oprosny-list-ventilyator.xlsx).';
+    }
+    if (rik_matches_any($normalized, ['клапан', 'кид', 'кидм', 'кгв', 'рик-1', 'рик-2', 'рик-3', 'огнезадерж', 'противопожар'])) {
+        return 'РИК производит противопожарные клапаны РИК-1, РИК-2 и РИК-3, клапаны избыточного давления КИД/КИДм, герметические клапаны КГВ, а также обратные клапаны и регулирующие заслонки. Модели и документы доступны в [каталоге продукции](/products).';
+    }
+    if (rik_matches_any($normalized, ['канальн', 'нагревател', 'охладител', 'фильтр', 'шумоглуш', 'рекуператор', 'заслонк'])) {
+        return 'Канальное оборудование РИК включает вентиляторы, водяные и электрические нагреватели, охладители, фильтры, шумоглушители, рекуператоры, обратные клапаны и заслонки круглого и прямоугольного сечения. [Открыть каталог](/products).';
+    }
+    if (rik_matches_any($normalized, ['привет', 'здравств', 'добрый день', 'добрый вечер', 'доброе утро'])) {
+        return 'Здравствуйте! Я помогу с продукцией РИК, документацией и подготовкой данных для расчёта. Напишите тип оборудования или маркировку, которая вас интересует.';
+    }
+    if (rik_matches_any($normalized, ['спасибо', 'благодар'])) {
+        return 'Пожалуйста! Если понадобится подобрать оборудование или найти документ, напишите маркировку или параметры задачи.';
+    }
+    if (rik_matches_any($normalized, ['что производ', 'продукц', 'оборудован', 'каталог', 'что есть', 'ассортимент'])) {
+        return 'РИК производит вентиляционное оборудование: центральные установки RIK-M/RIK-S, вентиляторы, круглое и прямоугольное канальное оборудование, противопожарные и специальные клапаны, воздуховоды, автоматику, воздушные завесы и оборудование холодоснабжения. Все группы собраны в [каталоге продукции](/products).';
+    }
+
+    return 'Уточните, пожалуйста, тип оборудования или маркировку — например RIK-M, KRV, RR, КИДм или канальное оборудование. Я подскажу назначение и найду нужную страницу или документ. Все группы доступны в [каталоге продукции](/products).';
+}
+
+/** @param list<array{role:string,content:string}> $messages @return array{0:bool,1:string,2:string} */
+function rik_complete_chat_answer(string $message, array $messages): array
+{
+    if (!rik_config_bool('CHAT_FORCE_LOCAL', false)) {
+        [$ok, $answer, $model] = rik_openrouter_complete($messages);
+        if ($ok && $model !== null) {
+            return [true, $answer, $model];
+        }
+    }
+    return [true, rik_local_knowledge_answer($message), 'local:knowledge'];
+}
+
 /** @param array<string, mixed> $payload */
 function rik_chat_result(array $payload): array
 {
@@ -41,11 +88,15 @@ function rik_chat_result(array $payload): array
         return ['answer' => $direct, 'sessionId' => $sessionId, 'model' => 'rule:questionnaire', 'sources' => []];
     }
 
-    [$knowledge, $sources] = rik_retrieve_knowledge($message);
+    $forceLocal = rik_config_bool('CHAT_FORCE_LOCAL', false);
+    [$knowledge, $sources] = $forceLocal ? ['', []] : rik_retrieve_knowledge($message);
     $messages = rik_build_messages($message, $history, isset($payload['pageUrl']) ? (string) $payload['pageUrl'] : '', $knowledge);
 
     rik_chat_append($sessionId, 'user', $message);
-    [$ok, $answer, $model] = rik_openrouter_complete($messages);
+    [$ok, $answer, $model] = rik_complete_chat_answer($message, $messages);
+    if ($model === 'local:knowledge') {
+        $sources = [];
+    }
     if ($ok) {
         rik_chat_append($sessionId, 'assistant', $answer);
         rik_increment_answer_stats($model ?? 'unknown');
