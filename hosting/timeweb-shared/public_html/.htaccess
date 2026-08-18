@@ -3,6 +3,28 @@ ErrorDocument 404 /404.html
 
 RewriteEngine On
 
+# Preserve search equity from the pre-2026 Bitrix URL structure.
+# Directory rules accept both the historical trailing-slash URL and its
+# no-slash variant, but always land on the current canonical URL.
+RewriteRule ^catalog/tsentralnye_karkasnye_konditsionery_rik_m_i_rik_s/?$ /product/centralnye-ustanovki/ [R=301,L,NE]
+RewriteRule ^catalog/klapana_protivopozharnye_kanalnye_/?$ /product/protivopozharnye-klapany/ [R=301,L,NE]
+RewriteRule ^catalog/sektsii_plastinchatykh_rekuperatorov_rp/?$ /product/centralnye-ustanovki/plastinchatye-rekuperatory/ [R=301,L,NE]
+RewriteRule ^catalog/kanalnoe_oborudovanie/?$ /product/kanalnoe-oborudovanie/ [R=301,L,NE]
+RewriteRule ^company/blog/printsip_raboty_tsentralnykh_karkasno_panelnykh_konditsionerov/?$ /product/centralnye-ustanovki/ [R=301,L,NE]
+RewriteRule ^catalog/klapana/?$ /product/specialnye-klapany/ [R=301,L,NE]
+RewriteRule ^upload/medialibrary/0bd/ayn0ko0zc8e8gc38960kbcyhwb816coe\.pdf$ /product/centralnye-ustanovki/ [R=301,L,NE]
+RewriteRule ^catalog/ventilyatory_kanalnye_wr_i_wrn/?$ /product/ventilyator-wr/ [R=301,L,NE]
+RewriteRule ^catalog/zatvory/?$ /product/ventilyatsionnye-zatvory/ [R=301,L,NE]
+RewriteRule ^catalog/kanalnoe_krugloe_oborudovanie/?$ /product/kanalnoe-krugloe/ [R=301,L,NE]
+RewriteRule ^catalog/plastinchatye_rekuperatory_rec/?$ /product/plastinchatyj-rekuperator-rec/ [R=301,L,NE]
+RewriteRule ^catalog/reguliruyushchie_zaslonki_s/?$ /product/zaslonka-reguliruyushchaya-rkz/ [R=301,L,NE]
+RewriteRule ^catalog/elektricheskie_vozdukhonagrevateli_euuu/?$ /product/elektricheskie-vozduhonagrevateli-re/ [R=301,L,NE]
+RewriteRule ^catalog/nerzhaveyushchaya_stal_ot_0_5_do_1_0/?$ /product/vozduhovody-i-fasonnye-izdeliya/ [R=301,L,NE]
+RewriteRule ^catalog/ventilyatory_kanalnye_/?$ /product/kanalnoe-oborudovanie/ [R=301,L,NE]
+RewriteRule ^catalog/zonty_kryshnyy/?$ /product/vozduhovody-i-fasonnye-izdeliya/ [R=301,L,NE]
+RewriteRule ^company/blog/printsip_raboty_vozdushnykh_zaslonok_ruchnye_mekhanicheskie_i_avtomaticheskie/?$ /product/specialnye-klapany/ [R=301,L,NE]
+RewriteRule ^upload/medialibrary/3eb/5tftc56ji3vyx6gj8q51x7ckr0lv6224\.pdf$ /product/protivopozharnye-klapany/ [R=301,L,NE]
+
 # Exported routes are directories; redirect directly to their final HTTPS URL.
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteCond %{REQUEST_URI} !/$

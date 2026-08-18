@@ -106,6 +106,12 @@ jobs:
           done
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/product/ventilyatorrrry-kryshnye-krv-v)" = "301"
           test "$(curl -sS -o /dev/null -w '%{redirect_url}' http://127.0.0.1:18080/product/ventilyatorrrry-kryshnye-krv-v)" = "http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v/"
+          while IFS=$'\t' read -r old_path new_path; do
+            for variant in "$old_path" "${old_path%/}"; do
+              test "$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080${variant}")" = "301"
+              test "$(curl -sS -o /dev/null -w '%{redirect_url}' "http://127.0.0.1:18080${variant}")" = "http://127.0.0.1:18080${new_path}"
+            done
+          done < <(node -e 'const redirects=require("./frontend/scripts/legacy-redirects.json"); for (const item of redirects) console.log(`${item.oldPath}\t${item.newPath}`)')
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/products)" = "301"
           test "$(curl -sS -o /dev/null -w '%{redirect_url}' http://127.0.0.1:18080/products)" = "http://127.0.0.1:18080/products/"
           curl -fsS http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v/ | grep -q '<link rel="canonical" href="https://rik-vent.ru/product/ventilyatory-kryshnye-krv-v/"'
