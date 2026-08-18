@@ -95,6 +95,7 @@
 .crumbs a { color: var(--brand); }
 .block { padding: 24px; border-top: 1px solid var(--line); }
 .block h2 { color: var(--brand-ink); }
+.block > h2:first-child { margin-top: 0; }
 .adv { columns: 2; gap: 24px; }
 .table-wrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; }
@@ -113,6 +114,8 @@ th { background: var(--surface); color: var(--brand-ink); }
   .product-grid { grid-template-columns: minmax(0, 1fr); }
   .product-media, .product-head { min-width: 0; }
   .adv { columns: 1; }
+  .product-content { padding-inline: 0; }
+  .product-content .table-wrap { max-width: 100%; scrollbar-width: thin; }
 }
 
 /* Форма заявки */
