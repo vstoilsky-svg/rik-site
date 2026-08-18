@@ -1,0 +1,188 @@
+[
+  {
+    "name": "Central plate recuperator models",
+    "pattern": "catalog/sektsii_plastinchatykh_rekuperatorov_rp/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/plastinchatye-rekuperatory/",
+    "samples": ["/catalog/sektsii_plastinchatykh_rekuperatorov_rp/2966/"]
+  },
+  {
+    "name": "Central electric heater models",
+    "pattern": "catalog/elektricheskie_vozdukhonagrevateli_euuu/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/elektricheskie-nagrevateli/",
+    "samples": ["/catalog/elektricheskie_vozdukhonagrevateli_euuu/3354/"]
+  },
+  {
+    "name": "Central freon cooler models",
+    "pattern": "catalog/sektsiya_isparitelya_freonovogo_cxy/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/freonovye-ohladiteli/",
+    "samples": ["/catalog/sektsiya_isparitelya_freonovogo_cxy/3385/"]
+  },
+  {
+    "name": "Central filter section models",
+    "pattern": "catalog/filtr_f[123](?:/[0-9]+)?/?",
+    "newPath": "/product/centralnye-ustanovki/sekcii-filtracii/",
+    "samples": ["/catalog/filtr_f3/", "/catalog/filtr_f1/2838/"]
+  },
+  {
+    "name": "Central water heater models",
+    "pattern": "catalog/vodyanye_vozdukhonagrevateli_hx/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/vodyanye-nagrevateli/",
+    "samples": ["/catalog/vodyanye_vozdukhonagrevateli_hx/2963/"]
+  },
+  {
+    "name": "Central fan section models",
+    "pattern": "catalog/sektsii_ventilyatorov_/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/ventilyatornye-sekcii/",
+    "samples": ["/catalog/sektsii_ventilyatorov_/3287/"]
+  },
+  {
+    "name": "Central mixing section models",
+    "pattern": "catalog/sektsii_smesheniya_vozdukha_r_pu_pd_pl_pr_i_promezhutochnye_sektsii_u_/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/sekcii-smesheniya/",
+    "samples": ["/catalog/sektsii_smesheniya_vozdukha_r_pu_pd_pl_pr_i_promezhutochnye_sektsii_u_/2824/"]
+  },
+  {
+    "name": "Central water cooler models",
+    "pattern": "catalog/sektsii_vodyanogo_vozdukhookhladitelya_wxx/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/vodyanye-ohladiteli/",
+    "samples": ["/catalog/sektsii_vodyanogo_vozdukhookhladitelya_wxx/3215/"]
+  },
+  {
+    "name": "Central silencer models",
+    "pattern": "catalog/sektsii_shumoglusheniya_y1_y2_y3/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/shumoglushiteli/",
+    "samples": ["/catalog/sektsii_shumoglusheniya_y1_y2_y3/2902/"]
+  },
+  {
+    "name": "Central humidifier models",
+    "pattern": "catalog/sektsii_sotovogo_uvlazhnitelya_/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/sotovye-uvlazhniteli/",
+    "samples": ["/catalog/sektsii_sotovogo_uvlazhnitelya_/3153/"]
+  },
+  {
+    "name": "Central rotary recuperator models",
+    "pattern": "catalog/sektsii_rotornykh_regeneratorov_rr/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/rotornye-regeneratory/",
+    "samples": ["/catalog/sektsii_rotornykh_regeneratorov_rr/2927/"]
+  },
+  {
+    "name": "Central reserve fan models",
+    "pattern": "catalog/rezervnaya_sistema_ventilyatsii/[0-9]+/?",
+    "newPath": "/product/centralnye-ustanovki/ventilyatornye-s-rezervom/",
+    "samples": ["/catalog/rezervnaya_sistema_ventilyatsii/3173/"]
+  },
+  {
+    "name": "KRV-V roof fan models",
+    "pattern": "catalog/ventilyatory_kryshnye_obshchepromyshlennye_krv_v/[0-9]+/?",
+    "newPath": "/product/ventilyatory-kryshnye-krv-v/",
+    "samples": ["/catalog/ventilyatory_kryshnye_obshchepromyshlennye_krv_v/2660/"]
+  },
+  {
+    "name": "KRV roof fan models",
+    "pattern": "catalog/kryshnye_ventilyatory_krv/[0-9]+/?",
+    "newPath": "/product/ventilyatory-kryshnye-krv/",
+    "samples": ["/catalog/kryshnye_ventilyatory_krv/2703/"]
+  },
+  {
+    "name": "Radial fan models",
+    "pattern": "catalog/ventilyatory_radialnye_obshchepromyshlennye_rr/[0-9]+/?",
+    "newPath": "/product/ventilyatory-radialnye-rr/",
+    "samples": ["/catalog/ventilyatory_radialnye_obshchepromyshlennye_rr/2592/"]
+  },
+  {
+    "name": "Round silencer models",
+    "pattern": "catalog/shumoglushiteli_kruglye/[0-9]+/?",
+    "newPath": "/product/shumoglushitel-rq-kruglyj/",
+    "samples": ["/catalog/shumoglushiteli_kruglye/2262/"]
+  },
+  {
+    "name": "Hermetic valve models",
+    "pattern": "catalog/klapana_germeticheskie_ventilyatsionnye/[0-9]+/?",
+    "newPath": "/product/germeticheskie-klapany/",
+    "samples": ["/catalog/klapana_germeticheskie_ventilyatsionnye/2218/"]
+  },
+  {
+    "name": "KID valve models",
+    "pattern": "catalog/klapan_izbytochnogo_davleniya_kid/[0-9]+/?",
+    "newPath": "/product/klapany-izbytochnogo-davleniya-kid/",
+    "samples": ["/catalog/klapan_izbytochnogo_davleniya_kid/2232/"]
+  },
+  {
+    "name": "Cassette filter legacy pages",
+    "pattern": "catalog/filtry_vozdushnye_kassetnye_(?:/[0-9]+)?/?",
+    "newPath": "/product/filtry-vozdushnye-kassetnye-rf/",
+    "samples": ["/catalog/filtry_vozdushnye_kassetnye_/", "/catalog/filtry_vozdushnye_kassetnye_/2177/"]
+  },
+  {
+    "name": "Round electric heater models",
+    "pattern": "catalog/elektricheskie_vozdukhonagrevateli_/[0-9]+/?",
+    "newPath": "/product/elektricheskie-vozduhonagrevateli-re-kruglye/",
+    "samples": ["/catalog/elektricheskie_vozdukhonagrevateli_/2206/"]
+  },
+  {
+    "name": "Round dampers category",
+    "pattern": "catalog/zaslonki_kruglye/?",
+    "newPath": "/product/kanalnoe-krugloe/",
+    "samples": ["/catalog/zaslonki_kruglye/"]
+  },
+  {
+    "name": "Round water heaters category",
+    "pattern": "catalog/vodyanye_vozdukhonagrevateli_/?",
+    "newPath": "/product/vodyanye-vozduhonagrevateli-rw-kruglye/",
+    "samples": ["/catalog/vodyanye_vozdukhonagrevateli_/"]
+  },
+  {
+    "name": "Round reverse valves category",
+    "pattern": "catalog/obratnye_klapany_ro/?",
+    "newPath": "/product/klapan-obratnyj-ro-kruglyj/",
+    "samples": ["/catalog/obratnye_klapany_ro/"]
+  },
+  {
+    "name": "Legacy fancoil catalog",
+    "pattern": "catalog/fankoyly(?:/.*)?/?",
+    "newPath": "/products/",
+    "samples": ["/catalog/fankoyly/fankoyl_kanalnyy/fankoyl_kanalnyy_gorizontalnyy/"]
+  },
+  {
+    "name": "Remaining legacy catalog",
+    "pattern": "catalog(?:/.*)?/?",
+    "newPath": "/products/",
+    "samples": ["/catalog/unknown-legacy-card/123/"]
+  },
+  {
+    "name": "Remaining legacy PDF library",
+    "pattern": "upload/medialibrary/.*\\.pdf",
+    "newPath": "/tehlisty/",
+    "samples": ["/upload/medialibrary/a07/uiup91f3x2s0qa4v7bkgbuxh6m3ix6mf.pdf"]
+  },
+  {
+    "name": "Remaining legacy company blog",
+    "pattern": "company/blog(?:/.*)?/?",
+    "newPath": "/news/",
+    "samples": ["/company/blog/234/"]
+  },
+  {
+    "name": "Remaining legacy company pages",
+    "pattern": "company(?:/.*)?/?",
+    "newPath": "/about/",
+    "samples": ["/company/old-section/"]
+  },
+  {
+    "name": "Remaining delivery and guarantee pages",
+    "pattern": "dostavka-oplata-garantii(?:/.*)?/?",
+    "newPath": "/contacts/",
+    "samples": ["/dostavka-oplata-garantii/old/"]
+  },
+  {
+    "name": "Remaining sale pages",
+    "pattern": "sale(?:/.*)?/?",
+    "newPath": "/news/",
+    "samples": ["/sale/old/"]
+  },
+  {
+    "name": "Remaining legacy help pages",
+    "pattern": "help(?:/.*)?/?",
+    "newPath": "/contacts/",
+    "samples": ["/help/old/"]
+  }
+]

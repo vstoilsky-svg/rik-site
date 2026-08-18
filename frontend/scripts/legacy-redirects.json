@@ -70,5 +70,65 @@
   {
     "oldPath": "/upload/medialibrary/3eb/5tftc56ji3vyx6gj8q51x7ckr0lv6224.pdf",
     "newPath": "/product/protivopozharnye-klapany/"
+  },
+  {
+    "oldPath": "/catalog/",
+    "newPath": "/products/"
+  },
+  {
+    "oldPath": "/catalog/kanalnoe_pryamougolnoe_oborudovanie/",
+    "newPath": "/product/kanalnoe-pryamougolnoe/"
+  },
+  {
+    "oldPath": "/company/",
+    "newPath": "/about/"
+  },
+  {
+    "oldPath": "/company/articles/",
+    "newPath": "/projects/"
+  },
+  {
+    "oldPath": "/company/rekvizity/",
+    "newPath": "/requisites/"
+  },
+  {
+    "oldPath": "/company/jobs/",
+    "newPath": "/careers/"
+  },
+  {
+    "oldPath": "/dostavka-oplata-garantii/",
+    "newPath": "/about/"
+  },
+  {
+    "oldPath": "/dostavka-oplata-garantii/dostavka/",
+    "newPath": "/contacts/"
+  },
+  {
+    "oldPath": "/dostavka-oplata-garantii/garantii/",
+    "newPath": "/about/"
+  },
+  {
+    "oldPath": "/dostavka-oplata-garantii/oplata/",
+    "newPath": "/contacts/"
+  },
+  {
+    "oldPath": "/izgotovlenie-na-zakaz/",
+    "newPath": "/production/"
+  },
+  {
+    "oldPath": "/sale/sad/",
+    "newPath": "/news/"
+  },
+  {
+    "oldPath": "/help/delivery/",
+    "newPath": "/contacts/"
+  },
+  {
+    "oldPath": "/kak-oformit-zakaz/",
+    "newPath": "/request/"
+  },
+  {
+    "oldPath": "/legacy-cookies-agreement.php",
+    "newPath": "/privacy/"
   }
 ]

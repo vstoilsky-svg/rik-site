@@ -6,8 +6,8 @@ export default function Contacts() {
     <>
       <PageHero
         crumbs={[{ label: "Контакты" }]}
-        title="Контакты"
-        lead="Отдел продаж РИК — подбор оборудования, расчёты и поставка по вашему проекту."
+        title="Контакты ООО «РИК»"
+        lead="Отдел продаж ООО «РИК» — подбор оборудования, расчёты и поставка по вашему проекту."
       />
       <div className="container section-body">
       <h2 className="sr-only" id="contacts-info-section-title">Контактная информация</h2>

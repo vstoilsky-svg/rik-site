@@ -4,7 +4,7 @@ import { hasGenericResponsiveSource } from "../data/responsive-images";
 
 export const SITE_ORIGIN = "https://rik-vent.ru";
 export const DEFAULT_DESCRIPTION =
-  "РИК — российский производитель вентиляционного оборудования полного цикла: центральные установки, вентиляторы, клапаны, воздуховоды и автоматика.";
+  "ООО «РИК» (Русская инжиниринговая компания) — российский производитель вентиляционного оборудования полного цикла в Москве: центральные установки, вентиляторы, клапаны, воздуховоды и автоматика.";
 
 export type SeoRouteKind = "static" | "product" | "section";
 
@@ -23,7 +23,7 @@ export type SeoRoute = {
 type StaticSeo = { title: string; description: string; image?: string };
 
 export const STATIC_SEO: Record<string, StaticSeo> = {
-  "/": { title: "РИК — вентиляционное оборудование полного цикла", description: DEFAULT_DESCRIPTION, image: "/photo/home-hero-light.webp" },
+  "/": { title: "ООО «РИК» — завод вентиляционного оборудования", description: DEFAULT_DESCRIPTION, image: "/photo/home-hero-light.webp" },
   "/products": { title: "Продукция РИК — вентиляционное оборудование", description: "Каталог вентиляционного оборудования РИК: центральные установки, вентиляторы, клапаны, воздуховоды, автоматика и комплектующие.", image: "/photo/catalog/central-units-combined.png" },
   "/production": { title: "Производство вентиляционного оборудования — РИК", description: "Производственные возможности РИК: полный цикл изготовления вентиляционного оборудования и контроль качества.", image: "/photo/home-hero-light.webp" },
   "/projects": { title: "Проекты вентиляции и оснащения объектов — РИК", description: "Реализованные проекты с вентиляционным оборудованием РИК." },
@@ -32,15 +32,15 @@ export const STATIC_SEO: Record<string, StaticSeo> = {
   "/questionnaires": { title: "Опросные листы на оборудование — РИК", description: "Опросные листы для подбора и расчёта вентиляционного оборудования РИК." },
   "/bim": { title: "BIM-библиотека оборудования — РИК", description: "BIM-модели вентиляционного оборудования РИК для проектирования." },
   "/tehlisty": { title: "Технические листы оборудования — РИК", description: "Технические листы и характеристики вентиляционного оборудования РИК." },
-  "/requisites": { title: "Реквизиты компании РИК", description: "Реквизиты производителя вентиляционного оборудования РИК." },
+  "/requisites": { title: "Реквизиты ООО «РИК» — ИНН 9718157854", description: "Официальные реквизиты ООО «РИК» — Русской инжиниринговой компании: ИНН 9718157854, ОГРН 1207700208682, адрес в Москве." },
   "/privacy": { title: "Политика конфиденциальности — РИК", description: "Политика обработки персональных данных на сайте РИК." },
   "/news": { title: "Новости производства и компании — РИК", description: "Новости производства и вентиляционного оборудования РИК." },
   "/careers": { title: "Работа и вакансии в компании РИК", description: "Работа и вакансии в компании РИК." },
   "/recommendations": { title: "Рекомендации и отзывы о компании РИК", description: "Рекомендательные письма и отзывы о работе компании РИК." },
   "/contractors": { title: "Монтажным организациям — РИК", description: "Материалы и сотрудничество для монтажных организаций." },
   "/services": { title: "Инженерные услуги компании РИК", description: "Подбор, расчёт, проектирование и сопровождение вентиляционного оборудования РИК." },
-  "/about": { title: "О производственной компании РИК", description: "РИК — российский производитель вентиляционного оборудования полного цикла." },
-  "/contacts": { title: "Контакты производственной компании РИК", description: "Контакты компании РИК: отдел продаж, производство и техническая поддержка." },
+  "/about": { title: "ООО «РИК» — Русская инжиниринговая компания", description: "ООО «РИК» — Русская инжиниринговая компания, российский производитель вентиляционного оборудования полного цикла в Москве." },
+  "/contacts": { title: "Контакты ООО «РИК» — Москва", description: "Контакты ООО «РИК» — Русской инжиниринговой компании: отдел продаж, производство и техническая поддержка в Москве." },
   "/request": { title: "Запросить расчёт оборудования — РИК", description: "Отправьте заявку на подбор и расчёт вентиляционного оборудования РИК." },
 };
 
@@ -175,11 +175,26 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      name: "РИК",
+      name: "ООО «РИК»",
+      legalName: "Общество с ограниченной ответственностью «Русская инжиниринговая компания»",
+      alternateName: ["РИК", "Русская инжиниринговая компания", "RIK", "RIK Vent", "rik-vent.ru"],
       url: SITE_ORIGIN,
       logo: `${SITE_ORIGIN}/logo.png`,
       telephone: "+7 (495) 104-37-79",
       email: "zakaz@rik-vent.ru",
+      taxID: "9718157854",
+      identifier: {
+        "@type": "PropertyValue",
+        propertyID: "ОГРН",
+        value: "1207700208682",
+      },
+      address: {
+        "@type": "PostalAddress",
+        postalCode: "119517",
+        addressCountry: "RU",
+        addressLocality: "Москва",
+        streetAddress: "Нежинская ул., д. 8, к. 2, этаж цоколь, помещ. 6а",
+      },
     },
     {
       "@context": "https://schema.org",
@@ -188,7 +203,12 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
       description: route.description,
       url,
       primaryImageOfPage: image,
-      isPartOf: { "@type": "WebSite", name: "РИК", url: SITE_ORIGIN },
+      isPartOf: {
+        "@type": "WebSite",
+        name: "ООО «РИК»",
+        alternateName: ["РИК", "RIK Vent", "rik-vent.ru"],
+        url: SITE_ORIGIN,
+      },
     },
   ];
   if (route.path !== "/") {

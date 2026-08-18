@@ -34,7 +34,7 @@ export default function Home() {
     <>
       <section className="hero">
         <div className="container hero-inner">
-          <h1 className="hero-title">Производство вентиляционного оборудования полного цикла</h1>
+          <h1 className="hero-title">ООО «РИК» — производство вентиляционного оборудования полного цикла</h1>
           <p className="hero-sub">Проектирование • Производство • Поставка • Монтаж • ПНР • Сервис</p>
           <p className="hero-lead">Надёжные инженерные решения для промышленных и коммерческих объектов любой сложности.</p>
           <div className="hero-actions">
