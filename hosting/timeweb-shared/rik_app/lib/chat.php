@@ -1,6 +1,16 @@
 <?php
 declare(strict_types=1);
 
+function rik_chat_provider_fallback(): string
+{
+    $legacy = 'Сейчас я немного перегружен. Попробуйте написать чуть позже.';
+    $configured = trim(rik_config('CHAT_FALLBACK_MESSAGE', ''));
+    if ($configured === '' || $configured === $legacy) {
+        return 'Чат-ассистент временно недоступен: внешний ИИ-провайдер отклонил запрос с сервера сайта. Попробуйте позже или отправьте заявку через «Запросить расчёт».';
+    }
+    return $configured;
+}
+
 /** @param array<string, mixed> $payload */
 function rik_chat_result(array $payload): array
 {
@@ -14,7 +24,7 @@ function rik_chat_result(array $payload): array
 
     if (!rik_rate_limit('chat:' . rik_client_ip(), rik_config_int('RATE_LIMIT_WINDOW_SECONDS', 60), rik_config_int('RATE_LIMIT_MAX_REQUESTS', 20))) {
         return [
-            'answer' => rik_config('CHAT_FALLBACK_MESSAGE', 'Сейчас я немного перегружен. Попробуйте написать чуть позже.'),
+            'answer' => rik_config('CHAT_RATE_LIMIT_MESSAGE', 'Слишком много сообщений за короткое время. Подождите минуту и попробуйте снова.'),
             'sessionId' => $sessionId,
             'model' => null,
             'sources' => [],
@@ -285,7 +295,7 @@ function rik_openrouter_complete(array $messages): array
 {
     $apiKey = rik_config('OPENROUTER_API_KEY');
     $models = array_values(array_filter(array_map('trim', explode(',', rik_config('OPENROUTER_MODELS')))));
-    $fallback = rik_config('CHAT_FALLBACK_MESSAGE', 'Сейчас я немного перегружен. Попробуйте написать чуть позже.');
+    $fallback = rik_chat_provider_fallback();
     if ($apiKey === '' || $models === []) {
         return [false, $fallback, null];
     }

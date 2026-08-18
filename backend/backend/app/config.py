@@ -44,6 +44,20 @@ def env_csv(name: str, default: str = "") -> tuple[str, ...]:
     return tuple(value.strip() for value in source.split(",") if value.strip())
 
 
+LEGACY_CHAT_FALLBACK_MESSAGE = "Сейчас я немного перегружен. Попробуйте написать чуть позже."
+DEFAULT_CHAT_FALLBACK_MESSAGE = (
+    "Чат-ассистент временно недоступен: внешний ИИ-провайдер отклонил запрос с сервера сайта. "
+    "Попробуйте позже или отправьте заявку через «Запросить расчёт»."
+)
+
+
+def resolve_chat_fallback_message(configured: str | None) -> str:
+    message = (configured or "").strip()
+    if not message or message == LEGACY_CHAT_FALLBACK_MESSAGE:
+        return DEFAULT_CHAT_FALLBACK_MESSAGE
+    return message
+
+
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_MODELS = [
     model.strip()
@@ -64,10 +78,7 @@ RATE_LIMIT_MAX_BUCKETS = env_int("RATE_LIMIT_MAX_BUCKETS", 10000)
 TRUSTED_PROXY_IPS = env_csv("TRUSTED_PROXY_IPS", "127.0.0.1,::1")
 CHAT_SESSION_RETENTION_SECONDS = env_int("CHAT_SESSION_RETENTION_SECONDS", 7 * 24 * 60 * 60)
 CHAT_MAX_SESSIONS = env_int("CHAT_MAX_SESSIONS", 5000)
-CHAT_FALLBACK_MESSAGE = os.getenv(
-    "CHAT_FALLBACK_MESSAGE",
-    "Сейчас я немного перегружен. Попробуйте написать чуть позже.",
-)
+CHAT_FALLBACK_MESSAGE = resolve_chat_fallback_message(os.getenv("CHAT_FALLBACK_MESSAGE"))
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
