@@ -238,6 +238,7 @@ function rik_http_json(string $url, array $headers, array $payload, int $timeout
             CURLOPT_POSTFIELDS => $body,
             CURLOPT_HTTPHEADER => $headerLines,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CONNECTTIMEOUT => min(10, $timeout),
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,

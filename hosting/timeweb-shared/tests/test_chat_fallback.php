@@ -19,4 +19,26 @@ if (rik_chat_provider_fallback() !== 'Пользовательское сооб�
     exit(1);
 }
 
+$cases = [
+    'Что производит РИК?' => '/products',
+    'Какие есть вентиляторы?' => '/downloads/oprosny-list-ventilyator.xlsx',
+    'Где сертификаты?' => '/certificates',
+    'Как связаться?' => '+7 (495) 104-37-79',
+    'Расскажите про RIK-M' => '/product/centralnye-ustanovki',
+    'Какие есть противопожарные клапаны?' => 'РИК-3',
+];
+foreach ($cases as $question => $needle) {
+    if (!str_contains(rik_local_knowledge_answer($question), $needle)) {
+        fwrite(STDERR, "Local knowledge answer failed for: {$question}\n");
+        exit(1);
+    }
+}
+
+$GLOBALS['RIK_CONFIG'] = ['CHAT_FORCE_LOCAL' => 'true'];
+[$ok, $answer, $model] = rik_complete_chat_answer('Что производит РИК?', []);
+if (!$ok || $model !== 'local:knowledge' || !str_contains($answer, '/products')) {
+    fwrite(STDERR, "Forced local chat mode failed.\n");
+    exit(1);
+}
+
 echo "Timeweb chat fallback guard PASS.\n";

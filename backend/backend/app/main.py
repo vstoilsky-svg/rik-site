@@ -14,6 +14,7 @@ from starlette.datastructures import UploadFile
 from . import config
 from .chat_store import FileChatStore
 from .knowledge_base import KnowledgeBase
+from .local_assistant import LOCAL_KNOWLEDGE_MODEL, local_knowledge_answer
 from .models import ChatRequest, ChatResponse
 from .openrouter_client import OpenRouterClient
 from .prompt_builder import PromptBuilder
@@ -152,7 +153,10 @@ async def chat(payload: ChatRequest, request: Request) -> JSONResponse:
         response = ChatResponse(answer=direct_answer, sessionId=session_id, model="rule:questionnaire")
         return JSONResponse(response_to_dict(response))
 
-    rag_context, sources = await retrieve_rag_context(message)
+    if config.CHAT_FORCE_LOCAL:
+        rag_context, sources = "", []
+    else:
+        rag_context, sources = await retrieve_rag_context(message)
     messages = prompt_builder.build_messages(
         message,
         history,
@@ -161,13 +165,24 @@ async def chat(payload: ChatRequest, request: Request) -> JSONResponse:
     )
 
     chat_store.append(session_id, "user", message)
-    result = await openrouter.complete(messages)
+    if config.CHAT_FORCE_LOCAL:
+        answer = local_knowledge_answer(message)
+        model = LOCAL_KNOWLEDGE_MODEL
+        sources = []
+    else:
+        result = await openrouter.complete(messages)
+        if result.ok:
+            answer = result.answer
+            model = result.model
+        else:
+            answer = local_knowledge_answer(message)
+            model = LOCAL_KNOWLEDGE_MODEL
+            sources = []
 
-    if result.ok:
-        chat_store.append(session_id, "assistant", result.answer)
-        chat_store.increment_successful_answers(result.model)
+    chat_store.append(session_id, "assistant", answer)
+    chat_store.increment_successful_answers(model or LOCAL_KNOWLEDGE_MODEL)
 
-    response = ChatResponse(answer=result.answer, sessionId=session_id, model=result.model, sources=sources)
+    response = ChatResponse(answer=answer, sessionId=session_id, model=model, sources=sources)
     return JSONResponse(response_to_dict(response))
 
 
@@ -197,7 +212,10 @@ async def chat_stream(payload: ChatRequest, request: Request) -> StreamingRespon
             yield sse("done", {"sessionId": session_id, "model": "rule:questionnaire", "sources": []})
             return
 
-        rag_context, sources = await retrieve_rag_context(message)
+        if config.CHAT_FORCE_LOCAL:
+            rag_context, sources = "", []
+        else:
+            rag_context, sources = await retrieve_rag_context(message)
         messages = prompt_builder.build_messages(
             message,
             history,
@@ -209,17 +227,23 @@ async def chat_stream(payload: ChatRequest, request: Request) -> StreamingRespon
         full_answer = ""
         used_model: str | None = None
 
-        def set_model(model: str) -> None:
-            nonlocal used_model
-            used_model = model
+        if config.CHAT_FORCE_LOCAL:
+            full_answer = local_knowledge_answer(message)
+            used_model = LOCAL_KNOWLEDGE_MODEL
+            sources = []
+            yield sse("message", {"delta": full_answer})
+        else:
+            async for delta, model in openrouter.stream(messages):
+                if model:
+                    used_model = model
+                elif used_model is None:
+                    delta = local_knowledge_answer(message)
+                    used_model = LOCAL_KNOWLEDGE_MODEL
+                    sources = []
+                full_answer += delta
+                yield sse("message", {"delta": delta})
 
-        async for delta, model in openrouter.stream(messages, on_model=set_model):
-            if model:
-                used_model = model
-            full_answer += delta
-            yield sse("message", {"delta": delta})
-
-        if used_model and full_answer != config.CHAT_FALLBACK_MESSAGE:
+        if used_model and full_answer:
             chat_store.append(session_id, "assistant", full_answer)
             chat_store.increment_successful_answers(used_model)
 
