@@ -11,6 +11,7 @@ foreach ($name in @('robots.txt', 'sitemap.xml', 'llms.txt')) {
 }
 
 $seoScript = Join-Path $frontend 'scripts\seo-artifacts.mjs'
+$legacyRedirectsPath = Join-Path $frontend 'scripts\legacy-redirects.json'
 & node $seoScript --check
 if ($LASTEXITCODE -ne 0) { throw "SEO source check failed: $LASTEXITCODE" }
 $routesJson = & node $seoScript --routes-json
@@ -35,6 +36,32 @@ if ($urls.Count -ne $routes.Count -or $missingUrls.Count -ne 0 -or $extraUrls.Co
     throw "Sitemap parity failed: routes=$($routes.Count) urls=$($urls.Count) missing=$($missingUrls.Count) extra=$($extraUrls.Count)"
 }
 if (($urls | Sort-Object -Unique).Count -ne $urls.Count) { throw 'Sitemap contains duplicate URLs' }
+
+$legacyRedirects = Get-Content -LiteralPath $legacyRedirectsPath -Raw -Encoding UTF8 | ConvertFrom-Json
+if ($legacyRedirects.Count -ne 18) { throw "Unexpected legacy redirect count: $($legacyRedirects.Count)" }
+if ((@($legacyRedirects.oldPath | Sort-Object -Unique)).Count -ne $legacyRedirects.Count) {
+    throw 'Legacy redirect source paths are not unique'
+}
+$apache = Get-Content -LiteralPath (Join-Path $root 'hosting\timeweb-shared\public_html\.htaccess') -Raw -Encoding UTF8
+$nginx = Get-Content -LiteralPath (Join-Path $root 'docker\nginx.conf') -Raw -Encoding UTF8
+foreach ($redirect in $legacyRedirects) {
+    $oldPath = [string]$redirect.oldPath
+    $newPath = [string]$redirect.newPath
+    if (-not $oldPath.StartsWith('/') -or -not $newPath.StartsWith('/')) {
+        throw "Legacy redirect paths must be root-relative: $oldPath -> $newPath"
+    }
+    if ($oldPath.EndsWith('/')) {
+        $apachePattern = [regex]::Escape($oldPath.TrimStart('/').TrimEnd('/')) + '/?'
+        $nginxPattern = [regex]::Escape($oldPath.TrimEnd('/')) + '/?'
+    } else {
+        $apachePattern = [regex]::Escape($oldPath.TrimStart('/'))
+        $nginxPattern = [regex]::Escape($oldPath)
+    }
+    $apacheRule = "RewriteRule ^$apachePattern`$ $newPath [R=301,L,NE]"
+    $nginxRule = "rewrite ^$nginxPattern`$ $newPath permanent;"
+    if (-not $apache.Contains($apacheRule)) { throw "Apache legacy redirect is absent: $oldPath" }
+    if (-not $nginx.Contains($nginxRule)) { throw "Nginx legacy redirect is absent: $oldPath" }
+}
 
 if (-not (Test-Path -LiteralPath $dist -PathType Container)) { throw 'frontend/dist is absent; run npm run build first' }
 $routeIndexFiles = @(Get-ChildItem -LiteralPath $dist -Recurse -File -Filter 'index.html')
@@ -112,7 +139,6 @@ try { $llms = $utf8Strict.GetString([System.IO.File]::ReadAllBytes($llmsPath)) }
 $llmsPrefix = '# ' + [char]0x0420 + [char]0x0418 + [char]0x041A
 if (-not $llms.StartsWith($llmsPrefix)) { throw 'llms.txt content is corrupted' }
 
-$nginx = Get-Content -LiteralPath (Join-Path $root 'docker\nginx.conf') -Raw -Encoding UTF8
 foreach ($needle in @(
     'try_files $uri =404;',
     'try_files $uri $uri/ =404;',
