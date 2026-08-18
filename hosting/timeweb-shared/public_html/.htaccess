@@ -41,6 +41,7 @@ RewriteRule ^kak-oformit-zakaz/?$ https://rik-vent.ru/request/ [R=301,L,NE]
 RewriteRule ^legacy-cookies-agreement\.php$ https://rik-vent.ru/privacy/ [R=301,L,NE]
 RewriteRule ^info/brands/sony/?$ https://rik-vent.ru/production/ [R=301,L,NE]
 RewriteRule ^auth/?$ https://rik-vent.ru/ [R=301,L,NE]
+RewriteRule ^contacts/stores/s1/?$ https://rik-vent.ru/contacts/ [R=301,L,NE]
 
 # Indexed legacy model cards keep the closest current product/category intent.
 # Final namespace fallbacks prevent any remaining Bitrix result from landing on 404.
