@@ -138,5 +138,9 @@
   {
     "oldPath": "/auth/",
     "newPath": "/"
+  },
+  {
+    "oldPath": "/contacts/stores/s1/",
+    "newPath": "/contacts/"
   }
 ]

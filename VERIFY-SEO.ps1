@@ -39,7 +39,7 @@ if ($urls.Count -ne $routes.Count -or $missingUrls.Count -ne 0 -or $extraUrls.Co
 if (($urls | Sort-Object -Unique).Count -ne $urls.Count) { throw 'Sitemap contains duplicate URLs' }
 
 $legacyRedirects = Get-Content -LiteralPath $legacyRedirectsPath -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($legacyRedirects.Count -ne 35) { throw "Unexpected legacy redirect count: $($legacyRedirects.Count)" }
+if ($legacyRedirects.Count -ne 36) { throw "Unexpected legacy redirect count: $($legacyRedirects.Count)" }
 if ((@($legacyRedirects.oldPath | Sort-Object -Unique)).Count -ne $legacyRedirects.Count) {
     throw 'Legacy redirect source paths are not unique'
 }
