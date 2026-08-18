@@ -58,7 +58,8 @@ foreach ($redirect in $legacyRedirects) {
         $apachePattern = [regex]::Escape($oldPath.TrimStart('/'))
         $nginxPattern = [regex]::Escape($oldPath)
     }
-    $apacheRule = "RewriteRule ^$apachePattern`$ $newPath [R=301,L,NE]"
+    $apacheTarget = "https://rik-vent.ru$newPath"
+    $apacheRule = "RewriteRule ^$apachePattern`$ $apacheTarget [R=301,L,NE]"
     $nginxRule = "rewrite ^$nginxPattern`$ $newPath permanent;"
     if (-not $apache.Contains($apacheRule)) { throw "Apache legacy redirect is absent: $oldPath" }
     if (-not $nginx.Contains($nginxRule)) { throw "Nginx legacy redirect is absent: $oldPath" }
@@ -77,7 +78,8 @@ foreach ($redirect in $legacyPatternRedirects) {
         throw "Invalid legacy pattern redirect: $name"
     }
     try { $compiledPattern = [regex]::new("^$pattern`$") } catch { throw "Invalid legacy redirect regex ($name): $pattern" }
-    $apacheRule = "RewriteRule ^$pattern`$ $newPath [R=301,L,NE]"
+    $apacheTarget = "https://rik-vent.ru$newPath"
+    $apacheRule = "RewriteRule ^$pattern`$ $apacheTarget [R=301,L,NE]"
     $nginxRule = "rewrite ^/$pattern`$ $newPath permanent;"
     if (-not $apache.Contains($apacheRule)) { throw "Apache legacy pattern redirect is absent: $name" }
     if (-not $nginx.Contains($nginxRule)) { throw "Nginx legacy pattern redirect is absent: $name" }
