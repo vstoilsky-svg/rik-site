@@ -177,7 +177,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
         </div>
       </div>
 
-      <div className="container">
+      <div className="container product-content">
         {isRoundHub && <ChannelRoundCards />}
         {isRectHub && <ChannelRectCards />}
         {p.slug === "vozduhovody-i-fasonnye-izdeliya" && <DuctSections />}

@@ -71,6 +71,11 @@ if (-not $burgerMatch.Success) {
 }
 Assert-Declaration $burgerMatch.Groups['body'].Value 'width' '48px'
 Assert-Declaration $burgerMatch.Groups['body'].Value 'height' '48px'
+$headerCtaMatch = [regex]::Match($layoutCss, "(?s)\.header-cta\s*\{(?<body>[^}]*)\}")
+if (-not $headerCtaMatch.Success) {
+  throw "Missing header controls rail rule"
+}
+Assert-Declaration $headerCtaMatch.Groups['body'].Value 'margin-left' 'auto'
 if (-not [regex]::IsMatch($layoutCss, "(?s)@media\s*\(min-width:\s*1301px\)\s*and\s*\(max-width:\s*1500px\)\s*\{.*?\.header-phone\s*\{[^}]*display\s*:\s*none")) {
   throw "1301-1500px desktop header must hide the phone before it can clip the request CTA"
 }
@@ -124,8 +129,14 @@ if (-not $tocButtonMatch.Success) {
 }
 Assert-Declaration $tocButtonMatch.Groups['body'].Value 'width' '48px'
 Assert-Declaration $tocButtonMatch.Groups['body'].Value 'height' '48px'
-if (-not [regex]::IsMatch($richCss, "(?s)@media\s*\(max-width:\s*560px\)\s*\{.*?\.toc-float:not\(\.is-open\)\s*\{[^}]*right\s*:\s*64px[^}]*top\s*:\s*12px")) {
-  throw "Mobile TOC trigger must occupy its dedicated header-rail slot"
+if (-not [regex]::IsMatch($richCss, "(?s)@media\s*\(max-width:\s*560px\)\s*\{.*?\.toc-float:not\(\.is-open\)\s*\{[^}]*left\s*:\s*16px[^}]*right\s*:\s*auto[^}]*top\s*:\s*auto[^}]*bottom\s*:\s*16px")) {
+  throw "Mobile TOC trigger must stay bottom-left, outside the header rail"
+}
+if (-not [regex]::IsMatch($richCss, "(?s)@media\s*\(max-width:\s*560px\)\s*\{.*?\.toc-float\.is-open\s*\{[^}]*left\s*:\s*16px[^}]*right\s*:\s*auto[^}]*top\s*:\s*auto[^}]*bottom\s*:\s*76px")) {
+  throw "Open mobile TOC panel must stay above its bottom-left trigger"
+}
+if (-not [regex]::IsMatch($richCss, "(?s)@media\s*\(max-width:\s*560px\)\s*\{.*?\.toc-burger-label\s*\{[^}]*display\s*:\s*inline")) {
+  throw "Mobile TOC trigger must have a visible text label"
 }
 
 $catalogCssPath = Join-Path $SourceRoot "catalog.css"
@@ -133,6 +144,12 @@ if (-not (Test-Path -LiteralPath $catalogCssPath -PathType Leaf)) {
   throw "Missing catalog CSS: catalog.css"
 }
 $catalogCss = Get-Content -LiteralPath $catalogCssPath -Raw -Encoding UTF8
+if (-not [regex]::IsMatch($catalogCss, "(?s)@media\s*\(max-width:\s*760px\)\s*\{.*?\.product-content\s*\{[^}]*padding-inline\s*:\s*0")) {
+  throw "Mobile product content must remove duplicate container padding"
+}
+if (-not [regex]::IsMatch($catalogCss, "(?s)\.block\s*>\s*h2:first-child\s*\{[^}]*margin-top\s*:\s*0")) {
+  throw "First product block heading must align without a stray top gap"
+}
 $centralMediaWrapperMatch = [regex]::Match($catalogCss, "(?s)\.card-media-duo-image\s*\{(?<body>[^}]*)\}")
 if (-not $centralMediaWrapperMatch.Success) {
   throw "Missing bounded media wrapper for the central-units catalog card"
@@ -350,4 +367,4 @@ if ($semanticFailures.Count -gt 0) {
   throw ("Semantic UI invariants failed:`n - " + ($semanticFailures -join "`n - "))
 }
 
-Write-Host "UI regression guards passed: category containment; <=320px component containment and product headings; bounded central-units media; unclipped central-card labels; responsive about video; intrinsic-aspect logos; 48px header controls; desktop/mobile header rail; closed TOC header slot; bottom-right chat launcher; certificate modal gutters; chat Escape focus return; one main landmark; heading contracts 8/8; accessible sr-only utility."
+Write-Host "UI regression guards passed: category containment; <=320px component containment and product headings; bounded central-units media; unclipped central-card labels; responsive about video; intrinsic-aspect logos; 48px header controls; right-aligned header rail; mobile TOC bottom-left; aligned mobile product content; bottom-right chat launcher; certificate modal gutters; chat Escape focus return; one main landmark; heading contracts 8/8; accessible sr-only utility."

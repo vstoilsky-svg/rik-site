@@ -38,7 +38,11 @@ export default function FloatingToc() {
         </nav>
       ) : (
         <button className="toc-burger" onClick={() => setOpen(true)} aria-label="Оглавление" title="Разделы страницы">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M9 6h12M9 12h12M9 18h12" />
+            <path d="M4 6h.01M4 12h.01M4 18h.01" strokeWidth="3" />
+          </svg>
+          <span className="toc-burger-label">Разделы</span>
         </button>
       )}
     </div>
