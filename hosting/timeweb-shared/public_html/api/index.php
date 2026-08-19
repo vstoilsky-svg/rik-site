@@ -7,6 +7,7 @@ if (!is_string($appRoot) || $appRoot === '') {
 }
 
 require $appRoot . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'bootstrap.php';
+require $appRoot . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'local_relay.php';
 require $appRoot . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'chat.php';
 require $appRoot . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'request.php';
 
@@ -17,6 +18,18 @@ $route = rik_api_route();
 
 if ($method === 'GET' && $route === 'health') {
     rik_json(['status' => 'ok', 'runtime' => 'timeweb-shared-php']);
+}
+
+if ($method === 'GET' && $route === 'chat-worker/health') {
+    rik_handle_local_relay_health();
+}
+
+if ($method === 'POST' && $route === 'chat-worker/claim') {
+    rik_handle_local_relay_claim();
+}
+
+if ($method === 'POST' && $route === 'chat-worker/complete') {
+    rik_handle_local_relay_complete();
 }
 
 if ($method === 'POST' && $route === 'chat') {

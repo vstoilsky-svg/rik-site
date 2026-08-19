@@ -6,7 +6,7 @@ function rik_chat_provider_fallback(): string
     $legacy = 'Сейчас я немного перегружен. Попробуйте написать чуть позже.';
     $configured = trim(rik_config('CHAT_FALLBACK_MESSAGE', ''));
     if ($configured === '' || $configured === $legacy) {
-        return 'Чат-ассистент временно недоступен: внешний ИИ-провайдер отклонил запрос с сервера сайта. Попробуйте позже или отправьте заявку через «Запросить расчёт».';
+        return 'Чат-ассистент временно недоступен: модель не ответила вовремя. Попробуйте позже или отправьте заявку через «Запросить расчёт».';
     }
     return $configured;
 }
@@ -46,14 +46,19 @@ function rik_local_knowledge_answer(string $message): string
     return 'Уточните, пожалуйста, тип оборудования или маркировку — например RIK-M, KRV, RR, КИДм или канальное оборудование. Я подскажу назначение и найду нужную страницу или документ. Все группы доступны в [каталоге продукции](/products).';
 }
 
-/** @param list<array{role:string,content:string}> $messages @return array{0:bool,1:string,2:string} */
+/** @param list<array{role:string,content:string}> $messages @return array{0:bool,1:string,2:?string} */
 function rik_complete_chat_answer(string $message, array $messages): array
 {
     if (!rik_config_bool('CHAT_FORCE_LOCAL', false)) {
+        [$relayOk, $relayAnswer, $relayModel] = rik_local_relay_complete($messages);
+        if ($relayOk && $relayModel !== null) {
+            return [true, $relayAnswer, $relayModel];
+        }
         [$ok, $answer, $model] = rik_openrouter_complete($messages);
         if ($ok && $model !== null) {
             return [true, $answer, $model];
         }
+        return [false, rik_chat_provider_fallback(), null];
     }
     return [true, rik_local_knowledge_answer($message), 'local:knowledge'];
 }
@@ -297,29 +302,52 @@ function rik_keyword_knowledge(string $query): string
     }
     $terms = preg_split('/[^\p{L}\p{N}_]+/u', rik_normalize_text($query), -1, PREG_SPLIT_NO_EMPTY) ?: [];
     $terms = array_values(array_filter($terms, static fn(string $term): bool => rik_text_length($term) >= 3));
-    $docs = [];
+    $chunks = [];
     foreach ($files as $file) {
         $content = file_get_contents($file);
         if (!is_string($content)) {
             continue;
         }
-        $haystack = rik_normalize_text(basename($file) . "\n" . $content);
-        $score = 0;
-        foreach ($terms as $term) {
-            if (rik_text_contains_case_insensitive($haystack, $term)) {
-                $score++;
+        $sections = preg_split('/(?=^##\s+)/mu', $content, -1, PREG_SPLIT_NO_EMPTY) ?: [$content];
+        foreach ($sections as $section) {
+            $section = trim($section);
+            if ($section === '') {
+                continue;
+            }
+            $firstLine = trim((string) strtok($section, "\r\n"));
+            $haystack = rik_normalize_text($section);
+            $heading = rik_normalize_text($firstLine);
+            $score = 0;
+            foreach ($terms as $term) {
+                $termLength = rik_text_length($term);
+                $stem = $termLength >= 7 ? rik_text_substr($term, 0, $termLength - 3) : $term;
+                $fullBodyMatch = rik_text_contains_case_insensitive($haystack, $term);
+                $stemBodyMatch = $stem !== $term && rik_text_contains_case_insensitive($haystack, $stem);
+                $fullHeadingMatch = rik_text_contains_case_insensitive($heading, $term);
+                $stemHeadingMatch = $stem !== $term && rik_text_contains_case_insensitive($heading, $stem);
+                if ($fullBodyMatch || $stemBodyMatch) {
+                    $score += $fullBodyMatch ? 2 : 1;
+                }
+                if ($fullHeadingMatch || $stemHeadingMatch) {
+                    $score += $fullHeadingMatch ? 6 : 3;
+                }
+            }
+            if ($score > 0) {
+                $chunks[] = ['name' => basename($file), 'content' => $section, 'score' => $score];
             }
         }
-        $docs[] = ['name' => basename($file), 'content' => $content, 'score' => $score];
     }
-    usort($docs, static fn(array $a, array $b): int => $b['score'] <=> $a['score']);
+    usort($chunks, static function (array $a, array $b): int {
+        $byScore = $b['score'] <=> $a['score'];
+        return $byScore !== 0 ? $byScore : rik_text_length($a['content']) <=> rik_text_length($b['content']);
+    });
 
     $max = rik_config_int('KNOWLEDGE_MAX_CHARS', 12000);
     $result = '';
-    foreach ($docs as $doc) {
-        $block = "\n\n### " . $doc['name'] . "\n" . trim($doc['content']);
+    foreach (array_slice($chunks, 0, 12) as $chunk) {
+        $block = "\n\n### " . $chunk['name'] . "\n" . $chunk['content'];
         if (rik_text_length($result . $block) > $max) {
-            break;
+            continue;
         }
         $result .= $block;
     }

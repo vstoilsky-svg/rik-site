@@ -30,6 +30,7 @@ runtime/
 site-tools/
 tmp/
 FULL_BACKUP/
+RESTORE-METADATA.json
 
 # OS and editor metadata
 .DS_Store

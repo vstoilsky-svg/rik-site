@@ -24,3 +24,5 @@ The public endpoints remain unchanged:
 The streaming endpoint emits valid SSE in one complete message. The existing chat widget supports this without frontend changes.
 
 Run `build.ps1` from this directory to create a self-contained upload archive outside the repository. The archive contains `public_html_new`, sibling `rik_app`, a manifest, and deployment instructions. Secrets are copied from the named local container into `rik_app/config.env`; the script never prints their values.
+
+The production chatbot requires the authenticated local relay because shared-hosting egress to the inference provider can be blocked. Release assembly therefore fails closed unless the source container provides a non-empty `LOCAL_RELAY_TOKEN`; `LOCAL_RELAY_ENABLED=true` is the committed production default. On Windows, schedule `worker/rik_chat_worker_bootstrap.pyw` with `pythonw.exe` directly. Do not schedule the PowerShell helper: the `.pyw` bootstrap decrypts the DPAPI config, enforces endpoint allowlists and runs without creating any console window.

@@ -60,7 +60,8 @@ foreach ($line in $containerEnv) {
 $required = @(
     'OPENROUTER_API_KEY', 'OPENROUTER_MODELS', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY',
     'SMTP_HOST', 'SMTP_PORT', 'SMTP_USERNAME', 'SMTP_PASSWORD', 'SMTP_FROM',
-    'SMTP_USE_TLS', 'SMTP_USE_SSL', 'REQUEST_RECIPIENT'
+    'SMTP_USE_TLS', 'SMTP_USE_SSL', 'REQUEST_RECIPIENT',
+    'LOCAL_RELAY_TOKEN'
 )
 foreach ($name in $required) {
     if (-not $environment.ContainsKey($name) -or [string]::IsNullOrWhiteSpace($environment[$name])) {
@@ -85,6 +86,12 @@ $configLines = foreach ($line in $exampleLines) {
 }
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllLines((Join-Path $appRoot 'config.env'), [string[]] $configLines, $utf8NoBom)
+
+$releaseConfig = [System.IO.File]::ReadAllText((Join-Path $appRoot 'config.env'))
+if ($releaseConfig -notmatch '(?m)^LOCAL_RELAY_ENABLED=true\s*$' -or
+    $releaseConfig -notmatch '(?m)^LOCAL_RELAY_TOKEN=\S+\s*$') {
+    throw 'Local relay must be enabled with a non-empty token; refusing a chatbot-degrading release'
+}
 
 $sourceCommit = (& git -C $repoRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve source commit' }
