@@ -37,20 +37,33 @@ $relativePaths = @(
 )
 if ($LASTEXITCODE -ne 0) { throw "git ls-files failed: $LASTEXITCODE" }
 
-$existingPaths = @(
-    $relativePaths | Where-Object {
-        Test-Path -LiteralPath (Join-Path $root $_) -PathType Leaf
-    }
-)
+$existingPaths = @($relativePaths | Where-Object { Test-Path -LiteralPath (Join-Path $root $_) -PathType Leaf })
+$sparsePaths = @($relativePaths | Where-Object { -not (Test-Path -LiteralPath (Join-Path $root $_) -PathType Leaf) })
 $blobs = @(Invoke-GitHashObject -Paths @($existingPaths))
 if ($blobs.Count -ne $existingPaths.Count) {
     throw "git hash-object failed: Paths=$($existingPaths.Count) Blobs=$($blobs.Count)"
 }
 
-$rows = for ($index = 0; $index -lt $existingPaths.Count; $index++) {
+$blobByPath = @{}
+for ($index = 0; $index -lt $existingPaths.Count; $index++) {
+    $blobByPath[$existingPaths[$index]] = $blobs[$index].Trim()
+}
+foreach ($relativePath in $sparsePaths) {
+    $tag = (& git -C $root -c core.quotepath=false ls-files -t -- $relativePath).Trim()
+    if ($LASTEXITCODE -ne 0 -or $tag -notmatch '^S ') {
+        throw "Tracked path is missing outside sparse-checkout: $relativePath"
+    }
+    $stage = (& git -C $root -c core.quotepath=false ls-files -s -- $relativePath).Trim()
+    if ($LASTEXITCODE -ne 0 -or $stage -notmatch '^[0-9]+ ([0-9a-f]{40}) [0-9]+\t') {
+        throw "Cannot resolve sparse index blob: $relativePath"
+    }
+    $blobByPath[$relativePath] = $matches[1]
+}
+
+$rows = foreach ($relativePath in $relativePaths) {
     [pscustomobject]@{
-        RelPath = $existingPaths[$index].Replace('\', '/')
-        GitBlob = $blobs[$index].Trim()
+        RelPath = $relativePath.Replace('\', '/')
+        GitBlob = $blobByPath[$relativePath]
     }
 }
 

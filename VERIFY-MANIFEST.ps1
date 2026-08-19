@@ -45,6 +45,11 @@ foreach ($row in $rows) {
     $nativePath = $relativePath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
     $path = Join-Path $root $nativePath
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        $tag = (& git -C $root -c core.quotepath=false ls-files -t -- $relativePath).Trim()
+        $stage = (& git -C $root -c core.quotepath=false ls-files -s -- $relativePath).Trim()
+        if ($LASTEXITCODE -eq 0 -and $tag -match '^S ' -and $stage -match '^[0-9]+ ([0-9a-f]{40}) [0-9]+\t' -and $matches[1] -eq $row.GitBlob) {
+            continue
+        }
         Write-Host "MISSING $($row.RelPath)"
         $missing++
         continue
@@ -67,10 +72,6 @@ $actualPaths = @(
     & git -C $root -c core.quotepath=false ls-files --cached --others --exclude-standard |
         Where-Object { $_ -and ($_ -ne 'MANIFEST.csv') } |
         ForEach-Object { $_.Replace('\', '/') } |
-        Where-Object {
-            $nativePath = $_.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
-            Test-Path -LiteralPath (Join-Path $root $nativePath) -PathType Leaf
-        } |
         Sort-Object -Unique
 )
 if ($LASTEXITCODE -ne 0) { throw "git ls-files failed: $LASTEXITCODE" }
