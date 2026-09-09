@@ -45,6 +45,9 @@ for (const route of routes) {
   if (occurrences(html, /<h1(?:\s|>)/g).length !== 1) throw new Error(`Expected one raw h1: ${route.path}`);
   if (occurrences(html, /data-rik-prerendered-route=/g).length !== 1) throw new Error(`Expected one route body marker: ${route.path}`);
   if (occurrences(html, /data-rik-prerendered-navigation=/g).length !== 1) throw new Error(`Expected one raw navigation block: ${route.path}`);
+  if (!html.includes('[data-rik-prerendered-navigation] .nav{display:flex;flex-wrap:wrap;')) {
+    throw new Error(`Raw navigation must stay visible without JavaScript on mobile: ${route.path}`);
+  }
   if (!mainMatch || mainText.length < 40) throw new Error(`Raw main content is empty or too short: ${route.path}`);
   if (!html.includes(expectedHeading)) throw new Error(`Raw h1 does not match route data: ${route.path}`);
   if (!html.includes(expectedDescription)) throw new Error(`Raw description does not match route data: ${route.path}`);

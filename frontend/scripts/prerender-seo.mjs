@@ -42,7 +42,17 @@ function renderBreadcrumbs(route) {
 }
 
 function renderPrimaryNavigation() {
-  return `<header class="site-header" data-rik-prerendered-navigation="true">
+  return `<style data-rik-prerendered-styles="true">
+      [data-rik-prerendered-navigation]{position:static}
+      [data-rik-prerendered-navigation] .header-inner{height:auto;min-height:72px;flex-wrap:wrap;padding:16px 24px;gap:16px}
+      [data-rik-prerendered-navigation] .nav{display:flex;flex-wrap:wrap;gap:8px 18px}
+      [data-rik-prerendered-navigation] .nav a{display:inline-flex;align-items:center;min-height:44px}
+      [data-rik-prerendered-route]{padding-top:0;overflow-wrap:anywhere}
+      .prerendered-catalog-links{padding-left:24px}
+      .prerendered-catalog-links a{display:inline-block;padding:8px 0}
+      @media(max-width:760px){[data-rik-prerendered-navigation] .nav{flex-basis:100%;order:2}}
+    </style>
+    <header class="site-header" data-rik-prerendered-navigation="true">
       <div class="container header-inner">
         <a class="logo" href="/" aria-label="Главная страница РИК">РИК</a>
         <nav class="nav" aria-label="Основная навигация">
