@@ -6,6 +6,16 @@ const dist = path.join(frontendRoot, "dist");
 const shellPath = path.join(dist, "index.html");
 const shell = await readFile(shellPath, "utf8");
 const { routes, canonicalUrl, structuredDataFor } = await loadSeoData();
+const primaryNavigation = [
+  ["/products", "Продукция"],
+  ["/production", "Производство"],
+  ["/projects", "Проекты"],
+  ["/designers", "Проектировщикам"],
+  ["/services", "Услуги"],
+  ["/about", "О компании"],
+  ["/contacts", "Контакты"],
+];
+const catalogRoutes = routes.filter((route) => route.kind === "product" || route.kind === "section");
 
 function escapeHtml(value) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -31,6 +41,32 @@ function renderBreadcrumbs(route) {
   return `<a href="/">Главная</a> <span aria-hidden="true">→</span> ${current}`;
 }
 
+function renderPrimaryNavigation() {
+  return `<header class="site-header" data-rik-prerendered-navigation="true">
+      <div class="container header-inner">
+        <a class="logo" href="/" aria-label="Главная страница РИК">РИК</a>
+        <nav class="nav" aria-label="Основная навигация">
+          ${primaryNavigation.map(([href, label]) => `<a href="${href}">${label}</a>`).join("\n          ")}
+        </nav>
+        <a class="btn btn-primary" href="/request">Запросить расчёт</a>
+      </div>
+    </header>`;
+}
+
+function renderCatalogIndex() {
+  const links = catalogRoutes
+    .map((catalogRoute) => `<li><a data-rik-prerendered-catalog-link="true" href="${escapeHtml(catalogRoute.path)}">${escapeHtml(catalogRoute.name)}</a></li>`)
+    .join("\n            ");
+
+  return `<section class="container section-body" data-rik-prerendered-catalog-index="true" aria-labelledby="rik-prerendered-catalog-title">
+        <h2 id="rik-prerendered-catalog-title">Каталог оборудования</h2>
+        <p>Выберите тип вентиляционного оборудования РИК, чтобы открыть описание, характеристики и документацию.</p>
+        <ul class="prerendered-catalog-links">
+          ${links}
+        </ul>
+      </section>`;
+}
+
 function renderRouteBody(route) {
   const isProduct = route.kind === "product" || route.kind === "section";
   const primaryLink = isProduct
@@ -40,7 +76,10 @@ function renderRouteBody(route) {
     ? '<a class="btn btn-ghost dark" href="/request">Запросить расчёт</a>'
     : '<a class="btn btn-ghost dark" href="/contacts">Связаться с РИК</a>';
 
-  return `<main data-rik-prerendered-route="${escapeHtml(route.path)}" aria-labelledby="rik-prerendered-title">
+  const catalogIndex = route.path === "/products" ? renderCatalogIndex() : "";
+
+  return `${renderPrimaryNavigation()}
+    <main data-rik-prerendered-route="${escapeHtml(route.path)}" aria-labelledby="rik-prerendered-title">
       <article class="container section-body">
         <nav class="crumbs" aria-label="Хлебные крошки">${renderBreadcrumbs(route)}</nav>
         <section class="block">
@@ -49,6 +88,7 @@ function renderRouteBody(route) {
           <div class="cta-row">${primaryLink}${secondaryLink}</div>
         </section>
       </article>
+      ${catalogIndex}
     </main>`;
 }
 
