@@ -1,88 +1,54 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { JSDOM } from "jsdom";
 import { frontendRoot, loadSeoData } from "./seo-runtime.mjs";
 
-const dist = path.join(frontendRoot, "dist");
+const fixtureIndex = process.argv.indexOf("--dist");
+const dist = fixtureIndex >= 0 ? path.resolve(process.argv[fixtureIndex + 1]) : path.join(frontendRoot, "dist");
 const { routes } = await loadSeoData();
-const productHeadings = new Map();
-const primaryNavigation = [
-  ["/products", "Продукция"],
-  ["/production", "Производство"],
-  ["/projects", "Проекты"],
-  ["/designers", "Проектировщикам"],
-  ["/services", "Услуги"],
-  ["/about", "О компании"],
-  ["/contacts", "Контакты"],
-];
-const catalogRoutes = routes.filter((route) => route.kind === "product" || route.kind === "section");
-
-function escapeHtml(value) {
-  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
-function occurrences(input, pattern) {
-  return input.match(pattern) ?? [];
-}
+const headings = new Map();
+const catalogRoutes = routes.filter((r) => r.kind === "product" || r.kind === "section");
+const navigation = ["/products", "/production", "/projects", "/designers", "/services", "/about", "/contacts"];
+let tables = 0;
+let images = 0;
+const plain = (node) => node?.textContent.replace(/\s+/g, " ").trim() ?? "";
 
 for (const route of routes) {
-  const target = route.path === "/"
-    ? path.join(dist, "index.html")
-    : path.join(dist, ...route.path.slice(1).split("/"), "index.html");
+  const target = path.join(dist, route.path === "/" ? "index.html" : `${route.path.slice(1)}/index.html`);
   const html = await readFile(target, "utf8");
-  const marker = `data-rik-prerendered-route="${escapeHtml(route.path)}"`;
-  const expectedHeading = `<h1 id="rik-prerendered-title">${escapeHtml(route.name)}</h1>`;
-  const expectedDescription = `<p class="lead">${escapeHtml(route.description)}</p>`;
-  const rootPosition = html.indexOf('<div id="root">');
-  const bodyPosition = html.indexOf(marker);
-  const mainClosePosition = html.indexOf("</main>", bodyPosition);
-  const rootClosePosition = html.indexOf("</div>", mainClosePosition);
-  const documentBodyClosePosition = html.indexOf("</body>", rootClosePosition);
-  const mainMatch = html.match(/<main(?:\s|>)[\s\S]*?<\/main>/);
-  const mainText = mainMatch?.[0].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() ?? "";
-
-  if (/<div id="root">\s*<\/div>/.test(html)) throw new Error(`Empty prerendered root: ${route.path}`);
-  if (occurrences(html, /<main(?:\s|>)/g).length !== 1) throw new Error(`Expected one raw main: ${route.path}`);
-  if (occurrences(html, /<h1(?:\s|>)/g).length !== 1) throw new Error(`Expected one raw h1: ${route.path}`);
-  if (occurrences(html, /data-rik-prerendered-route=/g).length !== 1) throw new Error(`Expected one route body marker: ${route.path}`);
-  if (occurrences(html, /data-rik-prerendered-navigation=/g).length !== 1) throw new Error(`Expected one raw navigation block: ${route.path}`);
-  if (!html.includes('[data-rik-prerendered-navigation] .nav{display:flex;flex-wrap:wrap;')) {
-    throw new Error(`Raw navigation must stay visible without JavaScript on mobile: ${route.path}`);
-  }
-  if (!mainMatch || mainText.length < 40) throw new Error(`Raw main content is empty or too short: ${route.path}`);
-  if (!html.includes(expectedHeading)) throw new Error(`Raw h1 does not match route data: ${route.path}`);
-  if (!html.includes(expectedDescription)) throw new Error(`Raw description does not match route data: ${route.path}`);
-  if (
-    rootPosition < 0
-    || bodyPosition < rootPosition
-    || mainClosePosition < bodyPosition
-    || rootClosePosition < mainClosePosition
-    || documentBodyClosePosition < rootClosePosition
-  ) {
-    throw new Error(`Prerendered body is not structurally inside root: ${route.path}`);
-  }
-  for (const [href, label] of primaryNavigation) {
-    if (!html.includes(`<a href="${href}">${label}</a>`)) {
-      throw new Error(`Missing raw primary navigation link ${href}: ${route.path}`);
+  const dom = new JSDOM(html);
+  try {
+    const doc = dom.window.document;
+    const main = doc.querySelector('#root > main[data-rik-prerendered-body="full"]');
+    const header = doc.querySelector('#root header[data-rik-prerendered-navigation="true"]');
+    const heading = main?.querySelector("h1");
+    if (!main || main.dataset.rikPrerenderedRoute !== route.path) throw new Error(`Missing full application body: ${route.path}`);
+    if (!header || !doc.querySelector("#root footer")) throw new Error(`Missing application header/footer: ${route.path}`);
+    if (doc.querySelectorAll("main").length !== 1 || doc.querySelectorAll("h1").length !== 1 || !plain(heading)) throw new Error(`Invalid main/H1: ${route.path}`);
+    if (plain(main).length < 80) throw new Error(`Application body too short: ${route.path}`);
+    if (doc.querySelector("#root script") || /<template[^>]*data-(?:msg|dgst)=/.test(html)) throw new Error(`Incomplete or executable static render: ${route.path}`);
+    if (doc.querySelector("#root form")) throw new Error(`Nonfunctional static form must not submit via GET: ${route.path}`);
+    if (!doc.querySelector("details[data-rik-static-menu] > summary")) throw new Error(`Missing native no-JS mobile menu: ${route.path}`);
+    for (const href of navigation) {
+      if (!doc.querySelector(`[data-rik-static-menu] a[href="${href}"]`)) throw new Error(`Missing static navigation ${href}: ${route.path}`);
     }
-  }
-
-  if (route.path === "/products") {
-    if (occurrences(html, /data-rik-prerendered-catalog-link=/g).length !== catalogRoutes.length) {
-      throw new Error(`Raw catalog link count is incomplete: expected ${catalogRoutes.length}`);
+    if (route.path === "/products") {
+      const links = [...main.querySelectorAll("[data-rik-prerendered-catalog-link]")];
+      if (links.length !== catalogRoutes.length || main.querySelectorAll("img").length < 20) throw new Error("Incomplete real catalog cards/index");
+      for (const item of catalogRoutes) {
+        if (!links.some((a) => a.getAttribute("href") === item.path && plain(a) === item.name)) throw new Error(`Missing catalog item ${item.path}`);
+      }
     }
-    for (const catalogRoute of catalogRoutes) {
-      const expectedLink = `<a data-rik-prerendered-catalog-link="true" href="${escapeHtml(catalogRoute.path)}">${escapeHtml(catalogRoute.name)}</a>`;
-      if (!html.includes(expectedLink)) throw new Error(`Missing raw catalog link: ${catalogRoute.path}`);
+    if (route.kind === "product" || route.kind === "section") {
+      const text = plain(heading);
+      if (headings.has(text)) throw new Error(`Duplicate product H1: ${text}`);
+      headings.set(text, route.path);
+      if (!main.querySelector("img") || !main.querySelector("h2")) throw new Error(`Missing product content/images: ${route.path}`);
     }
-  }
-
-  if (route.kind === "product" || route.kind === "section") {
-    const duplicatePath = productHeadings.get(route.name);
-    if (duplicatePath) throw new Error(`Duplicate product raw h1: ${route.name} (${duplicatePath}, ${route.path})`);
-    productHeadings.set(route.name, route.path);
-  }
+    if (route.path === "/" && (!main.querySelector(".hero") || !main.querySelector(".home-category-grid"))) throw new Error("Home hero/catalog content missing");
+    tables += main.querySelectorAll("table").length;
+    images += main.querySelectorAll("img").length;
+  } finally { dom.window.close(); }
 }
-
-process.stdout.write(
-  `Prerendered body guard passed: routes=${routes.length}, main=${routes.length}, h1=${routes.length}, uniqueProductH1=${productHeadings.size}.\n`,
-);
+if (tables < 100 || images < 137) throw new Error(`Static content coverage dropped: tables=${tables}, images=${images}`);
+process.stdout.write(`Full application HTML guard passed: routes=${routes.length}, productH1=${headings.size}, tables=${tables}, images=${images}.\n`);
