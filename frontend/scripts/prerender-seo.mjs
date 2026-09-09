@@ -1,5 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { Writable } from "node:stream";
+import { createElement } from "react";
+import { renderToPipeableStream } from "react-dom/server";
+import { createServer } from "vite";
+import { JSDOM } from "jsdom";
 import { buildSitemap, frontendRoot, loadSeoData } from "./seo-runtime.mjs";
 
 const dist = path.join(frontendRoot, "dist");
@@ -32,35 +37,26 @@ function responsiveDerivative(src, width) {
   return src.replace(/\.png$/i, `-responsive-${width}.webp`);
 }
 
-function renderBreadcrumbs(route) {
-  const current = `<span aria-current="page">${escapeHtml(route.name)}</span>`;
-  if (route.path === "/") return '<span aria-current="page">Главная</span>';
-  if (route.kind === "product" || route.kind === "section") {
-    return `<a href="/">Главная</a> <span aria-hidden="true">→</span> <a href="/products">Продукция</a> <span aria-hidden="true">→</span> ${current}`;
-  }
-  return `<a href="/">Главная</a> <span aria-hidden="true">→</span> ${current}`;
-}
-
-function renderPrimaryNavigation() {
+function renderStaticControls() {
   return `<style data-rik-prerendered-styles="true">
       [data-rik-prerendered-navigation]{position:static}
-      [data-rik-prerendered-navigation] .header-inner{height:auto;min-height:72px;flex-wrap:wrap;padding:16px 24px;gap:16px}
-      [data-rik-prerendered-navigation] .nav{display:flex;flex-wrap:wrap;gap:8px 18px}
-      [data-rik-prerendered-navigation] .nav a{display:inline-flex;align-items:center;min-height:44px}
-      [data-rik-prerendered-route]{padding-top:0;overflow-wrap:anywhere}
+      [data-rik-prerendered-navigation] .burger,[data-rik-prerendered-navigation] .theme-toggle{display:none}
+      [data-rik-prerendered-route]{padding-top:0}
+      [data-rik-static-menu]{padding:12px 24px;border-top:1px solid var(--line)}
+      [data-rik-static-menu] summary{cursor:pointer;font-weight:700;min-height:32px}
+      [data-rik-static-menu] nav{display:flex;flex-wrap:wrap;gap:8px 24px;padding-top:12px}
+      [data-rik-static-menu] a{display:inline-flex;align-items:center;min-height:44px}
+      [data-rik-prerendered-route] button{display:none}
       .prerendered-catalog-links{padding-left:24px}
       .prerendered-catalog-links a{display:inline-block;padding:8px 0}
-      @media(max-width:760px){[data-rik-prerendered-navigation] .nav{flex-basis:100%;order:2}}
+      @media(min-width:1301px){[data-rik-static-menu]{display:none}}
     </style>
-    <header class="site-header" data-rik-prerendered-navigation="true">
-      <div class="container header-inner">
-        <a class="logo" href="/" aria-label="Главная страница РИК">РИК</a>
-        <nav class="nav" aria-label="Основная навигация">
+    <details data-rik-static-menu="true">
+      <summary>Меню сайта</summary>
+      <nav aria-label="Основная навигация без JavaScript">
           ${primaryNavigation.map(([href, label]) => `<a href="${href}">${label}</a>`).join("\n          ")}
-        </nav>
-        <a class="btn btn-primary" href="/request">Запросить расчёт</a>
-      </div>
-    </header>`;
+      </nav>
+    </details>`;
 }
 
 function renderCatalogIndex() {
@@ -77,32 +73,57 @@ function renderCatalogIndex() {
       </section>`;
 }
 
-function renderRouteBody(route) {
-  const isProduct = route.kind === "product" || route.kind === "section";
-  const primaryLink = isProduct
-    ? '<a class="btn btn-primary" href="/request">Запросить расчёт</a>'
-    : '<a class="btn btn-primary" href="/products">Открыть каталог</a>';
-  const secondaryLink = route.path === "/products"
-    ? '<a class="btn btn-ghost dark" href="/request">Запросить расчёт</a>'
-    : '<a class="btn btn-ghost dark" href="/contacts">Связаться с РИК</a>';
+// Use the real application components, including their normal HTML sanitizer.
+// This isolated DOM has no user storage, network resource loading or script execution.
+const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "https://rik-vent.ru/" });
+const previousGlobals = new Map();
+for (const key of ["window", "document", "localStorage"]) {
+  previousGlobals.set(key, Object.getOwnPropertyDescriptor(globalThis, key));
+  Object.defineProperty(globalThis, key, { value: dom.window[key === "window" ? "window" : key], configurable: true });
+}
+const renderServer = await createServer({ root: frontendRoot, server: { middlewareMode: true }, appType: "custom", logLevel: "silent" });
+const { default: App } = await renderServer.ssrLoadModule("/src/App.tsx");
 
-  const catalogIndex = route.path === "/products" ? renderCatalogIndex() : "";
-
-  return `${renderPrimaryNavigation()}
-    <main data-rik-prerendered-route="${escapeHtml(route.path)}" aria-labelledby="rik-prerendered-title">
-      <article class="container section-body">
-        <nav class="crumbs" aria-label="Хлебные крошки">${renderBreadcrumbs(route)}</nav>
-        <section class="block">
-          <h1 id="rik-prerendered-title">${escapeHtml(route.name)}</h1>
-          <p class="lead">${escapeHtml(route.description)}</p>
-          <div class="cta-row">${primaryLink}${secondaryLink}</div>
-        </section>
-      </article>
-      ${catalogIndex}
-    </main>`;
+async function renderRouteBody(route) {
+  dom.reconfigure({ url: `https://rik-vent.ru${route.path}` });
+  dom.window.localStorage.clear();
+  const raw = await new Promise((resolve, reject) => {
+    const chunks = [];
+    const output = new Writable({ write(chunk, _encoding, callback) { chunks.push(Buffer.from(chunk)); callback(); } });
+    const timer = setTimeout(() => { stream.abort(); reject(new Error(`Static render timeout: ${route.path}`)); }, 30000);
+    output.on("finish", () => { clearTimeout(timer); resolve(Buffer.concat(chunks).toString("utf8")); });
+    output.on("error", (error) => { clearTimeout(timer); reject(error); });
+    const stream = renderToPipeableStream(createElement(App), {
+      onAllReady() { stream.pipe(output); },
+      onError(error) { clearTimeout(timer); reject(error); },
+    });
+  });
+  const container = dom.window.document.createElement("div");
+  container.innerHTML = raw;
+  const main = container.querySelector("main");
+  const header = container.querySelector("header.site-header");
+  if (!main || !header || main.querySelectorAll("h1").length !== 1 || !container.querySelector("footer")) {
+    throw new Error(`Incomplete application HTML: ${route.path}`);
+  }
+  main.dataset.rikPrerenderedRoute = route.path;
+  main.dataset.rikPrerenderedBody = "full";
+  header.dataset.rikPrerenderedNavigation = "true";
+  header.insertAdjacentHTML("beforeend", `<noscript>${renderStaticControls()}</noscript>`);
+  if (route.path === "/products") main.insertAdjacentHTML("beforeend", `<noscript>${renderCatalogIndex()}</noscript>`);
+  // Interactive chat, modal launchers and request submission still need JavaScript.
+  // Do not publish a nonfunctional chat control or a form that could submit via GET.
+  container.querySelectorAll(".chat-toggle, .chat-window, .toc-mobile-toggle").forEach((node) => node.remove());
+  container.querySelectorAll("form").forEach((form) => {
+    const notice = dom.window.document.createElement("p");
+    notice.className = "container section-body";
+    notice.innerHTML = 'Для отправки формы включите JavaScript или <a href="/contacts">свяжитесь с нами по телефону или электронной почте</a>.';
+    form.replaceWith(notice);
+  });
+  if (container.querySelector("script")) throw new Error(`Unexpected script in static body: ${route.path}`);
+  return container.innerHTML;
 }
 
-function renderRoute(route) {
+function renderRoute(route, body) {
   const url = canonicalUrl(route);
   const image = `https://rik-vent.ru${route.image}`;
   const jsonLd = JSON.stringify(structuredDataFor(route)).replace(/</g, "\\u003c");
@@ -141,18 +162,27 @@ function renderRoute(route) {
   html = replaceOne(
     html,
     /<div id="root">\s*<\/div>/,
-    `<div id="root">${renderRouteBody(route)}</div>`,
+    `<div id="root">${body}</div>`,
     "root container",
   );
   return html;
 }
 
-for (const route of routes) {
-  const target = route.path === "/"
-    ? shellPath
-    : path.join(dist, ...route.path.slice(1).split("/"), "index.html");
-  await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(target, renderRoute(route), "utf8");
+try {
+  for (const route of routes) {
+    const target = route.path === "/"
+      ? shellPath
+      : path.join(dist, ...route.path.slice(1).split("/"), "index.html");
+    await mkdir(path.dirname(target), { recursive: true });
+    await writeFile(target, renderRoute(route, await renderRouteBody(route)), "utf8");
+  }
+} finally {
+  await renderServer.close();
+  dom.window.close();
+  for (const [key, descriptor] of previousGlobals) {
+    if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+    else delete globalThis[key];
+  }
 }
 
 const notFound = `<!doctype html>

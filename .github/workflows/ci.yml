@@ -84,7 +84,7 @@ jobs:
             if curl -fsS http://127.0.0.1:18080/healthz >/dev/null; then break; fi
             sleep 1
           done
-          curl -fsS http://127.0.0.1:18080/healthz | grep -q '"status":"ok"'
+          curl -fsS http://127.0.0.1:18080/healthz | grep '"status":"ok"' > /dev/null
           while IFS= read -r route; do
             canonical_route="$route"
             if [ "$route" != "/" ]; then canonical_route="${route}/"; fi
@@ -120,17 +120,17 @@ jobs:
           done < <(node -e 'const redirects=require("./frontend/scripts/legacy-pattern-redirects.json"); for (const item of redirects) for (const sample of item.samples) console.log(`${sample}\t${item.newPath}`)')
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/products)" = "301"
           test "$(curl -sS -o /dev/null -w '%{redirect_url}' http://127.0.0.1:18080/products)" = "http://127.0.0.1:18080/products/"
-          curl -fsS http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v/ | grep -q '<link rel="canonical" href="https://rik-vent.ru/product/ventilyatory-kryshnye-krv-v/"'
-          curl -fsS http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v/ | grep -q 'id="rik-structured-data"'
-          curl -fsS http://127.0.0.1:18080/ | grep -q '<title>ООО «РИК» — завод вентиляционного оборудования</title>'
-          curl -fsS http://127.0.0.1:18080/ | grep -q '"taxID":"9718157854"'
-          curl -fsS http://127.0.0.1:18080/ | grep -q '"value":"1207700208682"'
-          curl -fsS http://127.0.0.1:18080/robots.txt | grep -q '^User-agent: \*$'
-          curl -fsS http://127.0.0.1:18080/sitemap.xml | grep -q '<urlset'
-          curl -fsSI http://127.0.0.1:18080/llms.txt | tr -d '\r' | grep -qi '^content-type: text/plain; charset=utf-8$'
-          curl -fsS http://127.0.0.1:18080/llms.txt | grep -q '^# РИК'
+          curl -fsS http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v/ | grep '<link rel="canonical" href="https://rik-vent.ru/product/ventilyatory-kryshnye-krv-v/"' > /dev/null
+          curl -fsS http://127.0.0.1:18080/product/ventilyatory-kryshnye-krv-v/ | grep 'id="rik-structured-data"' > /dev/null
+          curl -fsS http://127.0.0.1:18080/ | grep '<title>ООО «РИК» — завод вентиляционного оборудования</title>' > /dev/null
+          curl -fsS http://127.0.0.1:18080/ | grep '"taxID":"9718157854"' > /dev/null
+          curl -fsS http://127.0.0.1:18080/ | grep '"value":"1207700208682"' > /dev/null
+          curl -fsS http://127.0.0.1:18080/robots.txt | grep '^User-agent: \*$' > /dev/null
+          curl -fsS http://127.0.0.1:18080/sitemap.xml | grep '<urlset' > /dev/null
+          curl -fsSI http://127.0.0.1:18080/llms.txt | tr -d '\r' | grep -i '^content-type: text/plain; charset=utf-8$' > /dev/null
+          curl -fsS http://127.0.0.1:18080/llms.txt | grep '^# РИК' > /dev/null
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/media/production-video.mp4)" = "200"
-          curl -fsSI http://127.0.0.1:18080/media/production-video.mp4 | tr -d '\r' | grep -qi '^content-type: video/mp4$'
+          curl -fsSI http://127.0.0.1:18080/media/production-video.mp4 | tr -d '\r' | grep -i '^content-type: video/mp4$' > /dev/null
           test "$(curl -sS -r 0-1023 -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/media/production-video.mp4)" = "206"
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/media/definitely-not-real.mp4)" = "404"
           for bim in /downloads/bim/bim-00.rvt /downloads/bim/bim-01.rfa; do
@@ -140,4 +140,4 @@ jobs:
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/downloads/bim/definitely-not-real.rfa)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/assets/definitely-not-real.js)" = "404"
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/api/definitely-not-real)" = "404"
-          curl -sS http://127.0.0.1:18080/definitely-not-a-real-route | grep -q 'Страница не найдена'
+          curl -sS http://127.0.0.1:18080/definitely-not-a-real-route | grep 'Страница не найдена' > /dev/null
