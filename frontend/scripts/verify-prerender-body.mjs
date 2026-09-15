@@ -15,6 +15,14 @@ let tables = 0;
 let images = 0;
 const plain = (node) => node?.textContent.replace(/\s+/g, " ").trim() ?? "";
 
+function requireYandexTags(doc, routePath) {
+  const verification = doc.querySelector(`meta[name="yandex-verification"][content="${yandexVerification}"]`);
+  const metrikaScripts = [...doc.querySelectorAll("script")].filter((node) => node.textContent.includes(`ym(${yandexMetrikaId}, 'init'`));
+  const metrikaFallback = doc.querySelector(`noscript img[src="https://mc.yandex.ru/watch/${yandexMetrikaId}"]`);
+  if (!verification) throw new Error(`Missing Yandex Webmaster verification: ${routePath}`);
+  if (metrikaScripts.length !== 1 || !metrikaFallback) throw new Error(`Missing or duplicate Yandex Metrika: ${routePath}`);
+}
+
 for (const route of routes) {
   const target = path.join(dist, route.path === "/" ? "index.html" : `${route.path.slice(1)}/index.html`);
   const html = await readFile(target, "utf8");
@@ -24,11 +32,7 @@ for (const route of routes) {
     const main = doc.querySelector('#root > main[data-rik-prerendered-body="full"]');
     const header = doc.querySelector('#root header[data-rik-prerendered-navigation="true"]');
     const heading = main?.querySelector("h1");
-    const verification = doc.querySelector(`meta[name="yandex-verification"][content="${yandexVerification}"]`);
-    const metrikaScripts = [...doc.querySelectorAll("script")].filter((node) => node.textContent.includes(`ym(${yandexMetrikaId}, 'init'`));
-    const metrikaFallback = doc.querySelector(`noscript img[src="https://mc.yandex.ru/watch/${yandexMetrikaId}"]`);
-    if (!verification) throw new Error(`Missing Yandex Webmaster verification: ${route.path}`);
-    if (metrikaScripts.length !== 1 || !metrikaFallback) throw new Error(`Missing or duplicate Yandex Metrika: ${route.path}`);
+    requireYandexTags(doc, route.path);
     if (!main || main.dataset.rikPrerenderedRoute !== route.path) throw new Error(`Missing full application body: ${route.path}`);
     if (!header || !doc.querySelector("#root footer")) throw new Error(`Missing application header/footer: ${route.path}`);
     if (doc.querySelectorAll("main").length !== 1 || doc.querySelectorAll("h1").length !== 1 || !plain(heading)) throw new Error(`Invalid main/H1: ${route.path}`);
@@ -57,5 +61,11 @@ for (const route of routes) {
     images += main.querySelectorAll("img").length;
   } finally { dom.window.close(); }
 }
+const notFoundHtml = await readFile(path.join(dist, "404.html"), "utf8");
+const notFoundDom = new JSDOM(notFoundHtml);
+try {
+  requireYandexTags(notFoundDom.window.document, "/404.html");
+  if (notFoundDom.window.document.querySelector('meta[name="robots"]')?.getAttribute("content") !== "noindex, nofollow") throw new Error("Invalid 404 robots directive");
+} finally { notFoundDom.window.close(); }
 if (tables < 100 || images < 137) throw new Error(`Static content coverage dropped: tables=${tables}, images=${images}`);
 process.stdout.write(`Full application HTML guard passed: routes=${routes.length}, productH1=${headings.size}, tables=${tables}, images=${images}.\n`);
