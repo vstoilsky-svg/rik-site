@@ -38,6 +38,22 @@ class RequestEndpointTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         send_mail.assert_called_once()
 
+    @patch("backend.app.main.send_request_email")
+    def test_email_is_optional(self, send_mail) -> None:
+        form = dict(self.form)
+        form["email"] = ""
+        response = self.client.post("/api/request", data=form)
+        self.assertEqual(response.status_code, 200)
+        send_mail.assert_called_once()
+
+    @patch("backend.app.main.send_request_email")
+    def test_invalid_optional_email_is_rejected(self, send_mail) -> None:
+        form = dict(self.form)
+        form["email"] = "invalid"
+        response = self.client.post("/api/request", data=form)
+        self.assertEqual(response.status_code, 422)
+        send_mail.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

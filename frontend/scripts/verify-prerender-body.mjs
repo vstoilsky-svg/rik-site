@@ -17,10 +17,10 @@ const plain = (node) => node?.textContent.replace(/\s+/g, " ").trim() ?? "";
 
 function requireYandexTags(doc, routePath) {
   const verification = doc.querySelector(`meta[name="yandex-verification"][content="${yandexVerification}"]`);
-  const metrikaScripts = [...doc.querySelectorAll("script")].filter((node) => node.textContent.includes(`ym(${yandexMetrikaId}, 'init'`));
+  const metrikaScripts = [...doc.querySelectorAll("script")].filter((node) => node.textContent.includes(`ym(${yandexMetrikaId}`) || node.getAttribute("src")?.includes("mc.yandex.ru/metrika"));
   const metrikaFallback = doc.querySelector(`noscript img[src="https://mc.yandex.ru/watch/${yandexMetrikaId}"]`);
   if (!verification) throw new Error(`Missing Yandex Webmaster verification: ${routePath}`);
-  if (metrikaScripts.length !== 1 || !metrikaFallback) throw new Error(`Missing or duplicate Yandex Metrika: ${routePath}`);
+  if (metrikaScripts.length !== 0 || metrikaFallback) throw new Error(`Yandex Metrika must wait for cookie consent: ${routePath}`);
 }
 
 for (const route of routes) {

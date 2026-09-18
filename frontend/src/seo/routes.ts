@@ -34,6 +34,7 @@ export const STATIC_SEO: Record<string, StaticSeo> = {
   "/tehlisty": { title: "Технические листы оборудования — РИК", description: "Технические листы и характеристики вентиляционного оборудования РИК." },
   "/requisites": { title: "Реквизиты ООО «РИК» — ИНН 9718157854", description: "Официальные реквизиты ООО «РИК» — Русской инжиниринговой компании: ИНН 9718157854, ОГРН 1207700208682, адрес в Москве." },
   "/privacy": { title: "Политика конфиденциальности — РИК", description: "Политика обработки персональных данных на сайте РИК." },
+  "/personal-data-consent": { title: "Согласие на обработку персональных данных — РИК", description: "Условия согласия на обработку персональных данных, передаваемых через формы сайта РИК." },
   "/news": { title: "Новости производства и компании — РИК", description: "Новости производства и вентиляционного оборудования РИК." },
   "/careers": { title: "Работа и вакансии в компании РИК", description: "Работа и вакансии в компании РИК." },
   "/recommendations": { title: "Рекомендации и отзывы о компании РИК", description: "Рекомендательные письма и отзывы о работе компании РИК." },
@@ -133,7 +134,7 @@ function assertUnique(values: string[], label: string) {
   if (duplicates.size > 0) throw new Error(`Duplicate SEO ${label}: ${[...duplicates].join(", ")}`);
 }
 
-if (staticRoutes.length !== 19 || PRODUCTS.length !== 100 || CENTRAL_SECTIONS.length !== 18 || SEO_ROUTES.length !== 137) {
+if (staticRoutes.length !== 20 || PRODUCTS.length !== 100 || CENTRAL_SECTIONS.length !== 18 || SEO_ROUTES.length !== 138) {
   throw new Error(`Unexpected SEO route census: static=${staticRoutes.length} products=${PRODUCTS.length} sections=${CENTRAL_SECTIONS.length} total=${SEO_ROUTES.length}`);
 }
 for (const route of SEO_ROUTES) {

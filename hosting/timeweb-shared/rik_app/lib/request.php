@@ -27,8 +27,9 @@ function rik_handle_request(): never
     if (($fields['website'] ?? '') !== '') {
         rik_json(['ok' => true]);
     }
-    if (($fields['name'] ?? '') === '' || ($fields['phone'] ?? '') === '' || filter_var($fields['email'] ?? '', FILTER_VALIDATE_EMAIL) === false) {
-        rik_json(['ok' => false, 'error' => 'Заполните имя, телефон и корректный e-mail'], 422);
+    $email = $fields['email'] ?? '';
+    if (($fields['name'] ?? '') === '' || ($fields['phone'] ?? '') === '' || ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false)) {
+        rik_json(['ok' => false, 'error' => 'Заполните имя и телефон; если указан e-mail, проверьте его'], 422);
     }
     if (!in_array(rik_text_lower($fields['consent'] ?? ''), ['on', 'true', '1', 'yes'], true)) {
         rik_json(['ok' => false, 'error' => 'Требуется согласие на обработку данных'], 422);
@@ -214,9 +215,12 @@ function rik_send_request_mail(array $fields, array $attachments): void
         'To: ' . $recipient,
         'MIME-Version: 1.0',
         'Content-Type: multipart/mixed; boundary="' . $boundary . '"',
-        'Reply-To: ' . rik_safe_header($fields['email'] ?? ''),
         'X-Mailer: RIK-Timeweb-PHP',
     ];
+    $replyTo = rik_safe_header($fields['email'] ?? '');
+    if ($replyTo !== '') {
+        $headers[] = 'Reply-To: ' . $replyTo;
+    }
     rik_smtp_send($from, $recipient, implode("\r\n", $headers) . "\r\n\r\n" . $body);
 }
 

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
 import { PROJECTS } from "./Projects";
 
@@ -155,13 +156,17 @@ export default function ForContractors() {
             <label>Имя *<input name="name" required autoComplete="name" /></label>
             <label>Компания<input name="company" autoComplete="organization" /></label>
             <label>Телефон *<input name="phone" required inputMode="tel" autoComplete="tel" /></label>
-            <label>E-mail *<input name="email" required type="email" autoComplete="email" /></label>
+            <label>E-mail<input name="email" type="email" autoComplete="email" /></label>
             <label className="wide">Комментарий<textarea name="comment" rows={4} /></label>
             <label className="wide upload-drop">Файлы проекта
               <input name="file" type="file" multiple accept=".pdf,.xls,.xlsx,.doc,.docx,.dwg,.dxf,.rvt,.ifc,.jpg,.jpeg,.png,.zip,.rar,.7z" />
               <span>Можно выбрать несколько файлов</span>
             </label>
-            <label className="wide consent"><input name="consent" type="checkbox" required /> Согласен на обработку персональных данных</label>
+            <label className="wide consent">
+              <input name="consent" type="checkbox" required />
+              <span>Даю согласие на обработку персональных данных в соответствии с <Link to="/personal-data-consent">Согласием на обработку персональных данных</Link>.</span>
+            </label>
+            <p className="wide form-policy-note">Порядок обработки данных описан в <Link to="/privacy">Политике в отношении обработки персональных данных</Link>.</p>
             <input type="text" name="website" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <button className="btn btn-primary" disabled={status === "sending"}>{status === "sending" ? "Отправляем…" : "Отправить"}</button>
             {status === "ok" && <p className="form-success">Проект отправлен. Мы свяжемся с вами после проверки файлов.</p>}

@@ -191,24 +191,12 @@ const notFound = `<!doctype html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="yandex-verification" content="83eb63c1f46cb345" />
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript">
-      (function(m,e,t,r,i,k,a){
-          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-          m[i].l=1*new Date();
-          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112649563', 'ym');
-
-      ym(112649563, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-    </script>
-    <!-- /Yandex.Metrika counter -->
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" type="image/png" href="/favicon-32.png" />
     <title>Страница не найдена — РИК</title>
     <style>body{margin:0;background:#eef5ff;color:#092b66;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}.box{max-width:720px;margin:12vh auto;padding:48px 32px;text-align:center}.logo{width:132px;height:auto}.code{margin:28px 0 0;color:#0b63ce;font-size:.8rem;font-weight:800;letter-spacing:.16em}.box h1{margin:8px 0 12px;font-size:clamp(2rem,6vw,3.5rem)}.box p{margin:0 auto 26px;max-width:520px;color:#46617f}.box a{display:inline-block;border-radius:9px;background:#0b63ce;padding:13px 20px;color:#fff;font-weight:750;text-decoration:none}.box a:focus-visible{outline:3px solid #092b66;outline-offset:3px}</style>
   </head>
-  <body><noscript><div><img src="https://mc.yandex.ru/watch/112649563" style="position:absolute; left:-9999px;" alt="" /></div></noscript><main class="box"><img class="logo" src="/logo.png" alt="РИК" /><p class="code">ОШИБКА 404</p><h1>Страница не найдена</h1><p>Такой страницы нет или её адрес изменился. Перейдите в каталог вентиляционного оборудования РИК.</p><a href="/products">Открыть каталог</a></main></body>
+  <body><main class="box"><img class="logo" src="/logo.png" alt="РИК" /><p class="code">ОШИБКА 404</p><h1>Страница не найдена</h1><p>Такой страницы нет или её адрес изменился. Перейдите в каталог вентиляционного оборудования РИК.</p><a href="/products">Открыть каталог</a></main></body>
 </html>
 `;
 await writeFile(path.join(dist, "404.html"), notFound, "utf8");

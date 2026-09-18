@@ -131,6 +131,9 @@ th { background: var(--surface); color: var(--brand-ink); }
 .req-form .file input { padding: 8px 0; }
 .req-form .consent { flex-direction: row; align-items: center; gap: 10px; font-weight: 500; }
 .req-form .consent input { width: 18px; height: 18px; }
+.req-form .consent span { line-height: 1.45; }
+.req-form .consent a, .form-policy-note a { color: var(--brand); text-underline-offset: 2px; }
+.form-policy-note { margin: -6px 0 0; color: var(--ink-2); font-size: .88rem; line-height: 1.5; }
 .req-form button { grid-column: 1 / -1; justify-self: start; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; }
 .req-err { grid-column: 1 / -1; color: #c0392b; font-weight: 600; }

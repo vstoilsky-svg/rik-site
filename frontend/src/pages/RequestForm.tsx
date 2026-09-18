@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
 
 const API = "/api/request";
@@ -12,8 +13,8 @@ export default function RequestForm() {
     setStatus("sending"); setErr("");
     const form = e.currentTarget;
     const data = new FormData(form);
-    if (!String(data.get("name")).trim() || !String(data.get("phone")).trim() || !String(data.get("email")).trim()) {
-      setStatus("err"); setErr("Заполните имя, телефон и e-mail."); return;
+    if (!String(data.get("name")).trim() || !String(data.get("phone")).trim()) {
+      setStatus("err"); setErr("Заполните имя и телефон."); return;
     }
     try {
       const r = await fetch(API, { method: "POST", body: data });
@@ -44,14 +45,16 @@ export default function RequestForm() {
         <label>Имя *<input name="name" required autoComplete="name" /></label>
         <label>Компания<input name="company" autoComplete="organization" /></label>
         <label>Телефон *<input name="phone" required inputMode="tel" autoComplete="tel" /></label>
-        <label>E-mail *<input name="email" required type="email" autoComplete="email" /></label>
+        <label>E-mail<input name="email" type="email" autoComplete="email" /></label>
         <label className="wide">Комментарий<textarea name="comment" rows={4} /></label>
         <label className="wide file">Прикрепить проект / ТЗ / спецификацию
           <input name="file" type="file" accept=".pdf,.xls,.xlsx,.doc,.docx,.dwg,.jpg,.png,.zip,.rar" />
         </label>
         <label className="wide consent">
-          <input name="consent" type="checkbox" required /> Согласен на обработку персональных данных
+          <input name="consent" type="checkbox" required />
+          <span>Даю согласие на обработку персональных данных в соответствии с <Link to="/personal-data-consent">Согласием на обработку персональных данных</Link>.</span>
         </label>
+        <p className="wide form-policy-note">Порядок обработки данных описан в <Link to="/privacy">Политике в отношении обработки персональных данных</Link>.</p>
         <input type="text" name="website" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         <button className="btn btn-primary" disabled={status === "sending"}>
           {status === "sending" ? "Отправляем…" : "Отправить запрос"}
