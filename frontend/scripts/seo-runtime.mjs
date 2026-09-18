@@ -15,7 +15,7 @@ export async function loadSeoData() {
   try {
     const module = await server.ssrLoadModule("/src/seo/routes.ts");
     const routes = module.SEO_ROUTES;
-    if (!Array.isArray(routes) || routes.length !== 137) throw new Error(`SEO route export is invalid: ${routes?.length}`);
+    if (!Array.isArray(routes) || routes.length !== 138) throw new Error(`SEO route export is invalid: ${routes?.length}`);
     for (const route of routes) {
       const imagePaths = new Set([route.image, route.criticalImage].filter(Boolean));
       for (const image of imagePaths) {

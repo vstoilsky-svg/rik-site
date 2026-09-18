@@ -41,6 +41,8 @@
 .footer-links { display: flex; flex-direction: column; gap: 8px; }
 .footer-links a { color: rgba(255,255,255,.85); text-decoration: none; }
 .footer-links a:hover { color: #fff; }
+.footer-cookie-settings { border: 0; padding: 0; background: transparent; color: rgba(255,255,255,.85); font: inherit; text-align: left; cursor: pointer; }
+.footer-cookie-settings:hover { color: #fff; text-decoration: underline; }
 .footer-bottom { padding: 16px 24px 32px; opacity: .6; font-size: .85rem; }
 .burger { display: none; width: 48px; height: 48px; border: 1px solid var(--line); background: var(--card); border-radius: var(--r-sm); font-size: 20px; cursor: pointer; align-items: center; justify-content: center; color: var(--brand-ink); }
 .mobile-menu { display: none; }

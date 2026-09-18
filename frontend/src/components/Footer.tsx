@@ -17,6 +17,8 @@ export default function Footer() {
           <Link to="/requisites">Реквизиты</Link>
           <Link to="/careers">Карьера</Link>
           <Link to="/privacy">Политика конфиденциальности</Link>
+          <Link to="/personal-data-consent">Согласие на обработку ПДн</Link>
+          <button type="button" className="footer-cookie-settings" onClick={() => window.dispatchEvent(new Event("rik:cookie-settings"))}>Настроить cookie</button>
         </nav>
         <div className="footer-contacts">
           <a href="tel:+74951043779">+7 (495) 104-37-79</a>

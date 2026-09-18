@@ -13,6 +13,7 @@ import "./rich.css";
 import "./rik-20260722-fixes.css";
 import "./home-sections.css";
 import ChatWidget from "./components/ChatWidget.jsx";
+import CookieConsent from "./components/CookieConsent";
 import NotFound from "./pages/NotFound";
 
 const ProductPage = lazy(() => import("./pages/ProductPage"));
@@ -27,6 +28,7 @@ const Certificates = lazy(() => import("./pages/Certificates"));
 const Questionnaires = lazy(() => import("./pages/Questionnaires"));
 const Requisites = lazy(() => import("./pages/Requisites"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const PersonalDataConsent = lazy(() => import("./pages/PersonalDataConsent"));
 const News = lazy(() => import("./pages/News"));
 const Careers = lazy(() => import("./pages/Careers"));
 const Recommendations = lazy(() => import("./pages/Recommendations"));
@@ -42,6 +44,7 @@ function Layout() {
       <main><Outlet /></main>
       <Footer />
       <ChatWidget />
+      <CookieConsent />
     </>
   );
 }
@@ -67,6 +70,7 @@ export default function App() {
             <Route path="/tehlisty" element={<TechSheets />} />
             <Route path="/requisites" element={<Requisites />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/personal-data-consent" element={<PersonalDataConsent />} />
             <Route path="/news" element={<News />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/recommendations" element={<Recommendations />} />
