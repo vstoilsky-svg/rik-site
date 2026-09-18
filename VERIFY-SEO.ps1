@@ -19,7 +19,7 @@ $routesJson = & node $seoScript --routes-json
 if ($LASTEXITCODE -ne 0) { throw "SEO route export failed: $LASTEXITCODE" }
 $routes = $routesJson | ConvertFrom-Json
 $routes = @($routes)
-if ($routes.Count -ne 137) { throw "Unexpected route count: $($routes.Count)" }
+if ($routes.Count -ne 138) { throw "Unexpected route count: $($routes.Count)" }
 
 $robots = Get-Content -LiteralPath (Join-Path $public 'robots.txt') -Raw -Encoding UTF8
 if (-not $robots.Contains('User-agent: *')) { throw 'robots.txt has no wildcard user-agent' }
