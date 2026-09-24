@@ -13,6 +13,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
+import { resolveSeoRoute } from "./seo/routes";
 
 type Location = {
   pathname: string;
@@ -44,6 +45,16 @@ const RouterContext = createContext<RouterValue | null>(null);
 const ParamsContext = createContext<Record<string, string>>({});
 const OutletContext = createContext<ReactNode>(null);
 
+function canonicalInternalLink(to: string): string {
+  if (!to.startsWith("/") || to.startsWith("//")) return to;
+  const boundary = to.search(/[?#]/);
+  const pathname = boundary < 0 ? to : to.slice(0, boundary);
+  const suffix = boundary < 0 ? "" : to.slice(boundary);
+  const route = resolveSeoRoute(pathname);
+  if (!route) return to;
+  return `${route.path === "/" ? "/" : `${route.path}/`}${suffix}`;
+}
+
 function currentLocation(): Location {
   return {
     pathname: window.location.pathname || "/",
@@ -70,7 +81,7 @@ export function BrowserRouter({ children }: { children: ReactNode }) {
   }, []);
 
   const navigate = useCallback((to: string, replace = false, state?: unknown) => {
-    const url = new URL(to, window.location.href);
+    const url = new URL(canonicalInternalLink(to), window.location.href);
     if (url.origin !== window.location.origin) {
       window.location.assign(url.href);
       return;
@@ -163,6 +174,7 @@ export function Link({
   ...props
 }: LinkProps) {
   const { navigate } = useRouter();
+  const href = canonicalInternalLink(to);
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(event);
     if (
@@ -176,14 +188,14 @@ export function Link({
       || download
     ) return;
 
-    const url = new URL(to, window.location.href);
+    const url = new URL(href, window.location.href);
     if (url.origin !== window.location.origin) return;
     event.preventDefault();
-    navigate(to, replace, state);
+    navigate(href, replace, state);
   };
 
   return (
-    <a href={to} target={target} download={download} onClick={handleClick} {...props}>
+    <a href={href} target={target} download={download} onClick={handleClick} {...props}>
       {children}
     </a>
   );

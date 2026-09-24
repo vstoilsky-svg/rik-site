@@ -45,6 +45,47 @@ export const STATIC_SEO: Record<string, StaticSeo> = {
   "/request": { title: "Запросить расчёт оборудования — РИК", description: "Отправьте заявку на подбор и расчёт вентиляционного оборудования РИК." },
 };
 
+// These pages have confirmed demand in the 2026-08-24 Wordstat route map.
+// Keep technical model names and product facts from the existing catalog.
+const PRODUCT_SEO_OVERRIDES: Record<string, { title: string; description: string }> = {
+  "deflektor": {
+    title: "Вентиляционный дефлектор — РИК",
+    description: "Вентиляционный дефлектор РИК усиливает естественную тягу за счёт ветрового и теплового напора. Характеристики и техническая документация.",
+  },
+  "elektricheskie-vozduhonagrevateli-re": {
+    title: "Электрические канальные нагреватели RE — РИК",
+    description: "Электрические канальные нагреватели RE для прямоугольных воздуховодов. Ступенчатое или плавное регулирование мощности, характеристики и документация.",
+  },
+  "filtry-vozdushnye-kassetnye-rf": {
+    title: "Кассетные фильтры для вентиляции RF — РИК",
+    description: "Кассетные фильтры RF для очистки приточного воздуха в системах вентиляции. Прямоугольные корпуса, фильтрующие вставки и техническая документация.",
+  },
+  "kanalnoe-oborudovanie": {
+    title: "Канальное оборудование для вентиляции — РИК",
+    description: "Канальное оборудование РИК для круглых и прямоугольных воздуховодов. Откройте нужное сечение, чтобы посмотреть изделия и технические листы.",
+  },
+  "kryshnye-ventilyatory-dymoudaleniya-vverh-krv-du": {
+    title: "Крышный вентилятор дымоудаления KRV-DU — РИК",
+    description: "Крышные вентиляторы дымоудаления KRV-DU с выбросом вверх для удаления дымогазовых смесей при пожаре. Характеристики и технический лист.",
+  },
+  "protivopozharnye-klapany": {
+    title: "Противопожарные клапаны РИК-1, РИК-2, РИК-3",
+    description: "Противопожарные клапаны РИК-1, РИК-2 и РИК-3 для систем пожарной безопасности и противодымной вентиляции. Пределы огнестойкости EI 60/90/120.",
+  },
+  "pryamougolnaya-vrezka-v-pryamougolnyj-kanal": {
+    title: "Врезка в прямоугольный воздуховод — РИК",
+    description: "Врезка прямоугольного сечения в прямоугольный воздуховод РИК. Исполнения, присоединительные размеры и технический лист.",
+  },
+  "shumoglushitel-plastinchatyj-pryamougolnyj-gp": {
+    title: "Пластинчатый шумоглушитель ГП для вентиляции — РИК",
+    description: "Пластинчатый шумоглушитель ГП для прямоугольных воздуховодов. Снижение шума в системе вентиляции, размеры и технический лист.",
+  },
+  "vodyanye-vozduhonagrevateli-rw": {
+    title: "Водяной канальный нагреватель RW — РИК",
+    description: "Водяные канальные нагреватели RW для подогрева приточного воздуха в прямоугольных воздуховодах. Характеристики и технический лист.",
+  },
+};
+
 const productNameCounts = PRODUCTS.reduce((counts, product) => {
   counts.set(product.name, (counts.get(product.name) ?? 0) + 1);
   return counts;
@@ -78,12 +119,13 @@ function compactDescription(value: string): string {
 
 function productRoute(product: Product): SeoRoute {
   const name = productDisplayName(product);
+  const seoOverride = PRODUCT_SEO_OVERRIDES[product.slug];
   const image = product.pageMedia?.[0]?.src ?? product.catalogMedia?.[0]?.src ?? product.photo ?? "/logo.png";
   const criticalImage = product.pageMedia?.[0]?.src ?? product.photo ?? image;
   return {
     path: `/product/${product.slug}`,
-    title: `${name} — оборудование РИК`,
-    description: compactDescription(`${name}. ${product.blurb}`),
+    title: seoOverride?.title ?? `${name} — оборудование РИК`,
+    description: compactDescription(seoOverride?.description ?? `${name}. ${product.blurb}`),
     image,
     criticalImage,
     responsiveCriticalImage: hasGenericResponsiveSource(criticalImage),
@@ -219,7 +261,7 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE_ORIGIN}/` },
         ...(route.kind === "product" || route.kind === "section"
-          ? [{ "@type": "ListItem", position: 2, name: "Продукция", item: `${SITE_ORIGIN}/products` }]
+          ? [{ "@type": "ListItem", position: 2, name: "Продукция", item: `${SITE_ORIGIN}/products/` }]
           : []),
         { "@type": "ListItem", position: route.kind === "static" ? 2 : 3, name: route.name, item: url },
       ],

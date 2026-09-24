@@ -3,6 +3,10 @@ ErrorDocument 404 /404.html
 
 RewriteEngine On
 
+# Redirect only an explicit /index.html request; DirectoryIndex for / must stay 200.
+RewriteCond %{THE_REQUEST} \s/+index\.html(?:[?\s]) [NC]
+RewriteRule ^index\.html$ https://rik-vent.ru/ [R=301,L,NE]
+
 # Preserve search equity from the pre-2026 Bitrix URL structure.
 # Directory rules accept both the historical trailing-slash URL and its
 # no-slash variant, but always land on the current canonical URL.

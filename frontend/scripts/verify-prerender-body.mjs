@@ -8,7 +8,8 @@ const dist = fixtureIndex >= 0 ? path.resolve(process.argv[fixtureIndex + 1]) : 
 const { routes } = await loadSeoData();
 const headings = new Map();
 const catalogRoutes = routes.filter((r) => r.kind === "product" || r.kind === "section");
-const navigation = ["/products", "/production", "/projects", "/designers", "/services", "/about", "/contacts"];
+const navigation = ["/products/", "/production/", "/projects/", "/designers/", "/services/", "/about/", "/contacts/"];
+const knownRoutes = new Set(routes.map((route) => route.path));
 const yandexVerification = "83eb63c1f46cb345";
 const yandexMetrikaId = "112649563";
 let tables = 0;
@@ -39,6 +40,14 @@ for (const route of routes) {
     if (plain(main).length < 80) throw new Error(`Application body too short: ${route.path}`);
     if (doc.querySelector("#root script") || /<template[^>]*data-(?:msg|dgst)=/.test(html)) throw new Error(`Incomplete or executable static render: ${route.path}`);
     if (doc.querySelector("#root form")) throw new Error(`Nonfunctional static form must not submit via GET: ${route.path}`);
+    for (const link of doc.querySelectorAll('#root a[href^="/"]')) {
+      const href = link.getAttribute("href");
+      if (!href || href.startsWith("//")) continue;
+      const pathname = new URL(href, "https://rik-vent.ru").pathname;
+      if (pathname !== "/" && knownRoutes.has(pathname.replace(/\/+$/, "")) && !pathname.endsWith("/")) {
+        throw new Error(`Noncanonical internal link ${href}: ${route.path}`);
+      }
+    }
     if (!doc.querySelector("details[data-rik-static-menu] > summary")) throw new Error(`Missing native no-JS mobile menu: ${route.path}`);
     for (const href of navigation) {
       if (!doc.querySelector(`[data-rik-static-menu] a[href="${href}"]`)) throw new Error(`Missing static navigation ${href}: ${route.path}`);
@@ -47,7 +56,7 @@ for (const route of routes) {
       const links = [...main.querySelectorAll("[data-rik-prerendered-catalog-link]")];
       if (links.length !== catalogRoutes.length || main.querySelectorAll("img").length < 20) throw new Error("Incomplete real catalog cards/index");
       for (const item of catalogRoutes) {
-        if (!links.some((a) => a.getAttribute("href") === item.path && plain(a) === item.name)) throw new Error(`Missing catalog item ${item.path}`);
+        if (!links.some((a) => a.getAttribute("href") === `${item.path}/` && plain(a) === item.name)) throw new Error(`Missing catalog item ${item.path}`);
       }
     }
     if (route.kind === "product" || route.kind === "section") {

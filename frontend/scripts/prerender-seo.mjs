@@ -12,13 +12,13 @@ const shellPath = path.join(dist, "index.html");
 const shell = await readFile(shellPath, "utf8");
 const { routes, canonicalUrl, structuredDataFor } = await loadSeoData();
 const primaryNavigation = [
-  ["/products", "Продукция"],
-  ["/production", "Производство"],
-  ["/projects", "Проекты"],
-  ["/designers", "Проектировщикам"],
-  ["/services", "Услуги"],
-  ["/about", "О компании"],
-  ["/contacts", "Контакты"],
+  ["/products/", "Продукция"],
+  ["/production/", "Производство"],
+  ["/projects/", "Проекты"],
+  ["/designers/", "Проектировщикам"],
+  ["/services/", "Услуги"],
+  ["/about/", "О компании"],
+  ["/contacts/", "Контакты"],
 ];
 const catalogRoutes = routes.filter((route) => route.kind === "product" || route.kind === "section");
 
@@ -61,7 +61,7 @@ function renderStaticControls() {
 
 function renderCatalogIndex() {
   const links = catalogRoutes
-    .map((catalogRoute) => `<li><a data-rik-prerendered-catalog-link="true" href="${escapeHtml(catalogRoute.path)}">${escapeHtml(catalogRoute.name)}</a></li>`)
+    .map((catalogRoute) => `<li><a data-rik-prerendered-catalog-link="true" href="${escapeHtml(canonicalUrl(catalogRoute).replace("https://rik-vent.ru", ""))}">${escapeHtml(catalogRoute.name)}</a></li>`)
     .join("\n            ");
 
   return `<section class="container section-body" data-rik-prerendered-catalog-index="true" aria-labelledby="rik-prerendered-catalog-title">
@@ -116,7 +116,7 @@ async function renderRouteBody(route) {
   container.querySelectorAll("form").forEach((form) => {
     const notice = dom.window.document.createElement("p");
     notice.className = "container section-body";
-    notice.innerHTML = 'Для отправки формы включите JavaScript или <a href="/contacts">свяжитесь с нами по телефону или электронной почте</a>.';
+    notice.innerHTML = 'Для отправки формы включите JavaScript или <a href="/contacts/">свяжитесь с нами по телефону или электронной почте</a>.';
     form.replaceWith(notice);
   });
   if (container.querySelector("script")) throw new Error(`Unexpected script in static body: ${route.path}`);
@@ -196,7 +196,7 @@ const notFound = `<!doctype html>
     <title>Страница не найдена — РИК</title>
     <style>body{margin:0;background:#eef5ff;color:#092b66;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}.box{max-width:720px;margin:12vh auto;padding:48px 32px;text-align:center}.logo{width:132px;height:auto}.code{margin:28px 0 0;color:#0b63ce;font-size:.8rem;font-weight:800;letter-spacing:.16em}.box h1{margin:8px 0 12px;font-size:clamp(2rem,6vw,3.5rem)}.box p{margin:0 auto 26px;max-width:520px;color:#46617f}.box a{display:inline-block;border-radius:9px;background:#0b63ce;padding:13px 20px;color:#fff;font-weight:750;text-decoration:none}.box a:focus-visible{outline:3px solid #092b66;outline-offset:3px}</style>
   </head>
-  <body><main class="box"><img class="logo" src="/logo.png" alt="РИК" /><p class="code">ОШИБКА 404</p><h1>Страница не найдена</h1><p>Такой страницы нет или её адрес изменился. Перейдите в каталог вентиляционного оборудования РИК.</p><a href="/products">Открыть каталог</a></main></body>
+  <body><main class="box"><img class="logo" src="/logo.png" alt="РИК" /><p class="code">ОШИБКА 404</p><h1>Страница не найдена</h1><p>Такой страницы нет или её адрес изменился. Перейдите в каталог вентиляционного оборудования РИК.</p><a href="/products/">Открыть каталог</a></main></body>
 </html>
 `;
 await writeFile(path.join(dist, "404.html"), notFound, "utf8");
