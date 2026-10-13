@@ -48,7 +48,7 @@ RewriteRule ^auth/?$ https://rik-vent.ru/ [R=301,L,NE]
 RewriteRule ^contacts/stores/s1/?$ https://rik-vent.ru/contacts/ [R=301,L,NE]
 
 # Indexed legacy model cards keep the closest current product/category intent.
-# Final namespace fallbacks prevent any remaining Bitrix result from landing on 404.
+# Unknown legacy addresses remain true 404; only confirmed mappings redirect.
 RewriteRule ^catalog/sektsii_plastinchatykh_rekuperatorov_rp/[0-9]+/?$ https://rik-vent.ru/product/centralnye-ustanovki/plastinchatye-rekuperatory/ [R=301,L,NE]
 RewriteRule ^catalog/elektricheskie_vozdukhonagrevateli_euuu/[0-9]+/?$ https://rik-vent.ru/product/centralnye-ustanovki/elektricheskie-nagrevateli/ [R=301,L,NE]
 RewriteRule ^catalog/sektsiya_isparitelya_freonovogo_cxy/[0-9]+/?$ https://rik-vent.ru/product/centralnye-ustanovki/freonovye-ohladiteli/ [R=301,L,NE]
@@ -72,14 +72,7 @@ RewriteRule ^catalog/elektricheskie_vozdukhonagrevateli_/[0-9]+/?$ https://rik-v
 RewriteRule ^catalog/zaslonki_kruglye/?$ https://rik-vent.ru/product/kanalnoe-krugloe/ [R=301,L,NE]
 RewriteRule ^catalog/vodyanye_vozdukhonagrevateli_/?$ https://rik-vent.ru/product/vodyanye-vozduhonagrevateli-rw-kruglye/ [R=301,L,NE]
 RewriteRule ^catalog/obratnye_klapany_ro/?$ https://rik-vent.ru/product/klapan-obratnyj-ro-kruglyj/ [R=301,L,NE]
-RewriteRule ^catalog/fankoyly(?:/.*)?/?$ https://rik-vent.ru/products/ [R=301,L,NE]
-RewriteRule ^catalog(?:/.*)?/?$ https://rik-vent.ru/products/ [R=301,L,NE]
-RewriteRule ^upload/medialibrary/.*\.pdf$ https://rik-vent.ru/tehlisty/ [R=301,L,NE]
-RewriteRule ^company/blog(?:/.*)?/?$ https://rik-vent.ru/news/ [R=301,L,NE]
-RewriteRule ^company(?:/.*)?/?$ https://rik-vent.ru/about/ [R=301,L,NE]
-RewriteRule ^dostavka-oplata-garantii(?:/.*)?/?$ https://rik-vent.ru/contacts/ [R=301,L,NE]
-RewriteRule ^sale(?:/.*)?/?$ https://rik-vent.ru/news/ [R=301,L,NE]
-RewriteRule ^help(?:/.*)?/?$ https://rik-vent.ru/contacts/ [R=301,L,NE]
+RewriteRule ^catalog/fankoyly/fankoyl_kanalnyy/fankoyl_kanalnyy_gorizontalnyy/?$ https://rik-vent.ru/products/ [R=301,L,NE]
 
 # Exported routes are directories; redirect directly to their final HTTPS URL.
 RewriteCond %{REQUEST_FILENAME} -d
@@ -103,6 +96,8 @@ RewriteRule ^ - [L]
 # Unknown URLs must stay real 404 responses instead of becoming soft 404s.
 
 <IfModule mod_headers.c>
+  # Certificates are supporting documents; product pages and technical PDFs remain indexable.
+  Header set X-Robots-Tag "noindex, follow" env=rik_certificate_pdf
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
@@ -114,6 +109,10 @@ RewriteRule ^ - [L]
   <FilesMatch "\.(?:html|xml|txt|json)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
+</IfModule>
+
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "^/docs/certificates/.*\\.pdf$" rik_certificate_pdf=1
 </IfModule>
 
 <IfModule mod_mime.c>

@@ -101,7 +101,11 @@ jobs:
             /Definitely-Not-A-Real-Route \
             /product/definitely-not-a-product \
             /product/centralnye-ustanovki/definitely-not-a-section \
-            /recommendations/definitely-not-an-asset; do
+            /recommendations/definitely-not-an-asset \
+            /catalog/definitely-not-a-legacy-product \
+            /company/blog/definitely-not-an-article \
+            /upload/medialibrary/missing-file.pdf \
+            /sale/definitely-not-an-offer; do
             test "$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080${route}")" = "404"
           done
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/product/ventilyatorrrry-kryshnye-krv-v)" = "301"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
+import { trackGoal } from "../lib/metrika";
 
 const API = "/api/request";
 
@@ -19,6 +20,7 @@ export default function RequestForm() {
     try {
       const r = await fetch(API, { method: "POST", body: data });
       if (!r.ok) throw new Error("Сервер вернул " + r.status);
+      trackGoal("request_success");
       setStatus("ok"); form.reset();
     } catch {
       setStatus("err"); setErr("Не удалось отправить. Позвоните нам: +7 (495) 104-37-79.");

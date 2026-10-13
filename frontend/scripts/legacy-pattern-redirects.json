@@ -139,50 +139,8 @@
   },
   {
     "name": "Legacy fancoil catalog",
-    "pattern": "catalog/fankoyly(?:/.*)?/?",
+    "pattern": "catalog/fankoyly/fankoyl_kanalnyy/fankoyl_kanalnyy_gorizontalnyy/?",
     "newPath": "/products/",
     "samples": ["/catalog/fankoyly/fankoyl_kanalnyy/fankoyl_kanalnyy_gorizontalnyy/"]
-  },
-  {
-    "name": "Remaining legacy catalog",
-    "pattern": "catalog(?:/.*)?/?",
-    "newPath": "/products/",
-    "samples": ["/catalog/unknown-legacy-card/123/"]
-  },
-  {
-    "name": "Remaining legacy PDF library",
-    "pattern": "upload/medialibrary/.*\\.pdf",
-    "newPath": "/tehlisty/",
-    "samples": ["/upload/medialibrary/a07/uiup91f3x2s0qa4v7bkgbuxh6m3ix6mf.pdf"]
-  },
-  {
-    "name": "Remaining legacy company blog",
-    "pattern": "company/blog(?:/.*)?/?",
-    "newPath": "/news/",
-    "samples": ["/company/blog/234/"]
-  },
-  {
-    "name": "Remaining legacy company pages",
-    "pattern": "company(?:/.*)?/?",
-    "newPath": "/about/",
-    "samples": ["/company/old-section/"]
-  },
-  {
-    "name": "Remaining delivery and guarantee pages",
-    "pattern": "dostavka-oplata-garantii(?:/.*)?/?",
-    "newPath": "/contacts/",
-    "samples": ["/dostavka-oplata-garantii/old/"]
-  },
-  {
-    "name": "Remaining sale pages",
-    "pattern": "sale(?:/.*)?/?",
-    "newPath": "/news/",
-    "samples": ["/sale/old/"]
-  },
-  {
-    "name": "Remaining legacy help pages",
-    "pattern": "help(?:/.*)?/?",
-    "newPath": "/contacts/",
-    "samples": ["/help/old/"]
   }
 ]

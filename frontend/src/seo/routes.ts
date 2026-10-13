@@ -1,6 +1,7 @@
 import { PRODUCTS, type Product } from "../data/catalog";
 import { CENTRAL_SECTIONS, type CentralSection } from "../data/central-sections";
 import { hasGenericResponsiveSource } from "../data/responsive-images";
+import { PRODUCT_GUIDES } from "../data/product-guides";
 
 export const SITE_ORIGIN = "https://rik-vent.ru";
 export const DEFAULT_DESCRIPTION =
@@ -18,6 +19,8 @@ export type SeoRoute = {
   ogType: "website" | "product";
   kind: SeoRouteKind;
   name: string;
+  indexable?: boolean;
+  lastModified?: string;
 };
 
 type StaticSeo = { title: string; description: string; image?: string };
@@ -95,6 +98,34 @@ const productNameCounts = PRODUCTS.reduce((counts, product) => {
   return counts;
 }, new Map<string, number>());
 
+const PRODUCT_TITLE_OVERRIDES: Record<string, string> = {
+  "elektricheskie-vozduhonagrevateli-re-kruglye": "Круглые электрические воздухонагреватели RE — РИК",
+  "inspekcionnyj-lyuk-dlya-pryamougolnogo-kanala": "Инспекционный люк прямоугольного воздуховода — РИК",
+  "kkb-rra-i2": "Инверторные компрессорно-конденсаторные блоки RRA I2 — РИК",
+  "kruglaya-vrezka-v-pryamougolnyj-kanal": "Круглая врезка в прямоугольный воздуховод — РИК",
+  "pryamougolnaya-vrezka-v-kruglyj-kanal": "Прямоугольная врезка в круглый воздуховод — РИК",
+  "ventilyator-vr": "Канальный вентилятор VR с загнутыми назад лопатками — РИК",
+  "ventilyatory-kryshnye-krv-v": "Крышные вентиляторы KRV-V с выбросом в сторону — РИК",
+  "zaslonka-rkz-s-obogrevom": "Регулирующая заслонка RSn с обогревом — РИК",
+};
+
+const SECTION_TITLE_OVERRIDES: Record<string, string> = {
+  "sekcii-smesheniya": "Секции смешения воздуха RP и промежуточные RU — РИК",
+  "ventilyatornye-s-rezervom": "Вентиляторные секции с резервом RV1-R и RV2-R — РИК",
+  "ventilyatornye-vzryvozashchishchennye": "Взрывозащищённые вентиляторные секции RV1-Ex и RV2-Ex — РИК",
+  "zaslonka-s-obogrevom": "Регулирующая заслонка с обогревом для ЦК RSn — РИК",
+};
+
+// Даты только фактических содержательных правок, не дата очередной сборки.
+const PAGE_LAST_MODIFIED: Record<string, string> = {
+  "/contractors": "2026-09-24",
+  "/product/kruglyj-perehod": "2026-09-24",
+  "/recommendations": "2026-10-13",
+  ...Object.fromEntries(Object.keys(PRODUCT_GUIDES).map((slug) => [`/product/${slug}`, "2026-10-13"])),
+  ...Object.fromEntries(Object.keys(PRODUCT_TITLE_OVERRIDES).map((slug) => [`/product/${slug}`, "2026-10-13"])),
+  ...Object.fromEntries(Object.keys(SECTION_TITLE_OVERRIDES).map((slug) => [`/product/centralnye-ustanovki/${slug}`, "2026-10-13"])),
+};
+
 function geometryQualifier(slug: string): string | undefined {
   if (/^(?:kruglyj|kruglaya)-/.test(slug)) return "круглого сечения";
   if (/^(?:pryamougolnyj|pryamougolnaya)-/.test(slug)) return "прямоугольного сечения";
@@ -128,7 +159,7 @@ function productRoute(product: Product): SeoRoute {
   const criticalImage = product.pageMedia?.[0]?.src ?? product.photo ?? image;
   return {
     path: `/product/${product.slug}`,
-    title: seoOverride?.title ?? `${name} — оборудование РИК`,
+    title: PRODUCT_TITLE_OVERRIDES[product.slug] ?? seoOverride?.title ?? `${name} — оборудование РИК`,
     description: compactDescription(seoOverride?.description ?? `${name}. ${product.blurb}`),
     image,
     criticalImage,
@@ -143,7 +174,7 @@ function sectionRoute(section: CentralSection): SeoRoute {
   const name = `${section.name} ${section.marking}`;
   return {
     path: `/product/centralnye-ustanovki/${section.route}`,
-    title: `${name} — секция РИК`,
+    title: SECTION_TITLE_OVERRIDES[section.route] ?? `${name} — секция РИК`,
     description: compactDescription(`${name}. ${section.desc}`),
     image: section.photo,
     criticalImage: section.photo,
@@ -162,13 +193,17 @@ const staticRoutes: SeoRoute[] = Object.entries(STATIC_SEO).map(([path, seo]) =>
   ogType: "website",
   kind: "static",
   name: seo.title.replace(/\s+[—-]\s+РИК$/, ""),
+  indexable: !["/privacy", "/personal-data-consent"].includes(path),
 }));
 
 export const SEO_ROUTES: SeoRoute[] = [
   ...staticRoutes,
   ...PRODUCTS.map(productRoute),
   ...CENTRAL_SECTIONS.map(sectionRoute),
-];
+].map((route) => ({
+  ...route,
+  lastModified: PAGE_LAST_MODIFIED[route.path],
+}));
 
 function assertUnique(values: string[], label: string) {
   const seen = new Set<string>();
@@ -213,6 +248,10 @@ export function resolveSeoRoute(pathname: string): SeoRoute | undefined {
 
 export function canonicalUrl(route: SeoRoute): string {
   return `${SITE_ORIGIN}${route.path === "/" ? "/" : `${route.path}/`}`;
+}
+
+export function robotsContentFor(route?: SeoRoute): string {
+  return route && route.indexable !== false ? "index, follow, max-image-preview:large" : "noindex, follow";
 }
 
 export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {

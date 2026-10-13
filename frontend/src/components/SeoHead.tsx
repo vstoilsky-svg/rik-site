@@ -7,6 +7,7 @@ import {
   normalizeSeoPath,
   resolveSeoRoute,
   structuredDataFor,
+  robotsContentFor,
 } from "../seo/routes";
 
 function setMeta(attribute: "name" | "property", key: string, content: string) {
@@ -32,7 +33,7 @@ export default function SeoHead() {
 
     document.title = title;
     setMeta("name", "description", description);
-    setMeta("name", "robots", seo ? "index, follow, max-image-preview:large" : "noindex, follow");
+    setMeta("name", "robots", robotsContentFor(seo));
     setMeta("property", "og:title", title);
     setMeta("property", "og:description", description);
     setMeta("property", "og:url", currentCanonical);
