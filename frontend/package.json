@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "postbuild": "node scripts/prerender-seo.mjs && node scripts/verify-prerender-body.mjs && node scripts/verify-privacy-compliance.mjs",
+    "postbuild": "node scripts/prerender-seo.mjs && node scripts/verify-prerender-body.mjs && node scripts/verify-privacy-compliance.mjs && node scripts/verify-seo-closeout.mjs",
     "generate:seo": "node scripts/seo-artifacts.mjs",
     "verify:seo": "node scripts/seo-artifacts.mjs --check",
     "verify:prerender": "node scripts/verify-prerender-body.mjs",

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
 import { PROJECTS } from "./Projects";
+import { trackGoal } from "../lib/metrika";
 
 const SCOPE = ["Проектирование", "Производство", "Комплектация", "Монтаж", "Пусконаладка", "Сервис"];
 
@@ -53,6 +54,7 @@ export default function ForContractors() {
     try {
       const response = await fetch("/api/request", { method: "POST", body: new FormData(form) });
       if (!response.ok) throw new Error("Сервис временно недоступен");
+      trackGoal("project_success");
       form.reset();
       setStatus("ok");
     } catch (err) {

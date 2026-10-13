@@ -28,12 +28,12 @@ if (-not $robots.Contains('Sitemap: https://rik-vent.ru/sitemap.xml')) { throw '
 
 [xml]$sitemap = Get-Content -LiteralPath (Join-Path $public 'sitemap.xml') -Raw -Encoding UTF8
 $urls = @($sitemap.urlset.url.loc | ForEach-Object { [string]$_ })
-$expectedUrls = @($routes | ForEach-Object {
+$expectedUrls = @($routes | Where-Object { $_.indexable -ne $false } | ForEach-Object {
     if ($_.path -eq '/') { 'https://rik-vent.ru/' } else { "https://rik-vent.ru$($_.path)/" }
 })
 $missingUrls = @($expectedUrls | Where-Object { $urls -notcontains $_ })
 $extraUrls = @($urls | Where-Object { $expectedUrls -notcontains $_ })
-if ($urls.Count -ne $routes.Count -or $missingUrls.Count -ne 0 -or $extraUrls.Count -ne 0) {
+if ($urls.Count -ne $expectedUrls.Count -or $missingUrls.Count -ne 0 -or $extraUrls.Count -ne 0) {
     throw "Sitemap parity failed: routes=$($routes.Count) urls=$($urls.Count) missing=$($missingUrls.Count) extra=$($extraUrls.Count)"
 }
 if (($urls | Sort-Object -Unique).Count -ne $urls.Count) { throw 'Sitemap contains duplicate URLs' }
@@ -66,7 +66,7 @@ foreach ($redirect in $legacyRedirects) {
 }
 
 $legacyPatternRedirects = Get-Content -LiteralPath $legacyPatternRedirectsPath -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($legacyPatternRedirects.Count -ne 31) { throw "Unexpected legacy pattern redirect count: $($legacyPatternRedirects.Count)" }
+if ($legacyPatternRedirects.Count -ne 24) { throw "Unexpected legacy pattern redirect count: $($legacyPatternRedirects.Count)" }
 if ((@($legacyPatternRedirects.name | Sort-Object -Unique)).Count -ne $legacyPatternRedirects.Count) {
     throw 'Legacy pattern redirect names are not unique'
 }

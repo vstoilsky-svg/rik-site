@@ -19,6 +19,7 @@ import SafeHtml from "../components/SafeHtml";
 import ResponsiveCardImage from "../components/ResponsiveCardImage";
 import { hasGenericResponsiveSource } from "../data/responsive-images";
 import { productDisplayName } from "../seo/routes";
+import { PRODUCT_GUIDES } from "../data/product-guides";
 
 const PRODUCT_HERO_IMAGE_SIZES = "(max-width: 760px) calc(100vw - 84px), 600px";
 
@@ -58,6 +59,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
         : null;
   // Хабы канального оборудования: вместо тех.блоков — карточки товаров
   const isRoundHub = p.slug === "kanalnoe-krugloe";
+  const guide = PRODUCT_GUIDES[p.slug];
   const isRectHub = p.slug === "kanalnoe-pryamougolnoe";
   const isHub = isRoundHub || isRectHub;
   const ductHubFamily = familyForHubSlug(p.slug);
@@ -178,6 +180,13 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
       </div>
 
       <div className="container product-content">
+        {guide && (
+          <section className="block" id="selection-guide" data-toc="Подбор оборудования">
+            <h2>{guide.title}</h2>
+            {guide.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            <ul>{guide.links.map((link) => <li key={link.to}><Link to={link.to}>{link.label}</Link></li>)}</ul>
+          </section>
+        )}
         {isRoundHub && <ChannelRoundCards />}
         {isRectHub && <ChannelRectCards />}
         {p.slug === "vozduhovody-i-fasonnye-izdeliya" && <DuctSections />}

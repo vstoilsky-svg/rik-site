@@ -130,7 +130,7 @@ function renderRoute(route, body) {
   let html = shell;
   html = replaceOne(html, /<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(route.title)}</title>`, "title");
   html = replaceOne(html, /<meta name="description" content="[^"]*"\s*\/>/, `<meta name="description" content="${escapeHtml(route.description)}" />`, "description");
-  html = replaceOne(html, /<meta name="robots" content="[^"]*"\s*\/>/, '<meta name="robots" content="index, follow, max-image-preview:large" />', "robots");
+  html = replaceOne(html, /<meta name="robots" content="[^"]*"\s*\/>/, `<meta name="robots" content="${route.indexable === false ? "noindex, follow" : "index, follow, max-image-preview:large"}" />`, "robots");
   html = replaceOne(html, /<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="${escapeHtml(url)}" />`, "canonical");
   html = replaceOne(html, /<meta property="og:type" content="[^"]*"\s*\/>/, `<meta property="og:type" content="${route.ogType}" />`, "og:type");
   html = replaceOne(html, /<meta property="og:title" content="[^"]*"\s*\/>/, `<meta property="og:title" content="${escapeHtml(route.title)}" />`, "og:title");
