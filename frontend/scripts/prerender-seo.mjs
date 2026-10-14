@@ -33,10 +33,6 @@ function replaceOne(input, pattern, replacement, label) {
   return input.replace(pattern, replacement);
 }
 
-function responsiveDerivative(src, width) {
-  return src.replace(/\.png$/i, `-responsive-${width}.webp`);
-}
-
 function renderStaticControls() {
   return `<style data-rik-prerendered-styles="true">
       [data-rik-prerendered-navigation]{position:static}
@@ -83,6 +79,7 @@ for (const key of ["window", "document", "localStorage"]) {
 }
 const renderServer = await createServer({ root: frontendRoot, server: { middlewareMode: true }, appType: "custom", logLevel: "silent" });
 const { default: App } = await renderServer.ssrLoadModule("/src/App.tsx");
+const { IMAGE_ASSETS } = await renderServer.ssrLoadModule("/src/data/image-assets.generated.ts");
 
 async function renderRouteBody(route) {
   dom.reconfigure({ url: `https://rik-vent.ru${route.path}` });
@@ -100,6 +97,9 @@ async function renderRouteBody(route) {
   });
   const container = dom.window.document.createElement("div");
   container.innerHTML = raw;
+  // React 19 emits image hints in the streamed body. We write one exact,
+  // viewport-aware critical hint in head instead; do not duplicate it.
+  container.querySelectorAll('link[rel="preload"][as="image"]').forEach(node => node.remove());
   const main = container.querySelector("main");
   const header = container.querySelector("header.site-header");
   if (!main || !header || main.querySelectorAll("h1").length !== 1 || !container.querySelector("footer")) {
@@ -143,14 +143,25 @@ function renderRoute(route, body) {
     `<meta name="twitter:card" content="summary_large_image" />\n    <meta name="twitter:title" content="${escapeHtml(route.title)}" />\n    <meta name="twitter:description" content="${escapeHtml(route.description)}" />\n    <meta name="twitter:image" content="${escapeHtml(image)}" />\n    <script id="rik-structured-data" type="application/ld+json">${jsonLd}</script>`,
     "twitter metadata",
   );
+  const preview = dom.window.document.createElement("div");
+  preview.innerHTML = body;
+  const realHero = preview.querySelector(".product-media img, .cs-hero-media img");
   const criticalImage = route.path === "/" || route.path === "/products"
     ? "/photo/home-hero-light.webp"
     : route.path.startsWith("/product/")
-      ? route.criticalImage ?? route.image
+      ? realHero?.getAttribute("src") ?? null
       : null;
   if (criticalImage) {
-    const preload = route.responsiveCriticalImage
-      ? `<link rel="preload" as="image" href="${escapeHtml(responsiveDerivative(criticalImage, 640))}" imagesrcset="${escapeHtml(responsiveDerivative(criticalImage, 640))} 640w, ${escapeHtml(responsiveDerivative(criticalImage, 1280))} 1280w" imagesizes="(max-width: 760px) calc(100vw - 84px), 600px" fetchpriority="high" />`
+    const matchingImage = [...preview.querySelectorAll("img")].find(img => img.getAttribute("src") === criticalImage);
+    const responsiveSource = matchingImage?.parentElement.querySelector("source");
+    const directSrcset = matchingImage?.getAttribute("srcset") || responsiveSource?.getAttribute("srcset");
+    const directSizes = matchingImage?.getAttribute("sizes") || responsiveSource?.getAttribute("sizes");
+    const background = IMAGE_ASSETS[criticalImage];
+    const heroCandidate = (w) => background?.variants.find(v => v.width >= w)?.src ?? background?.variants.at(-1)?.src ?? criticalImage;
+    const preload = criticalImage === "/photo/home-hero-light.webp"
+      ? `<link rel="preload" as="image" href="${escapeHtml(heroCandidate(1920))}" media="(min-width: 761px)" fetchpriority="high" />\n    <link rel="preload" as="image" href="${escapeHtml(heroCandidate(640))}" imagesrcset="${escapeHtml(heroCandidate(640))} 1x, ${escapeHtml(heroCandidate(1280))} 2x" media="(max-width: 760px)" fetchpriority="high" />`
+      : directSrcset
+      ? `<link rel="preload" as="image" href="${escapeHtml(criticalImage)}" imagesrcset="${escapeHtml(directSrcset)}" imagesizes="${escapeHtml(directSizes)}" fetchpriority="high" />`
       : `<link rel="preload" as="image" href="${escapeHtml(criticalImage)}" fetchpriority="high" />`;
     html = replaceOne(
       html,

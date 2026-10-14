@@ -70,7 +70,7 @@
 .stat-label { color: var(--ink-2); font-size: .9rem; margin-top: 8px; }
 
 /* Габаритный чертёж над таблицей размеров */
-.scheme-img { display: block; max-width: 100%; width: auto; max-height: 340px; margin: 4px 0 18px;
+.scheme-img { display: block; max-width: 100%; width: auto; height: auto; max-height: 340px; margin: 4px 0 18px;
   background: #fff; border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px; }
 .duct-product .duct-rich h3:first-child { margin-top: 0; }
 .duct-product .duct-rich h3 + .table-wrap { margin-top: 8px; }

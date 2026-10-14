@@ -1,0 +1,3 @@
+/* Generated from the unchanged home hero, no crop or content edits. */
+:root, :root[data-theme="light"] { --hero-image: url('/photo/home-hero-light.webp'); }
+@media(max-width:760px){ :root, :root[data-theme="light"] { --hero-image: image-set(url('/photo/home-hero-light.webp') 1x, url('/photo/home-hero-light.webp') 2x); } }

@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
@@ -105,7 +106,7 @@ export default function TechSheets() {
                       {product.photo
                         ? hasGenericResponsiveSource(product.photo)
                           ? <ResponsiveCardImage src={product.photo} alt="" sizes="180px" profile="generic-card" />
-                          : <img src={product.photo} alt="" loading="lazy" />
+                          : <SiteImage src={product.photo} alt="" loading="lazy" sizes="180px" />
                         : <span>РИК</span>}
                     </Link>
                     <div className="ts-body">
@@ -125,7 +126,7 @@ export default function TechSheets() {
                       {product.photo
                         ? hasGenericResponsiveSource(product.photo)
                           ? <ResponsiveCardImage src={product.photo} alt="" sizes="180px" profile="generic-card" />
-                          : <img src={product.photo} alt="" loading="lazy" />
+                          : <SiteImage src={product.photo} alt="" loading="lazy" sizes="180px" />
                         : <span>РИК</span>}
                     </Link>
                     <div className="ts-body">

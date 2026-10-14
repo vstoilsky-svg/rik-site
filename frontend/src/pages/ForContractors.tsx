@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
@@ -105,7 +106,7 @@ export default function ForContractors() {
           <div className="proj-cards contractor-projects">
             {PROJECTS.map((project) => (
               <article className="proj-card" key={project.name}>
-                {project.img && <div className="proj-media"><img src={`/photo/projects/${project.img.includes(".") ? project.img : `${project.img}.png`}`} alt={project.name} loading="lazy" /></div>}
+                {project.img && <div className="proj-media"><SiteImage src={`/photo/projects/${project.img.includes(".") ? project.img : `${project.img}.png`}`} alt={project.name} loading="lazy" /></div>}
                 <div className="proj-body"><span className="proj-cat">{project.cat}</span><h3>{project.name}</h3><p>{project.desc}</p></div>
               </article>
             ))}
@@ -121,7 +122,7 @@ export default function ForContractors() {
             {CLIENT_LETTERS.map((letter) => (
               <figure className="client-letter-card" key={letter.src}>
                 <a href={letter.src} target="_blank" rel="noreferrer" aria-label={`Открыть письмо «${letter.title}»`}>
-                  <img src={letter.src} alt={`Рекомендательное письмо — ${letter.title}`} loading="lazy" />
+                  <SiteImage src={letter.src} alt={`Рекомендательное письмо — ${letter.title}`} loading="lazy" />
                 </a>
                 <figcaption>{letter.title}</figcaption>
               </figure>
@@ -136,7 +137,7 @@ export default function ForContractors() {
           </div>
           <div className="presentation-viewer">
             <button type="button" className="slide-arrow slide-prev" onClick={previous} aria-label="Предыдущий слайд">‹</button>
-            <figure><img src={SLIDES[slide]} alt={`Презентация РИК — слайд ${slide + 1}`} /><figcaption>Слайд {slide + 1} из {SLIDES.length}</figcaption></figure>
+            <figure><SiteImage src={SLIDES[slide]} alt={`Презентация РИК — слайд ${slide + 1}`} /><figcaption>Слайд {slide + 1} из {SLIDES.length}</figcaption></figure>
             <button type="button" className="slide-arrow slide-next" onClick={next} aria-label="Следующий слайд">›</button>
           </div>
           <div className="slide-dots" aria-label="Навигация по слайдам">

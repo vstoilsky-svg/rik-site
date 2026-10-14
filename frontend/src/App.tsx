@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Catalog from "./pages/Catalog";
 import "./theme.css";
+import "./image-hero.generated.css";
 import "./layout.css";
 import "./catalog.css";
 import "./rich.css";

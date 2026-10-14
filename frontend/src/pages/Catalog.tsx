@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { GROUPS, byGroupCatalog, type Product } from "../data/catalog";
@@ -27,7 +28,7 @@ function Card({ p }: { p: Product }) {
                       profile="generic-card"
                     />
                   )
-                  : <img src={m.src} alt="" loading="lazy" fetchPriority="low" />}
+                  : <SiteImage src={m.src} alt="" loading="lazy" fetchPriority="low" sizes="(max-width: 700px) calc(100vw - 64px), 520px" />}
               </span>
               <figcaption>{m.label}</figcaption>
             </figure>
@@ -45,7 +46,7 @@ function Card({ p }: { p: Product }) {
                   profile="generic-card"
                 />
               )
-              : <img src={p.photo} alt="" loading="lazy" fetchPriority="low" />
+              : <SiteImage src={p.photo} alt="" loading="lazy" fetchPriority="low" sizes="(max-width: 700px) calc(100vw - 32px), 300px" />
             : <span className="ph-sm">рендер готовится</span>}
         </span>
       )}

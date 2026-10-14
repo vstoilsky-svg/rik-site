@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { PageHero } from "../components/rich";
 import { Link } from "react-router-dom";
 
@@ -34,7 +35,7 @@ export default function Recommendations() {
           {LETTERS.map((letter) => (
             <figure className="client-letter-card" key={letter.src}>
               <a href={letter.src} target="_blank" rel="noopener noreferrer" aria-label={`Открыть письмо: ${letter.title}`}>
-                <img src={letter.src} alt={`Рекомендательное письмо — ${letter.title}`} loading="lazy" />
+                <SiteImage src={letter.src} alt={`Рекомендательное письмо — ${letter.title}`} loading="lazy" />
               </a>
               <figcaption>{letter.title}</figcaption>
             </figure>
