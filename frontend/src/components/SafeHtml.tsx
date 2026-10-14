@@ -1,12 +1,14 @@
 import DOMPurify from "dompurify";
+import { IMAGE_ASSETS } from "../data/image-assets.generated";
 
 type SafeHtmlProps = {
   html: string;
   className?: string;
+  imageContext?: string;
 };
 
 /** Render catalog HTML only after removing executable and layout-breaking markup. */
-export default function SafeHtml({ html, className }: SafeHtmlProps) {
+export default function SafeHtml({ html, className, imageContext }: SafeHtmlProps) {
   const sanitizedRoot = DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
     FORBID_TAGS: ["script", "style", "iframe", "object", "embed", "form"],
@@ -33,5 +35,21 @@ export default function SafeHtml({ html, className }: SafeHtmlProps) {
     });
   });
 
+  sanitizedRoot.querySelectorAll("img").forEach((img) => {
+    const asset = IMAGE_ASSETS[img.getAttribute("src") ?? ""];
+    if (!asset) return;
+    if (!img.hasAttribute("alt")) {
+      img.alt = img.closest("figure")?.querySelector("figcaption")?.textContent?.trim()
+        || (imageContext ? `Техническая иллюстрация — ${imageContext}` : "Иллюстрация к техническому описанию");
+    }
+    img.width = asset.width;
+    img.height = asset.height;
+    img.setAttribute("loading", "lazy");
+    img.setAttribute("decoding", "async");
+    if (asset.variants.length) {
+      img.srcset = asset.variants.map(v => `${v.src} ${v.width}w`).join(", ");
+      img.sizes = "(max-width: 760px) calc(100vw - 48px), 1120px";
+    }
+  });
   return <div className={className} dangerouslySetInnerHTML={{ __html: sanitizedRoot.innerHTML }} />;
 }

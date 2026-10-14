@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { Link } from "react-router-dom";
 import { bySlug } from "../data/catalog";
 import ResponsiveCardImage from "./ResponsiveCardImage";
@@ -30,7 +31,7 @@ export default function ChannelRoundCards() {
                 {p.photo && !p.placeholder
                   ? hasGenericResponsiveSource(p.photo)
                     ? <ResponsiveCardImage src={p.photo} alt={it.label} sizes="190px" profile="generic-card" />
-                    : <img src={p.photo} alt={it.label} loading="lazy" />
+                    : <SiteImage src={p.photo} alt={it.label} loading="lazy" sizes="320px" />
                   : <div className="ph">Фото готовится</div>}
               </div>
               <span className="cs-card-btn">{it.label}</span>

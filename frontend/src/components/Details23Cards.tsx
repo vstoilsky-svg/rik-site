@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { Link } from "react-router-dom";
 import { bySlug } from "../data/catalog";
 
@@ -39,7 +40,7 @@ export default function Details23Cards() {
           return (
             <Link className="cs-card" to={`/product/${it.slug}`} key={it.slug}>
               <div className="cs-card-media">
-                {p.photo ? <img src={p.photo} alt={it.label} loading="lazy" /> : <div className="ph">Фото готовится</div>}
+                {p.photo ? <SiteImage src={p.photo} alt={it.label} loading="lazy" sizes="320px" /> : <div className="ph">Фото готовится</div>}
               </div>
               <span className="cs-card-btn">{it.label}</span>
             </Link>

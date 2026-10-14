@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Product } from "../data/catalog";
@@ -102,8 +103,9 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
                       />
                     )
                     : (
-                      <img
+                      <SiteImage
                         src={m.src}
+                        sizes={PRODUCT_HERO_IMAGE_SIZES}
                         alt={`${p.name} — ${m.label}`}
                         loading={index === 0 ? "eager" : "lazy"}
                         fetchPriority={index === 0 ? "high" : "low"}
@@ -126,7 +128,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
                   fetchPriority="high"
                 />
               )
-              : <img src={p.photo} alt={p.name} loading="eager" fetchPriority="high" decoding="async" />
+              : <SiteImage src={p.photo} alt={p.name} sizes={PRODUCT_HERO_IMAGE_SIZES} loading="eager" fetchPriority="high" decoding="async" />
           ) : (
             <div className="ph">Изображение готовится студийным рендером</div>
           )}
@@ -216,14 +218,14 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
         {isDuctItem && ductContentHtml && (
           <section className="block" id="tech" data-toc="Технические характеристики">
             <h2>Технические характеристики</h2>
-            <SafeHtml className="duct-rich" html={ductContentHtml} />
+            <SafeHtml imageContext={p.name} className="duct-rich" html={ductContentHtml} />
           </section>
         )}
 
         {isRms && p.contentHtml && (
           <section className="block rms-rich-block" id="tech" data-toc="Технические характеристики">
             <h2>Технические характеристики</h2>
-            <SafeHtml className="duct-rich" html={p.contentHtml} />
+            <SafeHtml imageContext={p.name} className="duct-rich" html={p.contentHtml} />
           </section>
         )}
 
@@ -237,8 +239,8 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
             const renderRaw = (list: typeof raw) => list.map((tb) => (
               <div className="table-block" key={tb.title}>
                 {!isRedundantTechnicalHeading(tb.title) && <h3 className="table-h">{tb.title}</h3>}
-                {tb.img && <img className="scheme-img" src={tb.img} alt={tb.title} loading="lazy" />}
-                <SafeHtml className="waer-table" html={tb.html} />
+                {tb.img && <SiteImage className="scheme-img" src={tb.img} alt={tb.title || `Техническая иллюстрация — ${p.name}`} loading="lazy" />}
+                <SafeHtml imageContext={p.name} className="waer-table" html={tb.html} />
               </div>
             ));
             return (
@@ -246,7 +248,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
                 {gab.length > 0 && (
                   <section className="block" id="gabarity" data-toc="Габаритные размеры">
                     <h2>Габаритные размеры</h2>
-                    {p.scheme && <img className="scheme-img" src={p.scheme} alt={`Габаритный чертёж — ${p.name}`} loading="lazy" />}
+                    {p.scheme && <SiteImage className="scheme-img" src={p.scheme} alt={`Габаритный чертёж — ${p.name}`} loading="lazy" />}
                     {renderRaw(gab)}
                   </section>
                 )}
@@ -280,7 +282,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
           const render = (list: Tbl[]) => list.map((tb) => (
             <div className="table-block" key={tb.title}>
               {!isRedundantTechnicalHeading(tb.title) && <h3 className="table-h">{tb.title}</h3>}
-              {tb.img && <img className="scheme-img" src={tb.img} alt={tb.title} loading="lazy" />}
+              {tb.img && <SiteImage className="scheme-img" src={tb.img} alt={tb.title || `Техническая иллюстрация — ${p.name}`} loading="lazy" />}
               <div className="table-wrap">
                 <table>
                   <thead><tr>{tb.cols.map((c) => <th key={c}>{c}</th>)}</tr></thead>
@@ -294,7 +296,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
           ));
           return (
             <>
-              {gab.length > 0 && <section className="block" id="gabarity" data-toc="Габаритные размеры"><h2>Габаритные размеры</h2>{p.scheme && <img className="scheme-img" src={p.scheme} alt={`Габаритный чертёж — ${p.name}`} loading="lazy" />}{render(gab)}</section>}
+              {gab.length > 0 && <section className="block" id="gabarity" data-toc="Габаритные размеры"><h2>Габаритные размеры</h2>{p.scheme && <SiteImage className="scheme-img" src={p.scheme} alt={`Габаритный чертёж — ${p.name}`} loading="lazy" />}{render(gab)}</section>}
               {tech.length > 0 && <section className="block" id="tech" data-toc="Технические характеристики"><h2>Технические характеристики</h2>{render(tech)}</section>}
             </>
           );
@@ -307,7 +309,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
               {p.aeroCharts.map((chart) => (
                 <figure key={chart.src}>
                   <a href={chart.src} target="_blank" rel="noreferrer">
-                    <img src={chart.src} alt={chart.label} loading="lazy" />
+                    <SiteImage src={chart.src} alt={chart.label} loading="lazy" />
                   </a>
                   <figcaption>{chart.label}</figcaption>
                 </figure>

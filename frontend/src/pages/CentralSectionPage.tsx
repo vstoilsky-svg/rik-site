@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { useParams, Link } from "react-router-dom";
 import { sectionByRoute } from "../data/central-sections";
 import FloatingToc from "../components/FloatingToc";
@@ -51,7 +52,7 @@ export default function CentralSectionPage() {
       </nav>
 
       <div className="container product-grid">
-        <div className="cs-hero-media"><img src={s.photo} alt={s.name} loading="lazy" /></div>
+        <div className="cs-hero-media"><SiteImage src={s.photo} alt={s.name} loading="eager" fetchPriority="high" sizes="(max-width: 760px) calc(100vw - 84px), 600px" /></div>
         <div className="product-head">
           <h1>{s.name} <span className="cs-mark">{s.marking}</span></h1>
           {s.desc && <p className="lead">{s.desc}</p>}
@@ -77,7 +78,7 @@ export default function CentralSectionPage() {
             <div className="cs-variants">
               {s.variants.map((v) => (
                 <article className={v.photo ? "cs-variant" : "cs-variant cs-variant-notext"} key={v.title}>
-                  {v.photo && <div className="cs-variant-media"><img src={v.photo} alt={v.title} loading="lazy" /></div>}
+                  {v.photo && <div className="cs-variant-media"><SiteImage src={v.photo} alt={v.title} loading="lazy" /></div>}
                   <div className="cs-variant-body">
                     <h3>{v.title}</h3>
                     <p className="soft">{v.desc}</p>
@@ -95,7 +96,7 @@ export default function CentralSectionPage() {
               <div className="cs-scheme-row">
                 {s.schemes.map((sc) => (
                   <figure className="scheme-fig" key={sc.img}>
-                    <img className="scheme-img" src={sc.img} alt={sc.label || `Чертёж — ${s.name}`} loading="lazy" />
+                    <SiteImage className="scheme-img" src={sc.img} alt={sc.label || `Чертёж — ${s.name}`} loading="lazy" />
                     {sc.label && <figcaption>{sc.label}</figcaption>}
                   </figure>
                 ))}
@@ -108,13 +109,13 @@ export default function CentralSectionPage() {
                   <div className="cs-scheme-row">
                     {tb.schemes.map((sc) => (
                       <figure className="scheme-fig" key={sc.img}>
-                        <img className="scheme-img" src={sc.img} alt={sc.label || tb.title} loading="lazy" />
+                        <SiteImage className="scheme-img" src={sc.img} alt={sc.label || tb.title} loading="lazy" />
                         {sc.label && <figcaption>{sc.label}</figcaption>}
                       </figure>
                     ))}
                   </div>
                 )}
-                <SafeHtml className="waer-table" html={tb.html} />
+                <SafeHtml imageContext={s.name} className="waer-table" html={tb.html} />
               </div>
             ))}
             {s.tables.length === 0 && (

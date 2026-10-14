@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 /* oxlint-disable react/only-export-components -- project data is exported for reuse by the contractors page */
 import { Link } from "react-router-dom";
 import { PageHero, SideNav, FeatureCards, StatsBand, Icon } from "../components/rich";
@@ -126,7 +127,7 @@ export default function Projects() {
               <div className="proj-cards">
                 {PROJECTS.map((p) => (
                   <article className="proj-card" key={p.name}>
-                    {p.img && <div className="proj-media"><img src={`/photo/projects/${p.img.includes(".") ? p.img : `${p.img}.png`}`} alt={p.name} loading="lazy" /></div>}
+                    {p.img && <div className="proj-media"><SiteImage src={`/photo/projects/${p.img.includes(".") ? p.img : `${p.img}.png`}`} alt={p.name} loading="lazy" /></div>}
                     <div className="proj-body">
                       <span className="proj-cat">{p.cat}</span>
                       <h3>{p.name}</h3>

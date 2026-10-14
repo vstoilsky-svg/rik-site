@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { Link } from "react-router-dom";
 import { byGroupCatalog } from "../data/catalog";
 import ResponsiveCardImage from "../components/ResponsiveCardImage";
@@ -64,7 +65,7 @@ export default function Home() {
                     {image
                       ? hasGenericResponsiveSource(image)
                         ? <ResponsiveCardImage src={image} alt="" sizes="280px" profile="generic-card" />
-                        : <img src={image} alt="" loading="lazy" />
+                        : <SiteImage src={image} alt="" loading="lazy" sizes="280px" />
                       : <span>РИК</span>}
                   </span>
                   <span className="home-category-title">{group.title}</span>

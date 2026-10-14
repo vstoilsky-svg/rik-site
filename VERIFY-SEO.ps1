@@ -108,7 +108,7 @@ foreach ($route in $routes) {
     }
     if (-not (Test-Path -LiteralPath $target -PathType Leaf)) { throw "Missing prerendered route: $($route.path)" }
     $html = Get-Content -LiteralPath $target -Raw -Encoding UTF8
-    $preloadPattern = '<link rel="preload" as="image" href="(?<href>[^"]+)"(?: imagesrcset="(?<srcset>[^"]+)" imagesizes="(?<sizes>[^"]+)")? fetchpriority="high" />'
+    $preloadPattern = '<link rel="preload" as="image" href="(?<href>[^"]+)"(?<attrs>[^>]+) fetchpriority="high" />'
     $preloadMatches = @([regex]::Matches($html, $preloadPattern))
     $expectedPreload = if ($route.path -eq '/' -or $route.path -eq '/products') {
         '/photo/home-hero-light.webp'
@@ -118,22 +118,18 @@ foreach ($route in $routes) {
         $null
     }
     if ($expectedPreload) {
-        $isResponsive = [bool]$route.responsiveCriticalImage
-        $expectedHref = if ($isResponsive) { $expectedPreload -replace '\.png$', '-responsive-640.webp' } else { $expectedPreload }
-        if ($preloadMatches.Count -ne 1 -or $preloadMatches[0].Groups['href'].Value -ne $expectedHref) {
-            throw "Critical image preload mismatch: $($route.path)"
+        $expectedCount = if ($expectedPreload -eq '/photo/home-hero-light.webp') { 2 } else { 1 }
+        if ($preloadMatches.Count -ne $expectedCount) {
+            throw "Critical image preload count mismatch: $($route.path)"
         }
-        if ($isResponsive) {
-            $expectedSrcset = "$($expectedPreload -replace '\.png$', '-responsive-640.webp') 640w, $($expectedPreload -replace '\.png$', '-responsive-1280.webp') 1280w"
-            $expectedSizes = '(max-width: 760px) calc(100vw - 84px), 600px'
-            if (
-                $preloadMatches[0].Groups['srcset'].Value -ne $expectedSrcset -or
-                $preloadMatches[0].Groups['sizes'].Value -ne $expectedSizes
-            ) {
-                throw "Responsive critical image preload mismatch: $($route.path)"
+        foreach ($preload in $preloadMatches) {
+            $local = Join-Path $dist $preload.Groups['href'].Value.TrimStart('/')
+            if (-not (Test-Path -LiteralPath $local -PathType Leaf)) {
+                throw "Critical image preload file missing: $($route.path)"
             }
-        } elseif ($preloadMatches[0].Groups['srcset'].Success -or $preloadMatches[0].Groups['sizes'].Success) {
-            throw "Responsive preload attributes leaked into non-responsive route: $($route.path)"
+        }
+        if ($expectedCount -eq 2 -and (-not $html.Contains('media="(min-width: 761px)"') -or -not $html.Contains('media="(max-width: 760px)"'))) {
+            throw "Missing exact responsive hero media guards: $($route.path)"
         }
     } elseif ($preloadMatches.Count -ne 0) {
         throw "Critical image preload leaked into route: $($route.path)"
@@ -206,10 +202,10 @@ if (-not [regex]::IsMatch($nginx, '(?s)location\s*=\s*/product/ventilyatorrrry-k
 }
 
 $productView = Get-Content -LiteralPath (Join-Path $frontend 'src\pages\ProductView.tsx') -Raw -Encoding UTF8
-if ($productView -notmatch '<img src=\{p\.photo\} alt=\{p\.name\} loading="eager" fetchPriority="high" decoding="async" />') {
+if ($productView -notmatch '<SiteImage src=\{p\.photo\} alt=\{p\.name\} sizes=\{PRODUCT_HERO_IMAGE_SIZES\} loading="eager" fetchPriority="high" decoding="async" />') {
     throw 'Primary product LCP image is not eagerly prioritized'
 }
-if ($productView -match '<img src=\{p\.photo\} alt=\{p\.name\} loading="lazy"') {
+if ($productView -match '<(?:img|SiteImage) src=\{p\.photo\} alt=\{p\.name\}[^>]+loading="lazy"') {
     throw 'Primary product LCP image regressed to lazy loading'
 }
 

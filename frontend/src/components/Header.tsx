@@ -52,7 +52,7 @@ export default function Header() {
         <Link to="/" className="logo" onClick={close}>
           <picture>
             <source srcSet="/logo-header.webp" type="image/webp" />
-            <img src="/logo.png" alt="РИК — Русская инжиниринговая компания" width="320" height="120" />
+            <img src="/logo.png" alt="РИК — Русская инжиниринговая компания" width="320" height="120" loading="eager" decoding="async" />
           </picture>
         </Link>
         <nav className="nav">

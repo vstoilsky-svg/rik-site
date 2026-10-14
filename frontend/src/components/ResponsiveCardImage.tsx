@@ -2,6 +2,7 @@ import {
   genericResponsiveDerivative,
   type GenericResponsiveImageSource,
 } from "../data/responsive-images";
+import { IMAGE_ASSETS } from "../data/image-assets.generated";
 
 type ResponsiveCardImageProps = {
   src: string;
@@ -49,6 +50,8 @@ export default function ResponsiveCardImage({
         loading={loading}
         fetchPriority={fetchPriority}
         decoding={decoding}
+        width={IMAGE_ASSETS[src]?.width}
+        height={IMAGE_ASSETS[src]?.height}
       />
     </picture>
   );

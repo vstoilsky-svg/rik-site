@@ -1,3 +1,4 @@
+import SiteImage from "../components/SiteImage";
 import { Link } from "react-router-dom";
 import { PRODUCTS } from "../data/catalog";
 import { ductFamilyOf, type DuctFamily } from "../data/duct-families";
@@ -35,7 +36,7 @@ export default function DuctProductCards({ family, excludeSlug }: Props) {
               {product.photo && !product.placeholder
                 ? family === "round"
                   ? <ResponsiveCardImage src={product.photo} alt={product.name} sizes="216px" />
-                  : <img src={product.photo} alt={product.name} loading="lazy" />
+                  : <SiteImage src={product.photo} alt={product.name} loading="lazy" sizes="320px" />
                 : <span className="ph">Фото готовится</span>}
             </span>
             <span className="duct-product-label">{product.name}</span>

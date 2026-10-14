@@ -7,7 +7,7 @@ export default function Footer() {
         <div>
           <picture>
             <source srcSet="/logo-footer.webp" type="image/webp" />
-            <img src="/logo-white.png" alt="РИК" className="footer-logo-img" width="320" height="120" />
+            <img src="/logo-white.png" alt="РИК" className="footer-logo-img" width="320" height="120" loading="lazy" decoding="async" />
           </picture>
           <p className="footer-tag">Производство вентиляционного оборудования полного цикла</p>
         </div>
