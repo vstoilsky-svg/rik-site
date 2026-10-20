@@ -6,6 +6,10 @@ import { createServer } from "vite";
 import { frontendRoot, loadSeoData } from "./seo-runtime.mjs";
 
 const { routes, canonicalUrl } = await loadSeoData();
+for (const route of routes) {
+  assert.ok(!/(?:…|\.{3})\s*$/.test(route.description), "Оборванное описание: " + route.path);
+  assert.match(route.description, /[.!?]$/, "Описание должно заканчиваться законченным предложением: " + route.path);
+}
 const sitemap = readFileSync(path.join(frontendRoot, "dist/sitemap.xml"), "utf8");
 const xml = new JSDOM(sitemap, { contentType: "text/xml" }).window.document;
 const sitemapUrls = [...xml.querySelectorAll("loc")].map((e) => e.textContent);
@@ -17,6 +21,9 @@ for (const route of routes) {
   const rel = route.path === "/" ? "index.html" : route.path.slice(1) + "/index.html";
   const html = readFileSync(path.join(frontendRoot, "dist", rel), "utf8");
   const d = new JSDOM(html).window.document;
+  for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+    assert.equal(d.querySelector(selector)?.content, route.description, "Несогласованные описания: " + route.path);
+  }
   assert.equal(d.querySelector('meta[name="robots"]').content, route.indexable === false ? "noindex, follow" : "index, follow, max-image-preview:large");
   if (route.lastModified) {
     assert.match(route.lastModified, /^\d{4}-\d{2}-\d{2}$/);
