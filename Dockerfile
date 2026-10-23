@@ -9,6 +9,9 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
 COPY frontend/ ./
+# Несекретные правила также проверяются обязательной регрессией postbuild.
+COPY hosting/timeweb-shared/public_html/.htaccess /build/hosting/timeweb-shared/public_html/.htaccess
+COPY docker/nginx.conf /build/docker/nginx.conf
 RUN npm run build
 
 

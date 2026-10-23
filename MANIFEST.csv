@@ -67,7 +67,7 @@
 "docker/nginx.conf","2621ab1ba4bb9ca42aae78a87af6af466e10210b"
 "docker/rik-supervisor.conf","b09f9ea81145f23a6885a20a3dbdf20f93349d40"
 "docker/supervisord.conf","41490ce9ded563b2fc0a057fde54e7b6d7a7f3b0"
-"Dockerfile","afc9ed1b74cbbb0af95cec9c14f34206367e97a9"
+"Dockerfile","12c3e024d867ba2133030f06c489448845996439"
 "docs/AUDIT-CLOSURE.md","bcd61f523d2c9b839ee376e02750d2a9f6eebc2d"
 "docs/REPOSITORY-SIZE.md","78fd959cfa8b8987d0c6072d82a0483862ed991d"
 "frontend/.gitignore","a547bf36d8d11a4f89c59c144f24795749086dd1"
