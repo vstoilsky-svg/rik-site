@@ -5,7 +5,7 @@ import { trackGoal } from "../lib/metrika";
 
 const API = "/api/request";
 
-export default function RequestForm() {
+export default function RequestForm({ embedded = false }: { embedded?: boolean }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "err">("idle");
   const [err, setErr] = useState("");
 
@@ -29,20 +29,20 @@ export default function RequestForm() {
 
   if (status === "ok") return (
     <section className="container req-done">
-      <h1>Заявка отправлена ✓</h1>
+      {embedded ? <h2>Заявка отправлена ✓</h2> : <h1>Заявка отправлена ✓</h1>}
       <p className="soft">Мы подберём оборудование и подготовим расчёт по вашему проекту. Инженер свяжется с вами в ближайшее время.</p>
     </section>
   );
 
   return (
     <>
-      <PageHero
+      {!embedded && <PageHero
         crumbs={[{ label: "Запросить расчёт" }]}
         title="Запросить расчёт"
         lead="Подберём оборудование и подготовим расчёт стоимости по вашему проекту или техническому заданию."
-      />
+      />}
       <section className="container req section-body">
-      <form className="req-form" onSubmit={onSubmit}>
+      <form className="req-form" method="post" action={API} encType="multipart/form-data" onSubmit={onSubmit}>
         <input type="hidden" name="form_kind" value="request-calculation" />
         <label>Имя *<input name="name" required autoComplete="name" /></label>
         <label>Компания<input name="company" autoComplete="organization" /></label>
@@ -54,14 +54,14 @@ export default function RequestForm() {
         </label>
         <label className="wide consent">
           <input name="consent" type="checkbox" required />
-          <span>Даю согласие на обработку персональных данных в соответствии с <Link to="/personal-data-consent">Согласием на обработку персональных данных</Link>.</span>
+          <span>Даю согласие на обработку персональных данных в соответствии с <Link to="/personal-data-consent" target={embedded ? "_blank" : undefined} rel={embedded ? "noopener noreferrer" : undefined}>Согласием на обработку персональных данных</Link>.</span>
         </label>
-        <p className="wide form-policy-note">Порядок обработки данных описан в <Link to="/privacy">Политике в отношении обработки персональных данных</Link>.</p>
+        <p className="wide form-policy-note">Порядок обработки данных описан в <Link to="/privacy" target={embedded ? "_blank" : undefined} rel={embedded ? "noopener noreferrer" : undefined}>Политике в отношении обработки персональных данных</Link>.</p>
         <input type="text" name="website" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         <button className="btn btn-primary" disabled={status === "sending"}>
           {status === "sending" ? "Отправляем…" : "Отправить запрос"}
         </button>
-        {status === "err" && <p className="req-err">{err}</p>}
+        {status === "err" && <p className="req-err" role="alert">{err}</p>}
       </form>
       </section>
     </>

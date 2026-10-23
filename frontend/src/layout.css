@@ -104,3 +104,13 @@
 .mega-link { display: block; color: var(--ink-2); font-size: .87rem; padding: 4px 0; font-weight: 500; line-height: 1.25; }
 .mega-link:hover { color: var(--brand); }
 @media (max-width: 1100px) { .mega-inner { grid-template-columns: repeat(3, 1fr); } }
+/* Форма доступна без перехода; длинные поля и крошки не расширяют мобильный экран. */
+.request-modal-backdrop{position:fixed;inset:0;z-index:10000;background:rgba(8,29,54,.65);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.request-modal{position:relative;background:#fff;color:#14304b;border-radius:16px;width:min(760px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:28px;box-sizing:border-box;overscroll-behavior:contain}
+.request-modal h2{padding-right:48px;margin-top:0}
+.request-modal-close{position:absolute;right:12px;top:12px;width:44px;height:44px;border:1px solid #bbcede;border-radius:8px;background:#fff;color:#14304b;font-size:30px;cursor:pointer}
+.request-modal .container.req{width:100%;max-width:none;padding:0;margin:20px 0 0}
+.request-modal .req-form input,.request-modal .req-form textarea{max-width:100%;min-width:0;box-sizing:border-box}
+.request-modal .consent input[type="checkbox"]{width:18px;height:18px;min-width:18px;flex:0 0 18px;margin-top:3px}
+.crumbs{overflow-wrap:anywhere;flex-wrap:wrap}
+@media(max-width:600px){.request-modal-backdrop{padding:8px}.request-modal{padding:18px;max-height:calc(100dvh - 16px)}.request-modal .req-form{grid-template-columns:minmax(0,1fr)}.request-modal .req-form .wide{grid-column:1}}

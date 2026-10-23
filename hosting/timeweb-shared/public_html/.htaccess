@@ -101,6 +101,11 @@ RewriteRule ^ - [L]
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 
+  # Старые альтернативные редакции доступны по прямой ссылке, но не конкурируют с текущими документами в поиске.
+  <FilesMatch "^(?:katalog-rik|Tehlist_RIK-S,M(?:\.captioned)?)\.pdf$">
+    Header set X-Robots-Tag "noindex"
+  </FilesMatch>
+
   <FilesMatch "\.(?:css|js|mjs|woff2?|ttf|eot|webp|png|jpe?g|gif|svg|ico)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>

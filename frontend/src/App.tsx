@@ -16,10 +16,11 @@ import "./rik-20260722-fixes.css";
 import "./home-sections.css";
 import ChatWidget from "./components/ChatWidget.jsx";
 import CookieConsent from "./components/CookieConsent";
+import RequestModal from "./components/RequestModal";
+import RequestForm from "./pages/RequestForm";
 import NotFound from "./pages/NotFound";
 
 const ProductPage = lazy(() => import("./pages/ProductPage"));
-const RequestForm = lazy(() => import("./pages/RequestForm"));
 const Services = lazy(() => import("./pages/Services"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const About = lazy(() => import("./pages/About"));
@@ -47,6 +48,7 @@ function Layout() {
       <Footer />
       <ChatWidget />
       <CookieConsent />
+      <RequestModal />
     </>
   );
 }
