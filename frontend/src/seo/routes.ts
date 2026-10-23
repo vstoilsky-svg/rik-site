@@ -2,6 +2,9 @@ import { PRODUCTS, type Product } from "../data/catalog";
 import { CENTRAL_SECTIONS, type CentralSection } from "../data/central-sections";
 import { hasGenericResponsiveSource } from "../data/responsive-images";
 import { PRODUCT_GUIDES } from "../data/product-guides";
+import { MEETING_DESCRIPTIONS } from "./meeting-descriptions";
+import { CHANNEL_ROUND_MENU, CHANNEL_RECT_MENU } from "../data/catalog";
+import { ductFamilyOf, familyForHubSlug, DUCT_HUBS } from "../data/duct-families";
 
 export const SITE_ORIGIN = "https://rik-vent.ru";
 export const DEFAULT_DESCRIPTION =
@@ -44,7 +47,7 @@ export const STATIC_SEO: Record<string, StaticSeo> = {
   "/contractors": { title: "Генподрядчикам — вентиляция объекта под ключ | РИК", description: "Сотрудничество с генподрядчиками: проектирование, собственное производство, монтаж, пусконаладка и сервис вентиляции. Проекты и документы РИК." },
   "/services": { title: "Инженерные услуги компании РИК", description: "Подбор, расчёт, проектирование и сопровождение вентиляционного оборудования РИК." },
   "/about": { title: "ООО «РИК» — Русская инжиниринговая компания", description: "ООО «РИК» — Русская инжиниринговая компания, российский производитель вентиляционного оборудования полного цикла в Москве." },
-  "/contacts": { title: "Контакты ООО «РИК» — Москва", description: "Контакты ООО «РИК» — Русской инжиниринговой компании: отдел продаж, производство и техническая поддержка в Москве." },
+  "/contacts": { title: "Контакты РИК в Москве — телефон и адрес отдела продаж", description: "Контакты ООО «РИК» в Москве: адрес и отдел продаж. Подбор вентиляционного оборудования: +7 (495) 104-37-79, zakaz@rik-vent.ru." },
   "/request": { title: "Запросить расчёт оборудования — РИК", description: "Отправьте заявку на подбор и расчёт вентиляционного оборудования РИК." },
 };
 
@@ -76,7 +79,7 @@ const PRODUCT_SEO_OVERRIDES: Record<string, { title: string; description: string
     description: "Крышные вентиляторы дымоудаления KRV-DU с выбросом вверх для удаления дымогазовых смесей при пожаре. Характеристики и технический лист.",
   },
   "protivopozharnye-klapany": {
-    title: "Противопожарные клапаны РИК-1, РИК-2, РИК-3",
+    title: "Противопожарные клапаны РИК-1, РИК-2, РИК-3 — характеристики",
     description: "Противопожарные клапаны РИК-1, РИК-2 и РИК-3 для систем пожарной безопасности и противодымной вентиляции. Пределы огнестойкости EI 60/90/120.",
   },
   "pryamougolnaya-vrezka-v-pryamougolnyj-kanal": {
@@ -263,8 +266,10 @@ export const SEO_ROUTES: SeoRoute[] = [
   ...CENTRAL_SECTIONS.map(sectionRoute),
 ].map((route) => ({
   ...route,
-  description: compactDescription(DESCRIPTION_OVERRIDES[route.path] ?? route.description),
-  lastModified: DESCRIPTION_OVERRIDES[route.path] ? "2026-10-20" : PAGE_LAST_MODIFIED[route.path],
+  description: compactDescription(MEETING_DESCRIPTIONS[route.path.replace(/^\/product\//, "")] ?? DESCRIPTION_OVERRIDES[route.path] ?? route.description),
+  lastModified: route.kind === "product" || route.kind === "section" || route.path === "/contacts"
+    ? "2026-10-23"
+    : DESCRIPTION_OVERRIDES[route.path] ? "2026-10-20" : PAGE_LAST_MODIFIED[route.path],
 }));
 
 function assertUnique(values: string[], label: string) {
@@ -300,6 +305,43 @@ assertUnique(SEO_ROUTES.map((route) => route.title), "titles");
 assertUnique(SEO_ROUTES.map((route) => route.description), "descriptions");
 
 export const SEO_ROUTE_MAP = new Map(SEO_ROUTES.map((route) => [route.path, route]));
+
+// Реальные страницы каталога, а не вывод иерархии из плоского URL.
+function parentProductPath(slug: string): string | undefined {
+  if (CHANNEL_ROUND_MENU.some((item) => item.to === `/product/${slug}`)) return "/product/kanalnoe-krugloe";
+  if (CHANNEL_RECT_MENU.some((item) => item.to === `/product/${slug}`)) return "/product/kanalnoe-pryamougolnoe";
+  if (["kanalnoe-krugloe", "kanalnoe-pryamougolnoe"].includes(slug)) return "/product/kanalnoe-oborudovanie";
+  const p = PRODUCTS.find((product) => product.slug === slug);
+  if (!p) return undefined;
+  const family = ductFamilyOf(p);
+  if (family && !familyForHubSlug(slug)) return `/product/${DUCT_HUBS[family]}`;
+  if (familyForHubSlug(slug)) return "/product/vozduhovody-i-fasonnye-izdeliya";
+  if (p.group === "specialvalves" && slug !== "specialnye-klapany") return "/product/specialnye-klapany";
+  if (p.group === "chillers" && slug !== "chillery-teplovye-nasosy-i-gidromoduli") return "/product/chillery-teplovye-nasosy-i-gidromoduli";
+  return undefined;
+}
+
+export function breadcrumbsFor(route: SeoRoute): { label: string; path: string }[] {
+  if (route.path === "/") return [{ label: "Главная", path: "/" }];
+  const ancestors: SeoRoute[] = [];
+  let parent = route.kind === "section" ? "/product/centralnye-ustanovki"
+    : route.kind === "product" ? parentProductPath(route.path.slice("/product/".length)) : undefined;
+  const seen = new Set([route.path]);
+  while (parent) {
+    if (seen.has(parent)) throw new Error(`Цикл хлебных крошек: ${parent}`);
+    seen.add(parent);
+    const item = SEO_ROUTE_MAP.get(parent);
+    if (!item) throw new Error(`Нет родительской страницы: ${parent}`);
+    ancestors.unshift(item);
+    parent = parentProductPath(item.path.slice("/product/".length));
+  }
+  return [
+    { label: "Главная", path: "/" },
+    ...(route.kind !== "static" ? [{ label: "Продукция", path: "/products" }] : []),
+    ...ancestors.map((item) => ({ label: item.name, path: item.path })),
+    { label: route.path === "/products" ? "Продукция" : route.name, path: route.path },
+  ];
+}
 
 export function normalizeSeoPath(pathname: string): string {
   return pathname.length > 1 ? pathname.replace(/\/+$/, "") : "/";
@@ -364,13 +406,10 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
     data.push({
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Главная", item: `${SITE_ORIGIN}/` },
-        ...(route.kind === "product" || route.kind === "section"
-          ? [{ "@type": "ListItem", position: 2, name: "Продукция", item: `${SITE_ORIGIN}/products/` }]
-          : []),
-        { "@type": "ListItem", position: route.kind === "static" ? 2 : 3, name: route.name, item: url },
-      ],
+      itemListElement: breadcrumbsFor(route).map((crumb, index) => ({
+        "@type": "ListItem", position: index + 1, name: crumb.label,
+        item: `${SITE_ORIGIN}${crumb.path === "/" ? "/" : `${crumb.path}/`}`,
+      })),
     });
   }
   if (route.kind === "product" || route.kind === "section") {

@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { sectionByRoute } from "../data/central-sections";
 import FloatingToc from "../components/FloatingToc";
 import SafeHtml from "../components/SafeHtml";
+import ProductBreadcrumbs from "../components/ProductBreadcrumbs";
 
 // Техлисты секций ЦК (прямое скачивание PDF)
 const CK_TECHSHEET: Record<string, string> = {
@@ -46,10 +47,7 @@ export default function CentralSectionPage() {
 
   return (
     <article className="product">
-      <nav className="crumbs container">
-        <Link to="/products">Вся продукция</Link> <span>→</span>
-        <Link to="/product/centralnye-ustanovki"> Центральные установки RIK-M и RIK-S</Link> <span>→</span> <span>{s.name}</span>
-      </nav>
+      <ProductBreadcrumbs path={`/product/centralnye-ustanovki/${section}`} />
 
       <div className="container product-grid">
         <div className="cs-hero-media"><SiteImage src={s.photo} alt={s.name} loading="eager" fetchPriority="high" sizes="(max-width: 760px) calc(100vw - 84px), 600px" /></div>

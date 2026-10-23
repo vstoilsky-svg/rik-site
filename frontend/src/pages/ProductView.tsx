@@ -21,6 +21,7 @@ import ResponsiveCardImage from "../components/ResponsiveCardImage";
 import { hasGenericResponsiveSource } from "../data/responsive-images";
 import { productDisplayName } from "../seo/routes";
 import { PRODUCT_GUIDES } from "../data/product-guides";
+import ProductBreadcrumbs from "../components/ProductBreadcrumbs";
 
 const PRODUCT_HERO_IMAGE_SIZES = "(max-width: 760px) calc(100vw - 84px), 600px";
 
@@ -81,9 +82,7 @@ export default function ProductView({ p, embedded = false }: { p: Product; embed
   return (
     <article className={articleClass}>
       {!embedded && (
-        <nav className="crumbs container">
-          <Link to="/products">Вся продукция</Link> <span>→</span> <span>{p.name}</span>
-        </nav>
+        <ProductBreadcrumbs path={`/product/${p.slug}`} />
       )}
       <div className="container product-grid">
         <div className="product-media">
