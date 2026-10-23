@@ -51,6 +51,7 @@ jobs:
           docker run --rm -v "$PWD:/app" -w /app php:8.2-cli \
             sh -lc "find hosting/timeweb-shared -name '*.php' -print0 | xargs -0 -n1 php -l && php hosting/timeweb-shared/tests/test_chat_fallback.php"
           python -m py_compile hosting/timeweb-shared/tests/mock_smtp.py
+          python hosting/timeweb-shared/tests/test_legacy_documents.py
 
       - name: Verify exact manifest parity
         shell: pwsh

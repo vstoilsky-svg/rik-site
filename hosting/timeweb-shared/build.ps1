@@ -40,6 +40,23 @@ New-Item -ItemType Directory -Path $appRoot | Out-Null
 
 Copy-Item -Path (Join-Path $frontendRoot 'dist\*') -Destination $publicRoot -Recurse -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'public_html\.htaccess') -Destination (Join-Path $publicRoot '.htaccess')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'public_html\legacy-document.php') -Destination (Join-Path $publicRoot 'legacy-document.php')
+$legacyDocuments = [ordered]@{
+    'docs/katalog-rik.pdf' = '347C8D68BBE80092CCFA15C57C214202E9986C247F0B5573FA1E083F58561A94'
+    'downloads/tehlist/Tehlist_RIK-S,M.pdf' = '0E54C5DD3D40C27048D8300E5E3BC46AC6C9715E4BC118EB477CE418830511E6'
+    'downloads/tehlist/Tehlist_RIK-S,M.captioned.pdf' = 'AC020F156937BA67E7ADF7F18D9F403767BF7A5D0F85461FBFFD0B6905334FE4'
+}
+$legacyRoot = Join-Path $appRoot 'legacy-documents'
+New-Item -ItemType Directory -Path $legacyRoot | Out-Null
+foreach ($relativePdf in $legacyDocuments.Keys) {
+    $sourcePdf = (Resolve-Path -LiteralPath (Join-Path $publicRoot $relativePdf)).Path
+    if (-not $sourcePdf.StartsWith($publicRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw 'PDF вне каталога нового пакета' }
+    if ((Get-FileHash -LiteralPath $sourcePdf).Hash -ne $legacyDocuments[$relativePdf]) { throw 'Редакция старого PDF не совпала с утверждённой' }
+    $targetPdf = Join-Path $legacyRoot (Split-Path $sourcePdf -Leaf)
+    Copy-Item -LiteralPath $sourcePdf -Destination $targetPdf
+    if ((Get-FileHash -LiteralPath $sourcePdf).Hash -ne (Get-FileHash -LiteralPath $targetPdf).Hash) { throw 'Копия старого PDF повреждена' }
+    Remove-Item -LiteralPath $sourcePdf
+}
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'public_html\api') -Destination (Join-Path $publicRoot 'api') -Recurse
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'rik_app\lib') -Destination (Join-Path $appRoot 'lib') -Recurse
 New-Item -ItemType Directory -Path (Join-Path $appRoot 'data') | Out-Null
