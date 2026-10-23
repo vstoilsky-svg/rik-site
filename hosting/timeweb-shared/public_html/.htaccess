@@ -3,6 +3,12 @@ ErrorDocument 404 /404.html
 
 RewriteEngine On
 
+# Эти три старые редакции при упаковке перенесены вне webroot.
+# Несуществующий статический URL Timeweb передаёт в Apache; байты PDF не меняются.
+RewriteRule ^docs/katalog-rik\.pdf$ legacy-document.php?document=catalog [END]
+RewriteRule ^downloads/tehlist/Tehlist_RIK-S,M\.pdf$ legacy-document.php?document=central [END]
+RewriteRule ^downloads/tehlist/Tehlist_RIK-S,M\.captioned\.pdf$ legacy-document.php?document=central-captioned [END]
+
 # Redirect only an explicit /index.html request; DirectoryIndex for / must stay 200.
 RewriteCond %{THE_REQUEST} \s/+index\.html(?:[?\s]) [NC]
 RewriteRule ^index\.html$ https://rik-vent.ru/ [R=301,L,NE]
