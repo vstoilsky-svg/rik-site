@@ -11,7 +11,7 @@ let catalog, categories, hubs;
 try {catalog=await server.ssrLoadModule("/src/data/catalog.ts");categories=await server.ssrLoadModule("/src/data/category-landings.ts");hubs=await server.ssrLoadModule("/src/data/catalog-hubs.ts");}
 finally {await server.close();}
 assert.equal(catalog.GROUPS.length,11);assert.equal(catalog.PRODUCTS.length,100);
-assert.equal(routes.length,140);assert.equal(categories.NEW_CATEGORY_LANDINGS.length,2);
+assert.equal(routes.length,154);assert.equal(categories.NEW_CATEGORY_LANDINGS.length,2);
 const routeMap=new Map(routes.map(r=>[r.path,r]));
 const read=p=>new JSDOM(fs.readFileSync(path.join(frontendRoot,"dist",p==="/"?"index.html":p.slice(1)+"/index.html"),"utf8"));
 const catalogDom=read("/products");

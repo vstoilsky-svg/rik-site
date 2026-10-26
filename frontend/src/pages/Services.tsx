@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
+import { SERVICE_PAGES } from "../data/business-pages";
 
 const SERVICES = [
   ["Проектирование ОВиК", "Разработка разделов ОВ, ВК, АУ под ключ по нормам РФ."],
@@ -28,10 +29,11 @@ export default function Services() {
       <div className="container section-body">
         <h2 className="sr-only" id="services-list-section-title">Направления услуг</h2>
         <div className="tiles">
-          {SERVICES.map(([t, d]) => (
-            <div className="tile" key={t}><h3 className="no-arrow">{t}</h3><p>{d}</p></div>
+          {SERVICES.map(([t, d], index) => (
+            <div className="tile" key={t}><h3 className="no-arrow"><Link to={SERVICE_PAGES[index].path}>{t}</Link></h3><p>{d}</p><Link to={SERVICE_PAGES[index].path}>Подробнее об услуге →</Link></div>
           ))}
         </div>
+        <p className="block"><Link to="/resheniya">Решения для производственных и складских помещений →</Link></p>
         <div className="cta-final block"><h2>Нужна услуга под ваш объект?</h2>
           <Link to="/request" className="btn btn-primary">Запросить расчёт</Link></div>
       </div>
