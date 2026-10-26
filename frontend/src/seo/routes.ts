@@ -221,7 +221,9 @@ function productRoute(product: Product): SeoRoute {
   const name = productDisplayName(product);
   const seoOverride = PRODUCT_SEO_OVERRIDES[product.slug];
   const image = product.pageMedia?.[0]?.src ?? product.catalogMedia?.[0]?.src ?? product.photo ?? "/logo.png";
-  const criticalImage = product.pageMedia?.[0]?.src ?? product.photo ?? image;
+  const criticalImage = product.slug === "kanalnoe-oborudovanie"
+    ? PRODUCTS.find((item) => item.slug === "kanalnoe-krugloe")?.photo ?? image
+    : product.pageMedia?.[0]?.src ?? product.photo ?? image;
   return {
     path: `/product/${product.slug}`,
     title: PRODUCT_TITLE_OVERRIDES[product.slug] ?? seoOverride?.title ?? `${name} — оборудование РИК`,

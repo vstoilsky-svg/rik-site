@@ -31,7 +31,7 @@ for(const route of routes) {
       const mobile=preloads.find(p=>p.getAttribute('media')==='(max-width: 760px)');
       if(preloads.length!==2||desktop?.getAttribute('href')!==choose(1920)||mobile?.getAttribute('imagesrcset')!==`${choose(640)} 1x, ${choose(1280)} 2x`)throw Error(`Hero preload mismatch: ${route.path}`);
     } else if(route.path.startsWith('/product/')) {
-      const img=doc.querySelector('.product-media img, .cs-hero-media img');
+      const img=doc.querySelector('.product-media img, .cs-hero-media img, .channel-section-card:first-child img');
       const critical=img?.getAttribute('src');
       const set=img?.getAttribute('srcset')||img?.parentElement.querySelector('source')?.getAttribute('srcset');
       const sizes=img?.getAttribute('sizes')||img?.parentElement.querySelector('source')?.getAttribute('sizes');
