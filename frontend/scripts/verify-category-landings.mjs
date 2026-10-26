@@ -62,4 +62,23 @@ for(const slug of ["ventilyatory-kryshnye-krv","ventilyatory-radialnye-rr","kkb-
   const parent=slug.startsWith("kkb")?categories.CATEGORY_LANDING_PATHS.kkb:categories.CATEGORY_LANDING_PATHS.fans;
   assert.ok(dom.window.document.querySelector(`nav[aria-label="Хлебные крошки"] a[href="${parent}/"]`));dom.window.close();
 }
-console.log("Посадочные категории проверены: 11 адресов разделов, 2 новые страницы, 9 серий вентиляторов + RMS, 2 серии ККБ; ссылки, HTML, JSON-LD и прежние канальные цепочки сохранены.");
+const channel = read("/product/kanalnoe-oborudovanie");
+const channelDoc = channel.window.document;
+const sectionCards = [...channelDoc.querySelectorAll("main .channel-section-card")];
+assert.equal(sectionCards.length, 2, "Вверху канального хаба нужны две наглядные карточки сечений");
+const channelImages = [];
+for (const [index, slug] of ["kanalnoe-krugloe", "kanalnoe-pryamougolnoe"].entries()) {
+  const product = catalog.bySlug(slug), card = sectionCards[index];
+  assert.equal(card.getAttribute("href"), `/product/${slug}/`);
+  assert.equal(card.querySelector("h3").textContent, product.name);
+  assert.equal(card.querySelector("img").getAttribute("src"), product.photo);
+  assert.equal(card.querySelector("img").getAttribute("alt"), product.name);
+  assert.ok(channelDoc.querySelector(".channel-section-picker").compareDocumentPosition(channelDoc.querySelector("#selection-guide")) & 4, "Выбор сечения должен предшествовать текстовому руководству");
+  channelImages.push(product.photo);
+}
+assert.notEqual(channelImages[0], channelImages[1], "У двух сечений не должно быть одной картинки");
+assert.equal(routeMap.get("/product/kanalnoe-oborudovanie").criticalImage, channelImages[0]);
+assert.equal(channelDoc.querySelector('link[rel="preload"][as="image"]').getAttribute("href"), channelImages[0], "Первая видимая картинка должна загружаться приоритетно");
+assert.equal(channelDoc.querySelectorAll(".product-grid > .product-media").length, 0, "В общем разделе не должно быть одностороннего товарного hero");
+channel.window.close();
+console.log("Посадочные категории проверены: 11 адресов, 2 новые страницы, 9 серий вентиляторов + RMS, 2 серии ККБ; канальный хаб имеет две наглядные карточки с разными изображениями и переходами. Прежние канальные цепочки сохранены.");
