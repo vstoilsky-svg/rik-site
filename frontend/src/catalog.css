@@ -252,22 +252,28 @@ th { background: var(--surface); color: var(--brand-ink); }
 .mm-category-models{border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font-size:26px;min-width:48px;min-height:48px;cursor:pointer}
 .mega-title:focus-visible,.category-heading-link:focus-visible{outline:3px solid var(--brand);outline-offset:4px}
 .mega-title{display:block}
-/* Общий канальный раздел: оба сечения видны до описательного текста. */
-.channel-hub-intro{padding-top:16px;padding-bottom:36px}
-.channel-hub h1{margin-top:0;overflow-wrap:anywhere}
-.channel-hub .lead{max-width:920px}
-.channel-section-picker{margin-top:28px}
-.channel-section-picker h2{font-size:1.25rem;color:var(--brand-ink)}
-.channel-section-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
-.channel-section-card{min-width:0}
-.channel-section-card .card-media{aspect-ratio:auto;height:clamp(210px,25vw,320px)}
-.channel-section-card .card-body{display:flex;flex-direction:column;flex:1;gap:14px;padding:20px}
-.channel-section-card .card-body h3{font-size:1.2rem;line-height:1.35;overflow-wrap:anywhere}
-.channel-section-description{display:block;line-height:1.6;color:var(--ink-2)}
-.channel-section-action{display:block;margin-top:auto;font-weight:700;color:var(--brand)}
-.channel-hub-actions{margin-top:28px}
+/* Обзорные разделы: выбор по фотографиям перед описательным текстом. */
+.catalog-hub-intro{padding-top:16px;padding-bottom:36px}
+.catalog-hub h1{margin-top:0;overflow-wrap:anywhere;line-height:1.25}
+.catalog-hub .lead{max-width:920px}
+.catalog-hub-section{margin-top:28px;scroll-margin-top:96px}
+.catalog-hub-section h2{font-size:1.25rem;color:var(--brand-ink)}
+.catalog-hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px}
+.catalog-hub-grid--two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.catalog-hub-grid--three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.catalog-hub-grid--single{grid-template-columns:minmax(0,1fr);max-width:400px}
+.catalog-hub-card{min-width:0}
+.catalog-hub-card .card-media{aspect-ratio:4/3}
+.catalog-hub-grid--two .card-media{aspect-ratio:auto;height:clamp(210px,25vw,320px)}
+.catalog-hub-card .card-body{display:flex;flex-direction:column;flex:1;gap:14px;padding:20px}
+.catalog-hub-card .card-body h3{font-size:1.1rem;line-height:1.35;overflow-wrap:anywhere}
+.catalog-hub-description{display:block;line-height:1.6;color:var(--ink-2)}
+.catalog-hub-action{display:block;margin-top:auto;font-weight:700;color:var(--brand)}
+.catalog-hub-actions{margin-top:28px}
+@media(max-width:1000px){.catalog-hub-grid--three{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){
-  .channel-section-grid{grid-template-columns:minmax(0,1fr);gap:20px}
-  .channel-section-card .card-media{height:clamp(180px,65vw,300px)}
-  .channel-section-card .card-body{padding:16px}
+  .catalog-hub h1{font-size:clamp(26px,7.2vw,28px);line-height:1.2;text-wrap:balance}
+  .catalog-hub-grid{grid-template-columns:minmax(0,1fr);gap:20px}
+  .catalog-hub-card .card-media,.catalog-hub-grid--two .card-media{aspect-ratio:auto;height:clamp(180px,65vw,300px)}
+  .catalog-hub-card .card-body{padding:16px}
 }

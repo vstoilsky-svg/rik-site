@@ -145,7 +145,7 @@ function renderRoute(route, body) {
   );
   const preview = dom.window.document.createElement("div");
   preview.innerHTML = body;
-  const realHero = preview.querySelector(".product-media img, .cs-hero-media img, .channel-section-card:first-child img");
+  const realHero = preview.querySelector(".product-media img, .cs-hero-media img, .catalog-hub-card img");
   const criticalImage = route.path === "/" || route.path === "/products"
     ? "/photo/home-hero-light.webp"
     : route.path.startsWith("/product/")
