@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { byGroupCatalog } from "../data/catalog";
 import ResponsiveCardImage from "../components/ResponsiveCardImage";
 import { hasGenericResponsiveSource } from "../data/responsive-images";
+import { categoryLandingPath } from "../data/category-landings";
 
 const HOME_GROUPS = [
   { key: "central", title: "Центральные установки" },
@@ -60,7 +61,7 @@ export default function Home() {
               if (!product) return null;
               const image = product.catalogMedia?.[0]?.src ?? product.photo;
               return (
-                <Link className="home-category-card" to={`/products#${group.key}`} key={group.key}>
+                <Link className="home-category-card" to={categoryLandingPath(group.key)} key={group.key}>
                   <span className="home-category-media">
                     {image
                       ? hasGenericResponsiveSource(image)

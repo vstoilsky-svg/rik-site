@@ -14,7 +14,7 @@ const sitemap = readFileSync(path.join(frontendRoot, "dist/sitemap.xml"), "utf8"
 const xml = new JSDOM(sitemap, { contentType: "text/xml" }).window.document;
 const sitemapUrls = [...xml.querySelectorAll("loc")].map((e) => e.textContent);
 const indexable = routes.filter((r) => r.indexable !== false);
-assert.equal(indexable.length, 136);
+assert.equal(indexable.length, 138);
 assert.deepEqual([...sitemapUrls].sort(), indexable.map(canonicalUrl).sort());
 let dated = 0;
 for (const route of routes) {

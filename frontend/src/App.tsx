@@ -21,6 +21,7 @@ import RequestForm from "./pages/RequestForm";
 import NotFound from "./pages/NotFound";
 
 const ProductPage = lazy(() => import("./pages/ProductPage"));
+const CategoryLandingPage = lazy(() => import("./pages/CategoryLanding"));
 const Services = lazy(() => import("./pages/Services"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const About = lazy(() => import("./pages/About"));
@@ -64,6 +65,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="/products" element={<Catalog />} />
+            <Route path="/products/:category" element={<CategoryLandingPage />} />
             <Route path="/production" element={<Production />} />
             <Route path="/product/centralnye-ustanovki/:section" element={<CentralSectionPage />} />
             <Route path="/product/:slug" element={<ProductPage />} />
