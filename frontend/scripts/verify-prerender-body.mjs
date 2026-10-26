@@ -7,7 +7,7 @@ const fixtureIndex = process.argv.indexOf("--dist");
 const dist = fixtureIndex >= 0 ? path.resolve(process.argv[fixtureIndex + 1]) : path.join(frontendRoot, "dist");
 const { routes } = await loadSeoData();
 const headings = new Map();
-const catalogRoutes = routes.filter((r) => r.kind === "product" || r.kind === "section");
+const catalogRoutes = routes.filter((r) => r.kind === "product" || r.kind === "section" || r.kind === "category");
 const navigation = ["/products/", "/production/", "/projects/", "/designers/", "/services/", "/about/", "/contacts/"];
 const knownRoutes = new Set(routes.map((route) => route.path));
 const yandexVerification = "83eb63c1f46cb345";

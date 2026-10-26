@@ -1,0 +1,65 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { JSDOM } from "jsdom";
+import { createServer } from "vite";
+import { frontendRoot, loadSeoData } from "./seo-runtime.mjs";
+
+const { routes, canonicalUrl, structuredDataFor } = await loadSeoData();
+const server = await createServer({root:frontendRoot,server:{middlewareMode:true},appType:"custom",logLevel:"silent"});
+let catalog, categories;
+try {catalog=await server.ssrLoadModule("/src/data/catalog.ts");categories=await server.ssrLoadModule("/src/data/category-landings.ts");}
+finally {await server.close();}
+assert.equal(catalog.GROUPS.length,11);assert.equal(catalog.PRODUCTS.length,100);
+assert.equal(routes.length,140);assert.equal(categories.NEW_CATEGORY_LANDINGS.length,2);
+const routeMap=new Map(routes.map(r=>[r.path,r]));
+const read=p=>new JSDOM(fs.readFileSync(path.join(frontendRoot,"dist",p==="/"?"index.html":p.slice(1)+"/index.html"),"utf8"));
+const catalogDom=read("/products");
+for(const group of catalog.GROUPS) {
+  const to=categories.categoryLandingPath(group.key);assert.ok(routeMap.has(to),group.key);
+  const section=catalogDom.window.document.getElementById(group.key);
+  assert.ok(section?.querySelector("h2 a"),"Заголовок раздела не ведёт на посадочную: "+group.key);
+  assert.equal(section.querySelector("h2 a").getAttribute("href"),to+"/",group.key);
+  const menu=catalogDom.window.document.querySelectorAll(`.mega-title[href="${to}/"]`);
+  assert.equal(menu.length,1,"Категория должна иметь самостоятельную ссылку: "+group.key);
+}
+catalogDom.window.close();
+const home=read("/");
+for(const a of home.window.document.querySelectorAll(".home-category-card")) {
+  assert.ok(routeMap.has(a.getAttribute("href").replace(/\/$/,"")));
+  assert.ok(!a.getAttribute("href").includes("#"));
+}
+home.window.close();
+for(const category of categories.NEW_CATEGORY_LANDINGS) {
+  const route=routeMap.get("/products/"+category.slug),dom=read(route.path),d=dom.window.document;
+  assert.equal(d.querySelector("h1").textContent,category.name);
+  assert.equal(d.title,category.title);assert.equal(d.querySelector('link[rel="canonical"]').href,canonicalUrl(route));
+  assert.match(d.querySelector('meta[name="robots"]').content,/^index, follow/);
+  const expected=categories.categoryProducts(category);
+  assert.equal(new Set(expected.map(p=>p.slug)).size,expected.length);
+  for(const product of expected) {
+    assert.equal(d.querySelectorAll(`main .card-link[href="/product/${product.slug}/"]`).length,1,product.slug);
+    assert.equal(product.group,category.group);
+  }
+  assert.equal(d.querySelectorAll("main .card-link").length,expected.length);
+  const data=structuredDataFor(route);
+  assert.ok(data.some(v=>v["@type"]==="CollectionPage"));assert.ok(!data.some(v=>v["@type"]==="Product"));
+  const items=data.find(v=>v["@type"]==="ItemList").itemListElement;
+  assert.equal(items.length,expected.length);
+  assert.deepEqual(items.map(v=>v.url),expected.map(p=>"https://rik-vent.ru/product/"+p.slug+"/"));
+  assert.ok(!JSON.stringify(data).includes('"price"'));
+  dom.window.close();
+}
+const fans=categories.categoryProducts(categories.categoryBySlug("ventilyatory"));
+assert.equal(fans.length,10);assert.ok(fans.some(p=>p.slug==="montazhnye-stakany-rms"));
+for(const slug of ["kanalnyj-ventilyator-kr","ventilyator-vr","ventilyator-wr"]) {
+  assert.ok(fans.some(p=>p.slug===slug));
+  const crumbs=structuredDataFor(routeMap.get("/product/"+slug)).find(v=>v["@type"]==="BreadcrumbList");
+  assert.ok(crumbs.itemListElement.some(v=>v.item.includes("/product/kanalnoe-")),slug);
+}
+for(const slug of ["ventilyatory-kryshnye-krv","ventilyatory-radialnye-rr","kkb-rra-l5","kkb-rra-i2"]) {
+  const dom=read("/product/"+slug);
+  const parent=slug.startsWith("kkb")?categories.CATEGORY_LANDING_PATHS.kkb:categories.CATEGORY_LANDING_PATHS.fans;
+  assert.ok(dom.window.document.querySelector(`nav[aria-label="Хлебные крошки"] a[href="${parent}/"]`));dom.window.close();
+}
+console.log("Посадочные категории проверены: 11 адресов разделов, 2 новые страницы, 9 серий вентиляторов + RMS, 2 серии ККБ; ссылки, HTML, JSON-LD и прежние канальные цепочки сохранены.");

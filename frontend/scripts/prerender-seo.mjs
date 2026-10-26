@@ -20,7 +20,7 @@ const primaryNavigation = [
   ["/about/", "О компании"],
   ["/contacts/", "Контакты"],
 ];
-const catalogRoutes = routes.filter((route) => route.kind === "product" || route.kind === "section");
+const catalogRoutes = routes.filter((route) => route.kind === "product" || route.kind === "section" || route.kind === "category");
 
 function escapeHtml(value) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { GROUPS, byGroupMenu } from "../data/catalog";
+import { categoryLandingPath } from "../data/category-landings";
 
 const NAV = [
   { to: "/products", label: "Продукция" },
@@ -65,7 +66,7 @@ export default function Header() {
                   if (!items.length) return null;
                   return (
                     <div className="mega-col" key={g.key}>
-                      <div className="mega-title">{g.title}</div>
+                      <Link className="mega-title" to={categoryLandingPath(g.key)} onClick={() => setMegaOpen(false)}>{g.title}</Link>
                       {items.map((p) => (
                         <Link key={p.slug} to={`/product/${p.slug}`} className="mega-link" onClick={() => setMegaOpen(false)}>{p.name}</Link>
                       ))}
@@ -116,14 +117,10 @@ export default function Header() {
                 const items = byGroupMenu(group.key);
                 if (!items.length) return null;
                 return (
-                  <button
-                    type="button"
-                    className="mm-link mm-drill"
-                    key={group.key}
-                    onClick={() => setMobilePanel(`group:${group.key}`)}
-                  >
-                    <span>{group.title}</span><span className="mm-chevron" aria-hidden="true">›</span>
-                  </button>
+                  <div className="mm-category-row" key={group.key}>
+                    <Link className="mm-link" to={categoryLandingPath(group.key)} onClick={close}>{group.title}</Link>
+                    <button type="button" className="mm-category-models" aria-label={`Показать модели: ${group.title}`} onClick={() => setMobilePanel(`group:${group.key}`)}>›</button>
+                  </div>
                 );
               })}
             </div>
@@ -135,6 +132,7 @@ export default function Header() {
                 <span aria-hidden="true">‹</span> Продукция
               </button>
               <div className="mm-panel-title">{selectedGroup.title}</div>
+              <Link to={categoryLandingPath(selectedGroup.key)} className="mm-link" onClick={close}>Открыть раздел «{selectedGroup.title}»</Link>
               {selectedGroupItems.map((product) => (
                 <Link key={product.slug} to={`/product/${product.slug}`} className="mm-link mm-drill mm-product" onClick={close}>
                   <span>{product.name}</span><span className="mm-chevron" aria-hidden="true">›</span>

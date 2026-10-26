@@ -5,12 +5,13 @@ import { PRODUCT_GUIDES } from "../data/product-guides";
 import { MEETING_DESCRIPTIONS } from "./meeting-descriptions";
 import { CHANNEL_ROUND_MENU, CHANNEL_RECT_MENU } from "../data/catalog";
 import { ductFamilyOf, familyForHubSlug, DUCT_HUBS } from "../data/duct-families";
+import { NEW_CATEGORY_LANDINGS, categoryProducts, CATEGORY_LANDING_PATHS } from "../data/category-landings";
 
 export const SITE_ORIGIN = "https://rik-vent.ru";
 export const DEFAULT_DESCRIPTION =
   "ООО «РИК» (Русская инжиниринговая компания) — российский производитель вентиляционного оборудования полного цикла в Москве: центральные установки, вентиляторы, клапаны, воздуховоды и автоматика.";
 
-export type SeoRouteKind = "static" | "product" | "section";
+export type SeoRouteKind = "static" | "product" | "section" | "category";
 
 export type SeoRoute = {
   path: string;
@@ -264,10 +265,19 @@ export const SEO_ROUTES: SeoRoute[] = [
   ...staticRoutes,
   ...PRODUCTS.map(productRoute),
   ...CENTRAL_SECTIONS.map(sectionRoute),
+  ...NEW_CATEGORY_LANDINGS.map((category): SeoRoute => ({
+    path: `/products/${category.slug}`, name: category.name, title: category.title,
+    description: category.description,
+    image: categoryProducts(category)[0]?.photo ?? "/logo.png",
+    ogType: "website", kind: "category",
+  })),
 ].map((route) => ({
   ...route,
   description: compactDescription(MEETING_DESCRIPTIONS[route.path.replace(/^\/product\//, "")] ?? DESCRIPTION_OVERRIDES[route.path] ?? route.description),
-  lastModified: route.kind === "product" || route.kind === "section" || route.path === "/contacts"
+  lastModified: route.kind === "category" || ["/", "/products"].includes(route.path)
+    || (route.kind === "product" && parentProductPath(route.path.slice("/product/".length))?.startsWith("/products/"))
+    ? "2026-10-26"
+    : route.kind === "product" || route.kind === "section" || route.path === "/contacts"
     ? "2026-10-23"
     : DESCRIPTION_OVERRIDES[route.path] ? "2026-10-20" : PAGE_LAST_MODIFIED[route.path],
 }));
@@ -282,7 +292,7 @@ function assertUnique(values: string[], label: string) {
   if (duplicates.size > 0) throw new Error(`Duplicate SEO ${label}: ${[...duplicates].join(", ")}`);
 }
 
-if (staticRoutes.length !== 20 || PRODUCTS.length !== 100 || CENTRAL_SECTIONS.length !== 18 || SEO_ROUTES.length !== 138) {
+if (staticRoutes.length !== 20 || PRODUCTS.length !== 100 || CENTRAL_SECTIONS.length !== 18 || NEW_CATEGORY_LANDINGS.length !== 2 || SEO_ROUTES.length !== 140) {
   throw new Error(`Unexpected SEO route census: static=${staticRoutes.length} products=${PRODUCTS.length} sections=${CENTRAL_SECTIONS.length} total=${SEO_ROUTES.length}`);
 }
 for (const route of SEO_ROUTES) {
@@ -318,6 +328,7 @@ function parentProductPath(slug: string): string | undefined {
   if (familyForHubSlug(slug)) return "/product/vozduhovody-i-fasonnye-izdeliya";
   if (p.group === "specialvalves" && slug !== "specialnye-klapany") return "/product/specialnye-klapany";
   if (p.group === "chillers" && slug !== "chillery-teplovye-nasosy-i-gidromoduli") return "/product/chillery-teplovye-nasosy-i-gidromoduli";
+  if (p.group === "fans" || p.group === "kkb") return CATEGORY_LANDING_PATHS[p.group];
   return undefined;
 }
 
@@ -333,7 +344,7 @@ export function breadcrumbsFor(route: SeoRoute): { label: string; path: string }
     const item = SEO_ROUTE_MAP.get(parent);
     if (!item) throw new Error(`Нет родительской страницы: ${parent}`);
     ancestors.unshift(item);
-    parent = parentProductPath(item.path.slice("/product/".length));
+    parent = item.kind === "product" ? parentProductPath(item.path.slice("/product/".length)) : undefined;
   }
   return [
     { label: "Главная", path: "/" },
@@ -389,7 +400,7 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
     },
     {
       "@context": "https://schema.org",
-      "@type": "WebPage",
+      "@type": route.kind === "category" ? "CollectionPage" : "WebPage",
       name: route.title,
       description: route.description,
       url,
@@ -409,6 +420,17 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
       itemListElement: breadcrumbsFor(route).map((crumb, index) => ({
         "@type": "ListItem", position: index + 1, name: crumb.label,
         item: `${SITE_ORIGIN}${crumb.path === "/" ? "/" : `${crumb.path}/`}`,
+      })),
+    });
+  }
+  if (route.kind === "category") {
+    const category = NEW_CATEGORY_LANDINGS.find((item) => `/products/${item.slug}` === route.path);
+    if (!category) throw new Error(`Категория SEO не найдена: ${route.path}`);
+    data.push({
+      "@context": "https://schema.org", "@type": "ItemList", name: route.name,
+      itemListElement: categoryProducts(category).map((product, index) => ({
+        "@type": "ListItem", position: index + 1, name: productDisplayName(product),
+        url: `${SITE_ORIGIN}/product/${product.slug}/`,
       })),
     });
   }

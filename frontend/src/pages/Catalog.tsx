@@ -5,9 +5,10 @@ import { GROUPS, byGroupCatalog, type Product } from "../data/catalog";
 import { PageHero } from "../components/rich";
 import ResponsiveCardImage from "../components/ResponsiveCardImage";
 import { hasGenericResponsiveSource } from "../data/responsive-images";
+import { categoryLandingPath } from "../data/category-landings";
 
 // Хаб каталога. Вся карточка — одна ссылка на страницу товара (/product/<slug>).
-function Card({ p }: { p: Product }) {
+export function CatalogCard({ p }: { p: Product }) {
   const wide = p.catalogLayout === "wide";
   return (
     <Link
@@ -96,9 +97,9 @@ export default function Catalog() {
           if (!items.length) return null;
           return (
             <div key={g.key} id={g.key} className="cat-group">
-              <h2>{g.title}</h2>
+              <h2><Link to={categoryLandingPath(g.key)} className="category-heading-link">{g.title} <span aria-hidden="true">→</span></Link></h2>
               <div className="cards">
-                {items.map((p) => <Card key={p.slug} p={p} />)}
+                {items.map((p) => <CatalogCard key={p.slug} p={p} />)}
               </div>
             </div>
           );
