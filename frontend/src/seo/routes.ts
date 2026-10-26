@@ -7,6 +7,7 @@ import { CHANNEL_ROUND_MENU, CHANNEL_RECT_MENU } from "../data/catalog";
 import { ductFamilyOf, familyForHubSlug, DUCT_HUBS } from "../data/duct-families";
 import { NEW_CATEGORY_LANDINGS, categoryProducts, CATEGORY_LANDING_PATHS } from "../data/category-landings";
 import { CATALOG_HUBS, catalogHubProducts } from "../data/catalog-hubs";
+import { BUSINESS_PAGES, businessPageByPath } from "../data/business-pages";
 
 export const SITE_ORIGIN = "https://rik-vent.ru";
 export const DEFAULT_DESCRIPTION =
@@ -31,6 +32,7 @@ export type SeoRoute = {
 type StaticSeo = { title: string; description: string; image?: string };
 
 export const STATIC_SEO: Record<string, StaticSeo> = {
+  ...Object.fromEntries(BUSINESS_PAGES.map(page => [page.path, { title: page.title, description: page.description, image: page.image }])),
   "/": { title: "ООО «РИК» — завод вентиляционного оборудования", description: DEFAULT_DESCRIPTION, image: "/photo/home-hero-light.webp" },
   "/products": { title: "Продукция РИК — вентиляционное оборудование", description: "Каталог вентиляционного оборудования РИК: центральные установки, вентиляторы, клапаны, воздуховоды, автоматика и комплектующие.", image: "/photo/catalog/central-units-combined.png" },
   "/production": { title: "Производство вентиляционного оборудования — РИК", description: "Производственные возможности РИК: полный цикл изготовления вентиляционного оборудования и контроль качества.", image: "/photo/home-hero-light.webp" },
@@ -260,7 +262,7 @@ const staticRoutes: SeoRoute[] = Object.entries(STATIC_SEO).map(([path, seo]) =>
   image: seo.image ?? "/logo.png",
   ogType: "website",
   kind: "static",
-  name: seo.title.replace(/\s+[—-]\s+РИК$/, ""),
+  name: businessPageByPath(path)?.name ?? seo.title.replace(/\s+[—-]\s+РИК$/, ""),
   indexable: !["/privacy", "/personal-data-consent"].includes(path),
 }));
 
@@ -277,7 +279,8 @@ export const SEO_ROUTES: SeoRoute[] = [
 ].map((route) => ({
   ...route,
   description: compactDescription(MEETING_DESCRIPTIONS[route.path.replace(/^\/product\//, "")] ?? DESCRIPTION_OVERRIDES[route.path] ?? route.description),
-  lastModified: route.kind === "category" || ["/", "/products"].includes(route.path)
+  lastModified: businessPageByPath(route.path) || ["/services", "/projects"].includes(route.path)
+    ? "2026-10-26" : route.kind === "category" || ["/", "/products"].includes(route.path)
     || (route.kind === "product" && parentProductPath(route.path.slice("/product/".length))?.startsWith("/products/"))
     ? "2026-10-26"
     : route.kind === "product" || route.kind === "section" || route.path === "/contacts"
@@ -295,7 +298,7 @@ function assertUnique(values: string[], label: string) {
   if (duplicates.size > 0) throw new Error(`Duplicate SEO ${label}: ${[...duplicates].join(", ")}`);
 }
 
-if (staticRoutes.length !== 20 || PRODUCTS.length !== 100 || CENTRAL_SECTIONS.length !== 18 || NEW_CATEGORY_LANDINGS.length !== 2 || SEO_ROUTES.length !== 140) {
+if (BUSINESS_PAGES.length !== 14 || staticRoutes.length !== 34 || PRODUCTS.length !== 100 || CENTRAL_SECTIONS.length !== 18 || NEW_CATEGORY_LANDINGS.length !== 2 || SEO_ROUTES.length !== 154) {
   throw new Error(`Unexpected SEO route census: static=${staticRoutes.length} products=${PRODUCTS.length} sections=${CENTRAL_SECTIONS.length} total=${SEO_ROUTES.length}`);
 }
 for (const route of SEO_ROUTES) {
@@ -337,6 +340,12 @@ function parentProductPath(slug: string): string | undefined {
 
 export function breadcrumbsFor(route: SeoRoute): { label: string; path: string }[] {
   if (route.path === "/") return [{ label: "Главная", path: "/" }];
+  const business = businessPageByPath(route.path);
+  if (business) {
+    const parent = business.parent === "/" ? undefined : SEO_ROUTE_MAP.get(business.parent);
+    if (business.parent !== "/" && !parent) throw new Error(`Не найден раздел страницы: ${business.path}`);
+    return [{ label: "Главная", path: "/" }, ...(parent ? [{ label: parent.name, path: parent.path }] : []), { label: business.name, path: business.path }];
+  }
   const ancestors: SeoRoute[] = [];
   let parent = route.kind === "section" ? "/product/centralnye-ustanovki"
     : route.kind === "product" ? parentProductPath(route.path.slice("/product/".length)) : undefined;
@@ -445,6 +454,15 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
         url: `${SITE_ORIGIN}/product/${product.slug}/`,
       })),
     });
+  }
+  const business = businessPageByPath(route.path);
+  if (business?.kind === "service") {
+    data.push({ "@context": "https://schema.org", "@type": "Service", name: business.name,
+      description: business.description, url, provider: { "@type": "Organization", name: "ООО «РИК»", url: SITE_ORIGIN } });
+  }
+  if (business?.kind === "case") {
+    data.push({ "@context": "https://schema.org", "@type": "CreativeWork", name: business.name,
+      description: business.description, url, image, creator: { "@type": "Organization", name: "ООО «РИК»", url: SITE_ORIGIN } });
   }
   if (!overview && (route.kind === "product" || route.kind === "section")) {
     data.push({

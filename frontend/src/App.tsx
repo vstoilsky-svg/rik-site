@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const CategoryLandingPage = lazy(() => import("./pages/CategoryLanding"));
 const Services = lazy(() => import("./pages/Services"));
+const BusinessPage = lazy(() => import("./pages/BusinessPage"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const About = lazy(() => import("./pages/About"));
 const ForDesigners = lazy(() => import("./pages/ForDesigners"));
@@ -83,6 +84,10 @@ export default function App() {
             <Route path="/recommendations" element={<Recommendations />} />
             <Route path="/contractors" element={<ForContractors />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/services/:service" element={<BusinessPage />} />
+            <Route path="/resheniya" element={<BusinessPage />} />
+            <Route path="/resheniya/:solution" element={<BusinessPage />} />
+            <Route path="/proekty/:project" element={<BusinessPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/request" element={<RequestForm />} />

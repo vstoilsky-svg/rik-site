@@ -2,6 +2,13 @@ import SiteImage from "../components/SiteImage";
 /* oxlint-disable react/only-export-components -- project data is exported for reuse by the contractors page */
 import { Link } from "react-router-dom";
 import { PageHero, SideNav, FeatureCards, StatsBand, Icon } from "../components/rich";
+import { CASE_PAGES } from "../data/business-pages";
+
+const CASE_BY_PROJECT: Record<string, string> = {
+  "АО «Трансмашхолдинг»": CASE_PAGES[0].path,
+  "АО «Мосметрострой»": CASE_PAGES[1].path,
+  "ООО «Туапсинский балкерный терминал»": CASE_PAGES[2].path,
+};
 
 const CHIPS = [
   { icon: "gear", title: "Инженерные решения", sub: "под ваши задачи" },
@@ -96,6 +103,7 @@ export default function Projects() {
             <section id="categories" className="sol-section">
               <h2>Категории</h2>
               <p className="soft">Оборудование РИК применяется на объектах разных отраслей. Выберите категорию — примеры ниже.</p>
+              <p><Link to="/resheniya">Решения для производств и складов →</Link></p>
               <div className="chip-grid">
                 {CATEGORIES.map((c) => <a className="cat-chip cat-chip-link" href="#cases" key={c}>{c}</a>)}
               </div>
@@ -132,6 +140,7 @@ export default function Projects() {
                       <span className="proj-cat">{p.cat}</span>
                       <h3>{p.name}</h3>
                       <p className="soft">{p.desc}</p>
+                      {CASE_BY_PROJECT[p.name] && <Link to={CASE_BY_PROJECT[p.name]}>Подробнее о проекте →</Link>}
                     </div>
                   </article>
                 ))}
