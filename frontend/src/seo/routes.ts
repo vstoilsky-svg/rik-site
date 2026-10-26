@@ -6,6 +6,7 @@ import { MEETING_DESCRIPTIONS } from "./meeting-descriptions";
 import { CHANNEL_ROUND_MENU, CHANNEL_RECT_MENU } from "../data/catalog";
 import { ductFamilyOf, familyForHubSlug, DUCT_HUBS } from "../data/duct-families";
 import { NEW_CATEGORY_LANDINGS, categoryProducts, CATEGORY_LANDING_PATHS } from "../data/category-landings";
+import { CATALOG_HUBS, catalogHubProducts } from "../data/catalog-hubs";
 
 export const SITE_ORIGIN = "https://rik-vent.ru";
 export const DEFAULT_DESCRIPTION =
@@ -221,8 +222,8 @@ function productRoute(product: Product): SeoRoute {
   const name = productDisplayName(product);
   const seoOverride = PRODUCT_SEO_OVERRIDES[product.slug];
   const image = product.pageMedia?.[0]?.src ?? product.catalogMedia?.[0]?.src ?? product.photo ?? "/logo.png";
-  const criticalImage = product.slug === "kanalnoe-oborudovanie"
-    ? PRODUCTS.find((item) => item.slug === "kanalnoe-krugloe")?.photo ?? image
+  const criticalImage = CATALOG_HUBS[product.slug]
+    ? catalogHubProducts(CATALOG_HUBS[product.slug])[0]?.photo ?? image
     : product.pageMedia?.[0]?.src ?? product.photo ?? image;
   return {
     path: `/product/${product.slug}`,
@@ -375,6 +376,7 @@ export function robotsContentFor(route?: SeoRoute): string {
 export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
   const url = canonicalUrl(route);
   const image = `${SITE_ORIGIN}${route.image}`;
+  const overview = route.path.startsWith("/product/") ? CATALOG_HUBS[route.path.slice("/product/".length)] : undefined;
   const data: Record<string, unknown>[] = [
     {
       "@context": "https://schema.org",
@@ -402,7 +404,7 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
     },
     {
       "@context": "https://schema.org",
-      "@type": route.kind === "category" ? "CollectionPage" : "WebPage",
+      "@type": route.kind === "category" || overview ? "CollectionPage" : "WebPage",
       name: route.title,
       description: route.description,
       url,
@@ -436,7 +438,15 @@ export function structuredDataFor(route: SeoRoute): Record<string, unknown>[] {
       })),
     });
   }
-  if (route.kind === "product" || route.kind === "section") {
+  if (overview) {
+    data.push({ "@context": "https://schema.org", "@type": "ItemList", name: route.name,
+      itemListElement: catalogHubProducts(overview).map((product, index) => ({
+        "@type": "ListItem", position: index + 1, name: productDisplayName(product),
+        url: `${SITE_ORIGIN}/product/${product.slug}/`,
+      })),
+    });
+  }
+  if (!overview && (route.kind === "product" || route.kind === "section")) {
     data.push({
       "@context": "https://schema.org",
       "@type": "Product",

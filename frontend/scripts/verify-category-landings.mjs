@@ -7,8 +7,8 @@ import { frontendRoot, loadSeoData } from "./seo-runtime.mjs";
 
 const { routes, canonicalUrl, structuredDataFor } = await loadSeoData();
 const server = await createServer({root:frontendRoot,server:{middlewareMode:true},appType:"custom",logLevel:"silent"});
-let catalog, categories;
-try {catalog=await server.ssrLoadModule("/src/data/catalog.ts");categories=await server.ssrLoadModule("/src/data/category-landings.ts");}
+let catalog, categories, hubs;
+try {catalog=await server.ssrLoadModule("/src/data/catalog.ts");categories=await server.ssrLoadModule("/src/data/category-landings.ts");hubs=await server.ssrLoadModule("/src/data/catalog-hubs.ts");}
 finally {await server.close();}
 assert.equal(catalog.GROUPS.length,11);assert.equal(catalog.PRODUCTS.length,100);
 assert.equal(routes.length,140);assert.equal(categories.NEW_CATEGORY_LANDINGS.length,2);
@@ -81,4 +81,35 @@ assert.equal(routeMap.get("/product/kanalnoe-oborudovanie").criticalImage, chann
 assert.equal(channelDoc.querySelector('link[rel="preload"][as="image"]').getAttribute("href"), channelImages[0], "Первая видимая картинка должна загружаться приоритетно");
 assert.equal(channelDoc.querySelectorAll(".product-grid > .product-media").length, 0, "В общем разделе не должно быть одностороннего товарного hero");
 channel.window.close();
-console.log("Посадочные категории проверены: 11 адресов, 2 новые страницы, 9 серий вентиляторов + RMS, 2 серии ККБ; канальный хаб имеет две наглядные карточки с разными изображениями и переходами. Прежние канальные цепочки сохранены.");
+assert.equal(Object.keys(hubs.CATALOG_HUBS).length, 11);
+let hubCards = 0;
+for (const [slug, hub] of Object.entries(hubs.CATALOG_HUBS)) {
+  const route = routeMap.get(`/product/${slug}`), dom = read(route.path), d = dom.window.document;
+  assert.ok(d.querySelector(`[data-catalog-hub="${slug}"]`), slug);
+  const products = hubs.catalogHubProducts(hub), cards = [...d.querySelectorAll("main .catalog-hub-card")];
+  assert.equal(cards.length, products.length, slug);
+  assert.equal(new Set(products.map(p => p.slug)).size, products.length, slug);
+  assert.ok(products.length >= 2, slug);
+  for (const [index, product] of products.entries()) {
+    assert.equal(cards[index].getAttribute("href"), `/product/${product.slug}/`, slug);
+    assert.equal(cards[index].querySelector("img").getAttribute("src"), product.photo, product.slug);
+    assert.equal(cards[index].querySelector("img").getAttribute("alt"), product.name, product.slug);
+    assert.equal(cards[index].querySelector("h3").textContent, product.name, product.slug);
+  }
+  assert.equal(d.querySelectorAll("main #tech, main .product-notice").length, 0, `Обзорная страница не должна имитировать товарную: ${slug}`);
+  assert.ok(![...d.querySelectorAll("main h2")].some(h => h.textContent.trim() === "Технические характеристики"), `Пустой товарный блок на обзорной странице: ${slug}`);
+  const guide = d.querySelector("#selection-guide");
+  if (guide) for (const section of d.querySelectorAll(".catalog-hub-section")) assert.ok(section.compareDocumentPosition(guide) & 4, slug);
+  assert.equal(d.querySelector('link[rel="preload"][as="image"]').getAttribute("href"), products[0].photo, slug);
+  const data = structuredDataFor(route);
+  assert.ok(data.some(v => v["@type"] === "CollectionPage"));
+  assert.ok(!data.some(v => v["@type"] === "Product"));
+  assert.deepEqual(data.find(v => v["@type"] === "ItemList").itemListElement.map(v => v.url), products.map(p => `https://rik-vent.ru/product/${p.slug}/`));
+  hubCards += cards.length;dom.window.close();
+}
+assert.equal(catalog.GROUPS.find(g => g.key === "specialvalves").title, "Специальные клапаны");
+assert.equal(catalog.GROUPS.find(g => g.key === "firevalves").title, "Противопожарные клапаны");
+const special = read("/product/specialnye-klapany");
+assert.equal(special.window.document.querySelectorAll('#accessories .catalog-hub-card[href="/product/lyuk-vstavki/"]').length, 1);
+special.window.close();
+console.log(`Визуальные категории проверены: 11 групп меню, 11 обзорных страниц, ${hubCards} карточек с исходными изображениями и каноническими ссылками; пустые товарные блоки исключены, два раздела клапанов сохранены отдельно.`);
