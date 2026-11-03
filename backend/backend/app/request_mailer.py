@@ -95,7 +95,7 @@ def send_request_email(fields: dict[str, str], attachments: list[RequestAttachme
 
     kind = fields.get("form_kind", "request-calculation")
     subject_prefix = "Проект с сайта РИК" if kind == "send-project" else "Запрос расчёта с сайта РИК"
-    sender_name = safe_header(fields.get("name", "Без имени"))
+    sender_name = safe_header(fields.get("name") or "Без имени")
 
     message = EmailMessage()
     message["Subject"] = f"{subject_prefix}: {sender_name}"

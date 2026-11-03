@@ -22,6 +22,9 @@ for (const [label, source] of [["Форма расчёта", request], ["Фор�
     throw new Error(`${label}: e-mail не должен быть обязательным`);
   }
   requireText(source, 'name="phone" required', label);
+  if (/name="name"[^>]*\srequired/.test(source)) throw new Error(`${label}: имя не должно быть обязательным`);
+  requireText(source, "RUSSIAN_PHONE_PATTERN", label);
+  requireText(source, "formatRussianPhone", label);
 }
 
 requireText(consent, "Согласие на обработку персональных данных", "Документ согласия");
