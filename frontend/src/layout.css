@@ -33,6 +33,8 @@
 .hero-lead { opacity: .85; max-width: 60ch; margin: 0 0 32px; }
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
 .site-footer { background: var(--footer-bg); color: rgba(255,255,255,.85); margin-top: 64px; }
+/* На главной завершающий блок примыкает к футеру без пустой полосы. */
+main:has(.home-final-cta) + .site-footer { margin-top: 0; }
 .footer-inner { display: flex; justify-content: space-between; gap: 32px; padding: 48px 24px 24px; flex-wrap: wrap; }
 .footer-logo-img { width: auto; height: 38px; display: block; margin-bottom: 6px; }
 .footer-tag { opacity: .7; max-width: 40ch; }
