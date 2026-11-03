@@ -86,8 +86,9 @@ async def submit_request(request: Request) -> JSONResponse:
         return JSONResponse({"ok": True})
 
     email = fields.get("email", "")
-    if not fields.get("name") or not fields.get("phone") or (email and "@" not in email):
-        return JSONResponse({"ok": False, "error": "Заполните имя и телефон; если указан e-mail, проверьте его"}, status_code=422)
+    phone = fields.get("phone", "")
+    if not re.fullmatch(r"\+7(?: \([0-9]{3}\) [0-9]{3}-[0-9]{2}-[0-9]{2}|[0-9]{10})", phone) or (email and "@" not in email):
+        return JSONResponse({"ok": False, "error": "Укажите полный телефон с +7; если указан e-mail, проверьте его"}, status_code=422)
     if fields.get("consent") not in {"on", "true", "1", "yes"}:
         return JSONResponse({"ok": False, "error": "Требуется согласие на обработку данных"}, status_code=422)
     if len(uploads) > config.REQUEST_MAX_FILES:

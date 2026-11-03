@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
 import { trackGoal } from "../lib/metrika";
+import { formatRussianPhone, RUSSIAN_PHONE_PATTERN } from "../lib/phone";
 
 const API = "/api/request";
 
@@ -14,8 +15,8 @@ export default function RequestForm({ embedded = false }: { embedded?: boolean }
     setStatus("sending"); setErr("");
     const form = e.currentTarget;
     const data = new FormData(form);
-    if (!String(data.get("name")).trim() || !String(data.get("phone")).trim()) {
-      setStatus("err"); setErr("Заполните имя и телефон."); return;
+    if (!new RegExp(`^(?:${RUSSIAN_PHONE_PATTERN})$`).test(String(data.get("phone") || ""))) {
+      setStatus("err"); setErr("Укажите телефон в формате +7 (999) 999-99-99."); return;
     }
     try {
       const r = await fetch(API, { method: "POST", body: data });
@@ -44,9 +45,9 @@ export default function RequestForm({ embedded = false }: { embedded?: boolean }
       <section className="container req section-body">
       <form className="req-form" method="post" action={API} encType="multipart/form-data" onSubmit={onSubmit}>
         <input type="hidden" name="form_kind" value="request-calculation" />
-        <label>Имя *<input name="name" required autoComplete="name" /></label>
+        <label>Имя<input name="name" autoComplete="name" /></label>
         <label>Компания<input name="company" autoComplete="organization" /></label>
-        <label>Телефон *<input name="phone" required inputMode="tel" autoComplete="tel" /></label>
+        <label>Телефон *<input name="phone" required type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (999) 999-99-99" maxLength={18} pattern={RUSSIAN_PHONE_PATTERN} title="Введите номер в формате +7 (999) 999-99-99" onChange={(event) => { event.currentTarget.value = formatRussianPhone(event.currentTarget.value); }} /></label>
         <label>E-mail<input name="email" type="email" autoComplete="email" /></label>
         <label className="wide">Комментарий<textarea name="comment" rows={4} /></label>
         <label className="wide file">Прикрепить проект / ТЗ / спецификацию

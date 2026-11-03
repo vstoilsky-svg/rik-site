@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { PageHero } from "../components/rich";
 import { PROJECTS } from "./Projects";
 import { trackGoal } from "../lib/metrika";
+import { formatRussianPhone, RUSSIAN_PHONE_PATTERN } from "../lib/phone";
 
 const SCOPE = ["Проектирование", "Производство", "Комплектация", "Монтаж", "Пусконаладка", "Сервис"];
 
@@ -156,9 +157,9 @@ export default function ForContractors() {
           <div className="section-heading"><span className="eyebrow">Получить расчёт</span><h2>Отправить проект</h2><p className="soft">Приложите проект, спецификацию, ТЗ или архив исходных данных.</p></div>
           <form className="req-form contractor-form" onSubmit={sendProject}>
             <input type="hidden" name="form_kind" value="send-project" />
-            <label>Имя *<input name="name" required autoComplete="name" /></label>
+            <label>Имя<input name="name" autoComplete="name" /></label>
             <label>Компания<input name="company" autoComplete="organization" /></label>
-            <label>Телефон *<input name="phone" required inputMode="tel" autoComplete="tel" /></label>
+            <label>Телефон *<input name="phone" required type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (999) 999-99-99" maxLength={18} pattern={RUSSIAN_PHONE_PATTERN} title="Введите номер в формате +7 (999) 999-99-99" onChange={(event) => { event.currentTarget.value = formatRussianPhone(event.currentTarget.value); }} /></label>
             <label>E-mail<input name="email" type="email" autoComplete="email" /></label>
             <label className="wide">Комментарий<textarea name="comment" rows={4} /></label>
             <label className="wide upload-drop">Файлы проекта

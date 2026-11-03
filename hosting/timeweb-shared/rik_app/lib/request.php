@@ -28,8 +28,8 @@ function rik_handle_request(): never
         rik_json(['ok' => true]);
     }
     $email = $fields['email'] ?? '';
-    if (($fields['name'] ?? '') === '' || ($fields['phone'] ?? '') === '' || ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false)) {
-        rik_json(['ok' => false, 'error' => 'Заполните имя и телефон; если указан e-mail, проверьте его'], 422);
+    if (!rik_valid_request_phone($fields['phone'] ?? '') || ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false)) {
+        rik_json(['ok' => false, 'error' => 'Укажите полный телефон с +7; если указан e-mail, проверьте его'], 422);
     }
     if (!in_array(rik_text_lower($fields['consent'] ?? ''), ['on', 'true', '1', 'yes'], true)) {
         rik_json(['ok' => false, 'error' => 'Требуется согласие на обработку данных'], 422);
@@ -55,6 +55,11 @@ function rik_handle_request(): never
         rik_json(['ok' => false, 'error' => 'Не удалось отправить заявку'], 502);
     }
     rik_json(['ok' => true, 'recipient' => rik_config('REQUEST_RECIPIENT', 'zakaz@rik-vent.ru')]);
+}
+
+function rik_valid_request_phone(string $phone): bool
+{
+    return preg_match('/^\+7(?: \([0-9]{3}\) [0-9]{3}-[0-9]{2}-[0-9]{2}|[0-9]{10})$/', $phone) === 1;
 }
 
 /** @return list<array{name:string,type:string,content:string}> */
@@ -173,7 +178,7 @@ function rik_send_request_mail(array $fields, array $attachments): void
     }
 
     $kind = ($fields['form_kind'] ?? '') === 'send-project' ? 'Проект с сайта РИК' : 'Запрос расчёта с сайта РИК';
-    $subject = $kind . ': ' . rik_safe_header($fields['name'] ?? 'Без имени');
+    $subject = $kind . ': ' . rik_safe_header(($fields['name'] ?? '') !== '' ? $fields['name'] : 'Без имени');
     $labels = [
         'Форма' => ($fields['form_kind'] ?? '') === 'send-project' ? 'Отправить проект' : 'Запросить расчёт',
         'Имя' => $fields['name'] ?? '', 'Компания' => $fields['company'] ?? '', 'Телефон' => $fields['phone'] ?? '',
